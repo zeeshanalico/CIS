@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for user roles
+enum UserRole {
+  USER
+}
+
+// Enum for internal user roles
+enum InternalUserRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+// @db means NOT NULL
+
+// Enum for expense types
+enum ExpenseType {
+  SALARY
+  RENT
+  UTILITY
+  FOOD
+  TRAVEL
+  OTHER
+}
+
+// Enum for transaction types
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+model Batch {
+  id          Int       @id @default(autoincrement())
+  product_id  Int?
+  quantity    Int
+  cost_price  Decimal   @db.Decimal(10, 2)
+  purchase_id Int?
+  is_dummy    Boolean?  @default(false)
+  is_deleted  Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at  DateTime? @db.Timestamp(6)
+  product     Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  purchase    Purchase? @relation(fields: [purchase_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Category {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique @db.VarChar(255)
+  is_deleted Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+  product    Product[]
+}
+
+model Customer {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(100)
+  secret     String    @db.VarChar(255)
+  email      String    @unique @db.VarChar(255)
+  phone      String?   @db.VarChar(20)
+  is_active  Boolean?  @default(true)
+  is_deleted Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+  sale       Sale[]
+  trx        Trx[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Expense {
+  id           Int         @id @default(autoincrement())
+  kiosk_id     Int?
+  amount       Decimal     @db.Decimal(10, 2)
+  expense_date DateTime    @default(now()) @db.Timestamp(6)
+  description  String?
+  expense_type ExpenseType 
+  is_dummy     Boolean?    @default(false)
+  is_deleted   Boolean?    @default(false)
+  created_at   DateTime?   @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?   @default(now()) @db.Timestamp(6)
+  deleted_at   DateTime?   @db.Timestamp(6)
+  kiosk        Kiosk?      @relation(fields: [kiosk_id], references: [id], onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+  model Internal_user {
+    id         Int              @id @default(autoincrement())
+    name       String           @db.VarChar(255)
+    email      String           @unique @db.VarChar(255)
+    password   String           @db.VarChar(255)
+    role       InternalUserRole 
+    is_active  Boolean?         @default(true)
+    is_deleted Boolean?         @default(false)
+    created_at DateTime?        @default(now()) @db.Timestamp(6)
+    updated_at DateTime?        @default(now()) @db.Timestamp(6)
+    deleted_at DateTime?        @db.Timestamp(6)
+    kiosk      Kiosk[]
+  }
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Journal {
+  id          Int             @id @default(autoincrement())
+  kiosk_id    Int?
+  amount      Decimal         @db.Decimal(10, 2)
+  trx_type    TransactionType 
+  account     String          @db.VarChar(50)
+  description String?
+  is_dummy    Boolean?        @default(false)
+  is_deleted  Boolean?        @default(false)
+  created_at  DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?       @default(now()) @db.Timestamp(6)
+  deleted_at  DateTime?       @db.Timestamp(6)
+  kiosk       Kiosk?          @relation(fields: [kiosk_id], references: [id], onUpdate: NoAction)
+}
+
+model Kiosk {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  location      String?        @db.VarChar(255)
+  registered_by Int?
+  is_deleted    Boolean?       @default(false)
+  created_at    DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?      @default(now()) @db.Timestamp(6)
+  deleted_at    DateTime?      @db.Timestamp(6)
+  expense       Expense[]
+  journal       Journal[]
+  internal_user Internal_user? @relation(fields: [registered_by], references: [id], onUpdate: NoAction)
+  product       Product[]
+  purchase      Purchase[]
+  sale          Sale[]
+  trx           Trx[]
+  user          User[]
+}
+
+model Product {
+  id                      Int                       @id @default(autoincrement())
+  category_id             Int?
+  name                    String                    @db.VarChar(255)
+  sale_price              Decimal                   @db.Decimal(10, 2)
+  quantity                Int                       @default(0)
+  image_url               String?
+  kiosk_id                Int?
+  is_dummy                Boolean?                  @default(false)
+  is_deleted              Boolean?                  @default(false)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  deleted_at              DateTime?                 @db.Timestamp(6)
+  batch                   Batch[]
+  category                Category?                 @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  kiosk                   Kiosk?                    @relation(fields: [kiosk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sale_product            Sale_product[]
+  vendor_product_purchase vendor_product_purchase[]
+}
+
+model Purchase {
+  id                      Int                       @id @default(autoincrement())
+  user_id                 Int?
+  kiosk_id                Int?
+  purchase_date           DateTime                  @default(now()) @db.Timestamp(6)
+  amount                  Decimal                   @db.Decimal(10, 2)
+  is_dummy                Boolean?                  @default(false)
+  is_deleted              Boolean?                  @default(false)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  deleted_at              DateTime?                 @db.Timestamp(6)
+  batch                   Batch[]
+  kiosk                   Kiosk?                    @relation(fields: [kiosk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                    User?                     @relation(fields: [user_id], references: [id], onUpdate: NoAction)
+  vendor_product_purchase vendor_product_purchase[]
+}
+
+model Sale {
+  id           Int            @id @default(autoincrement())
+  customer_id  Int?
+  kiosk_id     Int?
+  sub_total    Decimal        @db.Decimal(10, 2)
+  discount     Decimal        @default(0) @db.Decimal(10, 2)
+  total        Decimal        @db.Decimal(10, 2)
+  qty          Int
+  sale_date    DateTime       @default(now()) @db.Timestamp(6)
+  is_dummy     Boolean?       @default(false)
+  is_deleted   Boolean?       @default(false)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?      @default(now()) @db.Timestamp(6)
+  deleted_at   DateTime?      @db.Timestamp(6)
+  customer     Customer?      @relation(fields: [customer_id], references: [id], onUpdate: NoAction)
+  kiosk        Kiosk?         @relation(fields: [kiosk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sale_product Sale_product[]
+}
+
+model Sale_product {
+  id         Int       @id @default(autoincrement())
+  sale_id    Int?
+  product_id Int?
+  quantity   Int
+  unit_price Decimal   @db.Decimal(10, 2)
+  discount   Decimal   @default(0) @db.Decimal(10, 2)
+  is_dummy   Boolean?  @default(false)
+  is_deleted Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+  product    Product?  @relation(fields: [product_id], references: [id], onUpdate: NoAction)
+  sale       Sale?     @relation(fields: [sale_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Trx {
+  id          Int       @id @default(autoincrement())
+  kiosk_id    Int?
+  amount      Decimal   @db.Decimal(10, 2)
+  customer_id Int?
+  vendor_id   Int?
+  is_dummy    Boolean?  @default(false)
+  is_deleted  Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at  DateTime? @db.Timestamp(6)
+  customer    Customer? @relation(fields: [customer_id], references: [id], onUpdate: NoAction)
+  kiosk       Kiosk?    @relation(fields: [kiosk_id], references: [id], onUpdate: NoAction)
+  vendor      Vendor?   @relation(fields: [vendor_id], references: [id], onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model User {
+  id         Int        @id @default(autoincrement())
+  kiosk_id   Int?
+  name       String     @db.VarChar(255)
+  email      String     @unique @db.VarChar(255)
+  password   String     @db.VarChar(255)
+  role       UserRole   
+  is_active  Boolean?   @default(true)
+  is_deleted Boolean?   @default(false)
+  created_at DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at DateTime?  @default(now()) @db.Timestamp(6)
+  deleted_at DateTime?  @db.Timestamp(6)
+  purchase   Purchase[]
+  kiosk      Kiosk?     @relation(fields: [kiosk_id], references: [id], onUpdate: NoAction)
+}
+
+model Vendor {
+  id                      Int                       @id @default(autoincrement())
+  name                    String                    @db.VarChar(255)
+  contact_info            String?                   @db.VarChar(255)
+  is_deleted              Boolean?                  @default(false)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamp(6)
+  deleted_at              DateTime?                 @db.Timestamp(6)
+  trx                     Trx[]
+  vendor_product_purchase vendor_product_purchase[]
+}
+
+model vendor_product_purchase {
+  id          Int       @id @default(autoincrement())
+  vendor_id   Int?
+  purchase_id Int?
+  product_id  Int?
+  qty         Int
+  cost_price  Decimal   @db.Decimal(10, 2)
+  is_dummy    Boolean?  @default(false)
+  is_deleted  Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at  DateTime? @db.Timestamp(6)
+  product     Product?  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  purchase    Purchase? @relation(fields: [purchase_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vendor      Vendor?   @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}

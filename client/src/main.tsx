@@ -6,18 +6,27 @@ import Home from './pages/Home/Home'
 import Login from './pages/Login/Login'
 import { Provider } from 'react-redux'
 import store from './store/store'
+import Sidebar from './layout/Sidebar'
+import ErrorBoundary from './components/error/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
 
   <StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-        </Routes>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<Login />} />
 
-      </BrowserRouter>
-    </Provider>
+            <Route path="/" element={<Sidebar />}>
+              <Route path="admin" element={<Home />} />
+            </Route>
+
+          </Routes>
+          
+        </BrowserRouter>
+      </Provider>
+    </ErrorBoundary>
   </StrictMode>,
 )

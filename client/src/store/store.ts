@@ -1,16 +1,17 @@
 'use client'
 import { configureStore } from "@reduxjs/toolkit";
+import { authApiSlice } from "./slices/authSlice/authApiSlice";
+import authSlice from "./slices/authSlice/authSlice";
 
 const reducer = {
-    // auth: authSlice.reducer,
-    // urls: urlSlice,
-    // [urlApiSlice.reducerPath]: urlApiSlice.reducer,
+    [authSlice.name]: authSlice.reducer,
+    [authApiSlice.reducerPath]: authApiSlice.reducer,
 };
 
 const store = configureStore({
     reducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(),
+        getDefaultMiddleware().concat(authApiSlice.middleware),
 });
 
 
