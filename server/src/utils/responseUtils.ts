@@ -1,18 +1,29 @@
 import express, { Request, Response } from 'express';
 import { CustomError } from './CustomError';
-const loggerService = require('../logger/loggerService')
+import loggerService from '../logger/loggerService';
+
+// type JSONSerializable =
+//   | string
+//   | number
+//   | boolean
+//   | null
+//   | JSONSerializable[]
+//   | { [key: string]: JSONSerializable };
+
 /**
  * 
  * @param {Response} res - The Express response object.
- * @param {any} data - The data to send in the response.
+ * @param {any} result - The result to send in the response.
  * @param {string} message - The error message.
  * @param {number} [statusCode=200] - The HTTP status code (default is 200).
  */
-function sendSuccess<T>(res: Response, data: T, message?: string, statusCode: number = 200): void {
-    loggerService.info(`Response: ${JSON.stringify(res, null, 2)}`, `responseUtils`);
+function sendSuccess<T>(res: Response, result: T, message: string | null = null, statusCode: number = 200): void {
+    loggerService.info(`Response: ${JSON.stringify(result, null, 2)}`, `responseUtils`);
+    // const {...rest}=result;
     res.status(statusCode).json({
         success: true,
-        data,
+        message,
+        result,
     });
 }
 
@@ -32,6 +43,7 @@ function sendError(res: Response, err: unknown, message?: string, statusCode: nu
         res.status(err.status).json({
             success: false,
             error: err.message,
+            result:null,
         });
         return;
     }
@@ -39,18 +51,16 @@ function sendError(res: Response, err: unknown, message?: string, statusCode: nu
         res.status(statusCode).json({
             success: false,
             error: err.message,
+            result:null,
         });
         return;
     } else {
         res.status(statusCode).json({
             success: false,
             error: "Internal Server Error",
+            result:null,
         });
         return;
     }
 }
-
-module.exports = {
-    sendSuccess,
-    sendError,
-};
+export { sendSuccess, sendError };

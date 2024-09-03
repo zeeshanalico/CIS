@@ -30,4 +30,4 @@ class LoggerService {
     }
 }
 
-module.exports = new LoggerService();
+export default new LoggerService();

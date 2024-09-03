@@ -4,7 +4,7 @@ class LoggerService {
         logger.info(this.formatMessage(message, context), { context });
     }
 
-    error(message: string, trace: string, context?: string) {
+    error(message: string, trace: string|undefined, context?: string) {
         logger.error(this.formatMessage(message, context, trace), { context });
         // logger.error(message,{ context, trace});
     }
@@ -30,4 +30,4 @@ class LoggerService {
     }
 }
 
-module.exports = new LoggerService();
+export default new LoggerService();

@@ -1,27 +1,19 @@
-// controllers/ProductController.ts
-
 import { Request, Response } from 'express';
 import ProductService from '../services/ProductService';
-const { sendError, sendSuccess } = require('../utils/responseUtils');
+import { sendError,sendSuccess } from '../utils/responseUtils';
 
 class ProductController {
-    private productService: ProductService;
-
-    constructor(productService: ProductService) {
-        this.productService = productService;
-    }
+    constructor(private readonly productService: ProductService) { }
 
     async createProduct(req: Request, res: Response): Promise<void> {
-        const { name, sale_price, quantity, category_id, kiosk_id } = req.body;
+        const { name, sale_price, quantity, category_id, kiosk_id = null } = req.body;
         try {
             const product = await this.productService.createProduct({
                 name,
                 sale_price,
                 quantity,
-                category: {
-                    connect: { id: category_id },
-                    kiosk: { connect: { id: kiosk_id } }
-                },
+                category: { connect: { id: category_id } },
+                kiosk: { connect: { id: kiosk_id } }
             });
             sendSuccess(res, { product });
         } catch (error) {

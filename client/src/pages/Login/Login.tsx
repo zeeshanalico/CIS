@@ -4,10 +4,12 @@ import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { setCredentials } from '@/store/slices/authSlice/authSlice';
 import { useLoginMutation } from '@/store/slices/authSlice/authApiSlice';
 import { useDispatch } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle } from "../../assets/icons";
+import { clearCredentials, setCredentials } from '@/store/slices/authSlice/authSlice';
+import { useToast } from '@/components/ui/use-toast';
+import { ApiResponseFailed } from '@/types/apiResponse';
 
 interface FormValues {
   email: string;
@@ -19,17 +21,35 @@ const LoginPage = () => {
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useLoginMutation();
+  const { toast } = useToast()
 
   const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     try {
-      const userData = await login(values).unwrap();
-      dispatch(setCredentials({ accessToken: userData.accessToken, user: userData.user }));
+      const response = await login(values).unwrap();
+      const { message, success, result } = response;
+      const { accessToken, user } = result;
+      dispatch(setCredentials({ accessToken, user }));
+      console.log('zeeshan');
       setSubmitting(false);
-      // Redirect user to another page or show success message here
-    } catch (err) {
+      toast({
+        title: "Success",
+        description: message,
+        // action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+        return;
+      }
       console.error('Failed to login:', err);
+      clearCredentials();
       setSubmitting(false);
-      // Handle login failure (e.g., show error message)
+      toast({
+        title: "Failure",
+        variant: "destructive",
+        description: (err as ApiResponseFailed).error,
+        // action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
     }
   };
 
@@ -102,6 +122,7 @@ const LoginPage = () => {
                     name="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    autoComplete='on'
                     value={values.password}
                     className={`pl-10 w-full py-2 border ${errors.password && touched.password
                       ? "border-red-500"

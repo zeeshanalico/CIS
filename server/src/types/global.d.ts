@@ -1,4 +1,6 @@
 import { UserPayload } from "./UserPayload";
+import { Request } from "express";
+import { Express } from "express";
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -9,10 +11,10 @@ declare global {
             PORT?: string;
         }
     }
+    
     namespace Express {
         interface Request {
             user?: UserPayload;
-
         }
     }
 }

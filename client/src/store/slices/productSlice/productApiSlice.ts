@@ -6,12 +6,12 @@ import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
 export type LoginResult = { accessToken: string; user: UserPayload };
 
 export const authApiSlice = createApi({
-  reducerPath: 'authApi',
-  baseQuery: baseQuery({ url: '/auth' }),
+  reducerPath: 'product',
+  baseQuery: baseQuery({ url: '/product' }),
   endpoints: (builder) => ({
     login: builder.mutation<ApiResponseSuccess<LoginResult>, { email: string; password: string; remember: boolean }>({
       query: (credentials) => ({
-        url: '/login',
+        url: '/',
         method: 'POST',
         body: credentials,
       }),

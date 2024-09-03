@@ -1,12 +1,11 @@
-export type ApiResponseType<T> = Promise<ApiResponseSuccess<T> | ApiResponseFailed<T>>
-
 export interface ApiResponseSuccess<T> {
-    data: T
     message: string
     success: boolean
+    result: T
 }
-export interface ApiResponseFailed<T> {
-    data: T
-    error: string
+export interface ApiResponseFailed {
     success: boolean
+    error: string
+    result: null
 }
+

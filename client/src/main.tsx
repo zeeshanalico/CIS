@@ -8,6 +8,8 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 import Sidebar from './layout/Sidebar'
 import ErrorBoundary from './components/error/ErrorBoundary'
+import { Toaster } from "@/components/ui/toaster"
+
 
 createRoot(document.getElementById('root')!).render(
 
@@ -24,9 +26,11 @@ createRoot(document.getElementById('root')!).render(
             </Route>
 
           </Routes>
-          
+
         </BrowserRouter>
       </Provider>
+      <Toaster />
+
     </ErrorBoundary>
   </StrictMode>,
 )
