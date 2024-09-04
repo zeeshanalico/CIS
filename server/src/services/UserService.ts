@@ -33,8 +33,17 @@ class UserService {
         });
     }
 
-    async getAllUsers(): Promise<User[]> {
-        return await this.prisma.user.findMany();
+    async getAllUsers({ skip, take }: { skip: number; take: number }): Promise<User[]> {
+        return await this.prisma.user.findMany({
+            skip,
+            take,
+            where: {
+                is_deleted: false, // Assuming you want to fetch only non-deleted users
+            },
+            orderBy: {
+                created_at: 'desc', // Optional: Order users by creation date
+            },
+        });
     }
 }
 

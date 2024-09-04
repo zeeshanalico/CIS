@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '../ui/button';
-import { Alert } from '../ui/alert'; // Adjust import if the path is different
+import ErrorComponent from './ErrorComponent';
+import { FaExclamationCircle } from '../../assets/icons';
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -40,15 +41,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     render() {
         if (this.state.hasError) {
             return (
-                <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-                    <Alert>
-                        <div>
-                            <h2>Something went wrong</h2>
-                            <p>{this.state.error?.message || 'An unexpected error occurred.'}</p>
-                            <Button onClick={this.handleReset}>Try Again</Button>
-                        </div>
-                    </Alert>
-                </div>
+                <ErrorComponent
+                    title='Something went wrong'
+                    message="An unexpected error occurred."
+                    buttonText='Try Again'
+                    onButtonClick={this.handleReset}
+                    icon={<FaExclamationCircle className="fa-5x text-8xl text-red-600" />}
+                />
             );
         }
 

@@ -1,6 +1,8 @@
+// import { UserPayload } from "./UserPayload";
+import {Express} from "express-serve-static-core";
+import jwt, { UserPayload } from 'jsonwebtoken';
+import {  Request } from "express";
 import { UserPayload } from "./UserPayload";
-import { Request } from "express";
-import { Express } from "express";
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -11,10 +13,16 @@ declare global {
             PORT?: string;
         }
     }
-    
-    namespace Express {
-        interface Request {
-            user?: UserPayload;
+
+    namespace Express {//if you use ts-node you will get the same error when you try to execute your .ts file because ts-node ignore .d.ts fies unless you add flag --files to package.json
+        export interface Request {
+            user?: UserPayload | string;
         }
     }
 }
+
+// declare module 'express-serve-static-core' {
+//    export interface Request {
+//         user?: UserPayload | string;
+//     }
+// }

@@ -1,13 +1,34 @@
 import React, { useState } from "react";
-import { FaBars, FaTimes } from '../assets/icons'
+import { FaBars, FaTimes, FaSignOutAlt } from '../assets/icons'
+import { useLogoutMutation } from "@/store/slices/authSlice/authApiSlice";
+import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom"
+import { clearCredentials } from "@/store/slices/authSlice/authSlice";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
+
+    const handleLogout = async () => {
+        try {
+            await logout().unwrap();
+            dispatch(clearCredentials());
+            navigate('/login', { replace: true })
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.log(err.message);
+                return;
+            }
+            console.error('Failed to logout:', err);
+        }
+    }
 
     return (
         <div className="flex h-screen">
@@ -24,22 +45,28 @@ const Sidebar = () => {
                         <FaTimes />
                     </button>
                     <ul className="mt-6 space-y-2">
-                        <li><a href="#" className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</a></li>
-                        <li><a href="#" className="block py-2 px-4 rounded hover:bg-indigo-500">Profile</a></li>
-                        <li><a href="#" className="block py-2 px-4 rounded hover:bg-indigo-500">Settings</a></li>
-                        <li><a href="#" className="block py-2 px-4 rounded hover:bg-indigo-500">Logout</a></li>
+                        <li onClick={() => toggleSidebar()}><Link to="/dashboard" className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</Link></li>
+                        <li onClick={() => toggleSidebar()}><Link to="kiosk" className="block py-2 px-4 rounded hover:bg-indigo-500">Kiosk</Link></li>
+                        <li onClick={() => toggleSidebar()}><Link to="user" className="block py-2 px-4 rounded hover:bg-indigo-500">User</Link></li>
+                        <li onClick={() => toggleSidebar()}><Link to="#" className="block py-2 px-4 rounded hover:bg-indigo-500">Logout</Link></li>
                     </ul>
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
-                <header className="flex items-center justify-between bg-indigo-700 text-white p-4">
+                <header className="w-full flex items-center justify-between sticky bg-indigo-700 text-white p-4">
                     <button
                         onClick={toggleSidebar}
                         className="text-2xl focus:outline-none"
                     >
                         <FaBars />
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="text-2xl focus:outline-none "
+                    >
+                        <FaSignOutAlt />
                     </button>
                     {/* <h1 className="text-xl font-semibold">Header</h1> */}
                 </header>

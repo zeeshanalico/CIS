@@ -1,25 +1,28 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLoginMutation } from '@/store/slices/authSlice/authApiSlice';
-import { useDispatch } from 'react-redux';
+import { useLoginMutation, } from '@/store/slices/authSlice/authApiSlice';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle } from "../../assets/icons";
-import { clearCredentials, setCredentials } from '@/store/slices/authSlice/authSlice';
+import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
 import { useToast } from '@/components/ui/use-toast';
+import { RootState } from '@/store/store';
 import { ApiResponseFailed } from '@/types/apiResponse';
 
-interface FormValues {
+export interface FormValues {
   email: string;
   password: string;
   remember: boolean;
 }
 
+
 const LoginPage = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const [login, { isLoading }] = useLoginMutation();
   const { toast } = useToast()
 
@@ -29,6 +32,7 @@ const LoginPage = () => {
       const { message, success, result } = response;
       const { accessToken, user } = result;
       dispatch(setCredentials({ accessToken, user }));
+      navigate('/dashboard', { replace: true })
       console.log('zeeshan');
       setSubmitting(false);
       toast({
@@ -52,6 +56,8 @@ const LoginPage = () => {
       })
     }
   };
+
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

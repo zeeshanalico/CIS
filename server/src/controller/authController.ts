@@ -10,26 +10,33 @@ class AuthController {
         const { email, password, remember = false }: LoginDto = req.body;
         try {
             const { accessToken, refreshToken, user } = await this.authService.login({ email, password });
-            res.cookie('refreshToken', refreshToken,);
+            res.cookie('refreshToken', refreshToken, { httpOnly: true });
             sendSuccess(res, { accessToken, user }, 'Login successful');
         } catch (error) {
             sendError(res, error);
         }
     }
 
-    async refreshToken(req: any, res: Response): Promise<void> {
-        console.log(req.cookies);
-        
+    async refreshToken(req: Request, res: Response): Promise<void> {
         try {
             const refreshToken = req.cookies?.refreshToken;
-            if (!refreshToken) {    
+
+            if (!refreshToken) {
                 throw new CustomError('No refresh token provided', 401);
             }
             const accessToken = await this.authService.refreshToken(refreshToken);
-            
             sendSuccess(res, { accessToken });
         } catch (error) {
             sendError(res, error);
+        }
+    }
+
+    async logout(req: Request, res: Response) {
+        try {
+            res.clearCookie('refreshToken', { httpOnly: true });
+            sendSuccess(res, null, 'Logout successful');
+        } catch (err) {
+            sendError(res, err);
         }
     }
 }

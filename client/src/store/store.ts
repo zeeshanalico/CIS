@@ -6,6 +6,7 @@ import authSlice from "./slices/authSlice/authSlice";
 const reducer = {
     [authSlice.name]: authSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
+
 };
 
 const store = configureStore({
