@@ -71,7 +71,7 @@ const Sidebar = () => {
                     {/* <h1 className="text-xl font-semibold">Header</h1> */}
                 </header>
 
-                <main className="flex-1 p-6 bg-gray-50">
+                <main className="flex-1 p-6 bg-gray-50 scrollbar-style">
                     {/* <h2 className="text-2xl font-bold mb-4">Welcome to the Dashboard</h2>
                     <p>Your content goes here...</p> */}
                     <Outlet />

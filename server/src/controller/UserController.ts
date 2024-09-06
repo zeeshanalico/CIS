@@ -3,13 +3,16 @@ import UserService from '../services/UserService';
 import { sendError, sendSuccess } from '../utils/responseUtils';
 import { CustomError } from '../utils/CustomError';
 import _ from 'lodash'
+import bcrypt from 'bcrypt'
 
 class UserController {
   constructor(private readonly userService: UserService) { }
 
   async createUser(req: Request, res: Response): Promise<void> {
+    const { name, email, password, role } = req.body
     try {
-      const newUser = await this.userService.createUser(req.body);
+      const hashedPassword = await bcrypt.hash(password, 10)
+      const newUser = await this.userService.createUser({ name, email, password: hashedPassword, role });
       sendSuccess(res, newUser, 'User created successfully');
     } catch (error) {
       sendError(res, error);

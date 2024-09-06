@@ -8,7 +8,6 @@ export const autheticateUser = (req: Request, res: Response, next: NextFunction)
         return next();
     }
     const authHeader = req.headers['authorization'];
-    console.log('authHeader',authHeader);
     
     if (authHeader) {
         const [scheme, token] = authHeader.split(' ');

@@ -18,7 +18,7 @@ export const authApiSlice = createApi({
       transformResponse: (response: ApiResponseSuccess<LoginResult>) => response,
       transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
     }),
-    refreshToken: builder.mutation<{ accessToken: string }, void>({
+    refreshToken: builder.mutation<ApiResponseSuccess<{ accessToken: string,user:UserPayload }>, void>({
       query: () => ({
         url: '/refresh-token',
         method: 'POST',

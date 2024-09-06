@@ -1,9 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
-import { User } from '@/types/user';
+import { User } from '@/types/User';
 import { FormValues } from '@/components/form/CreateUser';
-export const authApiSlice = createApi({
+export const userApiSlice = createApi({
     reducerPath: 'user',
     tagTypes: ['User'],
     baseQuery: baseQuery({ url: '/user' }),
@@ -28,5 +28,4 @@ export const authApiSlice = createApi({
     }),
 });
 
-// Export hooks for usage in functional components
-export const { useCreateUserMutation, useGetAllUsersQuery } = authApiSlice;
+export const { useCreateUserMutation, useGetAllUsersQuery } = userApiSlice;

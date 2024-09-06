@@ -64,7 +64,35 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  .scrollbar-style {
+    --sb-thumb-color: rgb(89, 58, 202);
+    --sb-track-color: rgb(139, 146, 231);
+    --sb-size: 6px;
+  }
+
+  .scrollbar-style::-webkit-scrollbar {
+    width: var(--sb-size)
+  }
+
+  .scrollbar-style::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: 3px;
+  }
+
+  .scrollbar-style::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: 3px;
+
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    .scrollbar-style {
+      scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+    }
   }
 }

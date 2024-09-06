@@ -3,9 +3,9 @@ import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FaUserAlt, FaLock, FaExclamationCircle, MdOutlineAlternateEmail } from "../../assets/icons";
+import { FaUserAlt, FaUserShield, FaLock, FaExclamationCircle, MdOutlineAlternateEmail, FaEyeSlash, FaEye } from "../../assets/icons";
+import { useState } from 'react';
 import { useCreateUserMutation } from '@/store/slices/userSlice/userApiSlice';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Role } from '@/types/Roles';
 
@@ -17,9 +17,8 @@ export interface FormValues {
     role: Role;
 }
 
-
 const CreateUser = () => {
-    const navigate = useNavigate();
+    const [passwordVisibility, setPasswordVisibility] = useState(false)
     const [createUser, { isLoading }] = useCreateUserMutation();
     const { toast } = useToast();
 
@@ -28,7 +27,6 @@ const CreateUser = () => {
             const response = await createUser(values).unwrap();
             const { message, success } = response;
             if (success) {
-                navigate('/dashboard', { replace: true });
                 toast({
                     title: "Success",
                     description: message,
@@ -46,6 +44,10 @@ const CreateUser = () => {
             }
         }
     };
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisibility(!passwordVisibility)
+    }
 
     return (
         <div className="flex items-center justify-center ">
@@ -78,7 +80,7 @@ const CreateUser = () => {
                                     Name
                                 </Label>
                                 <div className='relative'>
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                         <FaUserAlt />
                                     </span>
                                     <Input
@@ -155,11 +157,14 @@ const CreateUser = () => {
                                             } rounded-md focus:ring-indigo-500 focus-visible:ring-transparent focus:border-indigo-500`}
                                         placeholder="Enter your password"
                                     />
-                                    {errors.password && touched.password && (
-                                        <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-red-500">
+                                    {errors.password && touched.password
+                                        ? <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-red-500">
                                             <FaExclamationCircle />
                                         </span>
-                                    )}
+                                        : <span className="absolute inset-y-0 right-0 flex items-center pe-3 text-gray-400">
+                                            {passwordVisibility ? <FaEyeSlash onClick={togglePasswordVisibility} /> : <FaEye onClick={togglePasswordVisibility} />}
+                                        </span>
+                                    }
                                 </div>
                                 {errors.password && touched.password && (
                                     <p className="mt-2 text-sm text-red-600">{errors.password}</p>
@@ -167,26 +172,32 @@ const CreateUser = () => {
                             </div>
 
                             <div className="mb-4">
+
                                 <Label htmlFor="role" className="block mb-1 text-sm font-medium text-gray-700">
                                     Role
                                 </Label>
-                                <select
-                                    disabled
-                                    name="role"
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    value={values.role}
-                                    className="w-full py-2 border border-gray-300 rounded-md focus-visible:ring-transparent outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    {Object.values(Role).map((value) => (
-                                        <option key={value} value={value}>
-                                            {value}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.role && touched.role && (
-                                    <p className="mt-2 text-sm text-red-600 ">{errors.role}</p>
-                                )}
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-400">
+                                        <FaUserShield className='w-8'/>
+                                    </span>
+                                    <select
+                                        disabled
+                                        name="role"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.role}
+                                        className="pl-10 w-full py-2 border border-gray-300 rounded-md focus-visible:ring-transparent outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    >
+                                        {Object.values(Role).map((value) => (
+                                            <option key={value} value={value}>
+                                                {value}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.role && touched.role && (
+                                        <p className="mt-2 text-sm text-red-600 ">{errors.role}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <Button

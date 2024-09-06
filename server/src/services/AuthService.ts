@@ -38,6 +38,11 @@ class AuthService {
         return accessToken;
     }
 
+    async getUserByRefreshToken(refreshToken: string): Promise<UserPayload> {
+        const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET!;
+        const user = jwt.verify(refreshToken, refreshTokenSecret) as UserPayload;
+        return user;
+    }
     private generateTokens(user: UserPayload) {
 
         const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET!;
@@ -57,7 +62,6 @@ class AuthService {
             refreshTokenSecret,
             { expiresIn: '30d' }
         );
-
         return { accessToken, refreshToken };
     }
 }

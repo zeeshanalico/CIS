@@ -1,17 +1,18 @@
-import { useEffect } from 'react';
 import { Formik, FormikHelpers } from 'formik';
+import { useState } from 'react';
 import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLoginMutation, } from '@/store/slices/authSlice/authApiSlice';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { FaUserAlt, FaLock, FaExclamationCircle } from "../../assets/icons";
+import { useDispatch, } from 'react-redux';
+import { FaUserAlt, FaLock, FaExclamationCircle, FaEyeSlash, FaEye } from "../../assets/icons";
 import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
 import { useToast } from '@/components/ui/use-toast';
-import { RootState } from '@/store/store';
 import { ApiResponseFailed } from '@/types/apiResponse';
+import { Role } from '@/types/Roles';
+import { Toast } from '@radix-ui/react-toast';
 
 export interface FormValues {
   email: string;
@@ -21,19 +22,24 @@ export interface FormValues {
 
 
 const LoginPage = () => {
+  const [passwordVisibility, setPasswordVisibility] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [login, { isLoading }] = useLoginMutation();
   const { toast } = useToast()
-
+  
   const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     try {
       const response = await login(values).unwrap();
       const { message, success, result } = response;
       const { accessToken, user } = result;
       dispatch(setCredentials({ accessToken, user }));
-      navigate('/dashboard', { replace: true })
-      console.log('zeeshan');
+      if (user.roles?.includes(Role.SUPER_ADMIN)) {
+        navigate('/dashboard', { replace: true })
+      }
+      else if (user.roles?.includes(Role.USER)) {
+        navigate('/userdashboard', { replace: true })
+      }
       setSubmitting(false);
       toast({
         title: "Success",
@@ -57,6 +63,9 @@ const LoginPage = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setPasswordVisibility(!passwordVisibility)
+  }
 
 
   return (
@@ -123,8 +132,9 @@ const LoginPage = () => {
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     <FaLock />
                   </span>
+
                   <Input
-                    type="password"
+                    type={passwordVisibility ? "text" : "password"}
                     name="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -136,11 +146,14 @@ const LoginPage = () => {
                       } rounded-md focus:ring-indigo-500 focus-visible:ring-transparent focus:border-indigo-500`}
                     placeholder="Enter your password"
                   />
-                  {errors.password && touched.password && (
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-red-500">
+                  {errors.password && touched.password
+                    ? <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-red-500">
                       <FaExclamationCircle />
                     </span>
-                  )}
+                    : <span className="absolute inset-y-0 right-0 flex items-center pe-3 text-gray-400">
+                      {passwordVisibility ? <FaEyeSlash onClick={togglePasswordVisibility} /> : <FaEye onClick={togglePasswordVisibility} />}
+                    </span>
+                  }
                 </div>
                 {errors.password && touched.password && (
                   <p className="mt-2 text-sm text-red-600">{errors.password}</p>

@@ -2,6 +2,7 @@ import { BaseQueryFn, fetchBaseQuery, FetchBaseQueryError, FetchBaseQueryMeta, }
 import { setCredentials, clearCredentials } from './slices/authSlice/authSlice';
 import { RootState } from './store';
 import { colors } from '@/utils/consoleColors';
+import { UserPayload } from '@/types/UserPayload';
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -16,6 +17,7 @@ const logRequest = (args: Parameters<ReturnType<typeof fetchBaseQuery>>[0]) => {
 const logResponse = (result: { data?: any; error?: FetchBaseQueryError; meta?: FetchBaseQueryMeta }) => {
   console.log(`${colors.fg.green}Response:${colors.reset}`, result);
 };
+
 const setAuthorizationHeader = (headers: Headers | string[][] | Record<string, string | undefined>, token: string) => {
   if (headers instanceof Headers) {
     headers.set('Authorization', `Bearer ${token}`);
@@ -37,13 +39,13 @@ const handleTokenRefresh = async (
   const refreshResult = await baseQueryInstance({ url: '/refresh-token', method: 'POST' }, api, extraOptions);
 
   if (refreshResult.data) {
-    const newAccessToken = (refreshResult.data as { accessToken: string }).accessToken;
-    
-    api.dispatch(setCredentials({ accessToken: newAccessToken }));
-   
+    const response = (refreshResult.data as { accessToken: string; user: UserPayload });
+
+    api.dispatch(setCredentials({ accessToken: response.accessToken, user: response.user }));
+
 
     if (typeof args === 'object' && args.headers) {
-      setAuthorizationHeader(args.headers, newAccessToken);
+      setAuthorizationHeader(args.headers, response.accessToken);
     }
 
     const result = await baseQueryInstance(args, api, extraOptions);
@@ -63,7 +65,7 @@ export const baseQuery = ({ url }: { url: string }) => {
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.accessToken;
-      
+
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -79,7 +81,6 @@ export const baseQuery = ({ url }: { url: string }) => {
     if (result.error && result.error.status === 401) {
       result = await handleTokenRefresh(api, baseQueryInstance, args, extraOptions);
     }
-
     return result;
   };
 

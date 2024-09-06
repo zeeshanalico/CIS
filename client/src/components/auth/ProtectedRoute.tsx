@@ -18,17 +18,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) =
     const { accessToken, user } = useSelector((state: RootState) => state.auth);
 
     const [refreshToken, { isLoading }] = useRefreshTokenMutation();
+
     const [isAuthChecked, setIsAuthChecked] = useState(false);
     const refreshTokenCalled = useRef(false);
-
     useEffect(() => {
         const checkAuth = async () => {
             if (!accessToken) {
                 if (!refreshTokenCalled.current) {
                     refreshTokenCalled.current = true;
                     try {
-                        const result = await refreshToken().unwrap();
-                        dispatch(setCredentials({ accessToken: result.accessToken }));
+                        const response = await refreshToken().unwrap();
+                        dispatch(setCredentials({ accessToken: response.result.accessToken, user: response.result.user }));
                     } catch (error) {
                         dispatch(clearCredentials());
                         navigate('/login', { replace: true });
@@ -43,6 +43,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) =
 
     useEffect(() => {
         if (isAuthChecked && accessToken) {
+            console.log(requiredRoles, user?.roles);
+
             if (requiredRoles.length > 0 && !requiredRoles.some(role => user?.roles?.includes(role))) {
                 navigate('/unauthorized', { replace: true });
             }
@@ -50,7 +52,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) =
     }, [isAuthChecked, accessToken, requiredRoles, user, navigate]);
 
     if (isLoading || !isAuthChecked) {
-        return <FullPageLoader/>; // Replace with your loading indicator
+        return <FullPageLoader />;
     }
 
     return <Outlet />;

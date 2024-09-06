@@ -4,6 +4,7 @@ import { LoginDto } from '../dto/LoginDto';
 import { sendError, sendSuccess } from '../utils/responseUtils';
 import { UserPayload } from '../types/UserPayload';
 import { CustomError } from '../utils/CustomError';
+import _ from 'lodash'
 class AuthController {
     constructor(private readonly authService: AuthService) { }
     async login(req: Request, res: Response): Promise<void> {// res: {authToken(accessToken): string,  user: User}
@@ -25,7 +26,8 @@ class AuthController {
                 throw new CustomError('No refresh token provided', 401);
             }
             const accessToken = await this.authService.refreshToken(refreshToken);
-            sendSuccess(res, { accessToken });
+            const user = await this.authService.getUserByRefreshToken(refreshToken);
+            sendSuccess(res, { accessToken, user });
         } catch (error) {
             sendError(res, error);
         }
