@@ -33,7 +33,7 @@ class UserService {
         });
     }
 
-    async getAllUsers({ skip, take }: { skip: number; take: number }): Promise<User[]> {
+    async getAllUsers({ skip, take }: { skip?: number; take?: number|undefined }): Promise<User[]> {
         return await this.prisma.user.findMany({
             skip,
             take,

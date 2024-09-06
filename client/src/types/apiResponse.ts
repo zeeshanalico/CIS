@@ -9,3 +9,8 @@ export interface ApiResponseFailed {
     result: null
 }
 
+export interface FailedResponse {
+    status: number;
+    data: ApiResponseFailed;
+}
+

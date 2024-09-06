@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useCreateUserMutation } from '@/store/slices/userSlice/userApiSlice';
 import { useToast } from '@/components/ui/use-toast';
 import { Role } from '@/types/Roles';
-
+import { errorHandler } from '../error/errorHandler';
 
 export interface FormValues {
     name: string;
@@ -35,13 +35,7 @@ const CreateUser = () => {
             setSubmitting(false);
         } catch (err: unknown) {
             setSubmitting(false);
-            if (err instanceof Error) {
-                toast({
-                    title: "Failure",
-                    variant: "destructive",
-                    description: (err as unknown as any).error,
-                });
-            }
+            errorHandler(err)
         }
     };
 
@@ -51,7 +45,7 @@ const CreateUser = () => {
 
     return (
         <div className="flex items-center justify-center ">
-            <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+            <div className="w-full p-6 bg-white rounded-lg shadow-md">
                 <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
                     Create a New User
                 </h2>
@@ -148,6 +142,7 @@ const CreateUser = () => {
                                     <Input
                                         type="password"
                                         name="password"
+                                        autoComplete='off'
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         value={values.password}
@@ -178,7 +173,7 @@ const CreateUser = () => {
                                 </Label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-400">
-                                        <FaUserShield className='w-8'/>
+                                        <FaUserShield className='w-8' />
                                     </span>
                                     <select
                                         disabled

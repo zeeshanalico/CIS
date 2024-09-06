@@ -1,36 +1,28 @@
 import CreateUser from '@/components/form/CreateUser';
 import { useState } from 'react';
 import UserTable from './UserTable';
-
+const enum Tab {
+    addNewUser,
+    existedUsers
+}
 const User = () => {
-    const [allUsers, setAllUsers] = useState<boolean>(false); 
+    const [tab, setTab] = useState<Tab>(Tab.addNewUser)
+    const toggleTab = (tab: Tab) => {
+        setTab(tab)
+    }
     return (
-        <div>
-            <div className="relative ml-auto text-gray-500 flex gap-2 justify-between bg-white rounded-lg border p-1 w-fit">
-                <span
-                    className={`absolute top-0 bottom-0 left-0  w-1/2 h-full rounded-lg bg-gray-200 transition-transform duration-300 ${allUsers ? 'translate-x-full' : 'translate-x-0'
-                        }`}
-                ></span>
-
-                <button
-                    onClick={() => setAllUsers(false)}
-                    className={`relative z-10 rounded-lg px-3 py-1 transition-all ${!allUsers ? 'text-black' : 'text-gray-500'}`}
-                >
-                    Create User
-                </button>
-
-                <button
-                    onClick={() => setAllUsers(true)}
-                    className={`relative z-10 rounded-lg px-3 py-1 transition-all ${allUsers ? 'text-black' : 'text-gray-500'
-                        }`}
-                >
-                    All Users
-                </button>
-            </div>
-
-            {/* Conditionally Render Components */}
-            {!allUsers ? <CreateUser /> : <UserTable />}
+        <div className=''>
+            <ul className="flex flex-wrap text-sm font-medium text-center text-gray-400 border-b border-gray-200 mb-3">
+                <li className="me-1">
+                    <button onClick={() => toggleTab(Tab.addNewUser)} className={`inline-block p-2 rounded-t-lg  hover:bg-gray-100  ${tab==Tab.addNewUser ? 'text-indigo-600 bg-gray-100' : ''}`}>Add New</button>
+                </li>
+                <li className="me-1">
+                    <button onClick={() => toggleTab(Tab.existedUsers)} className={`inline-block p-2 rounded-t-lg hover:bg-gray-100 ${tab==Tab.existedUsers ? 'text-indigo-600 bg-gray-100' : ''}`}>Existed Users</button>
+                </li>
+            </ul>
+            {tab===Tab.addNewUser ? <CreateUser/> : <UserTable/>}
         </div>
+
     );
 };
 

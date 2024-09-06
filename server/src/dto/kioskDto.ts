@@ -12,36 +12,12 @@ export const createKioskSchema = Joi.object({
             'any.required': 'Name is required',
         }),
     location: Joi.string()
+		.min(0)
         .max(255)
-        .optional()
+        .optional().allow(null)
         .messages({
             'string.base': 'Location should be a type of string',
             'string.max': 'Location cannot exceed 255 characters',
-        }),
-    registered_by: Joi.number()
-        .optional()
-        .messages({
-            'number.base': 'Registered by should be a valid number',
-        }),
-    is_deleted: Joi.boolean()
-        .optional()
-        .messages({
-            'boolean.base': 'Is deleted should be a boolean value',
-        }),
-    created_at: Joi.date()
-        .optional()
-        .messages({
-            'date.base': 'Created at should be a valid date',
-        }),
-    updated_at: Joi.date()
-        .optional()
-        .messages({
-            'date.base': 'Updated at should be a valid date',
-        }),
-    deleted_at: Joi.date()
-        .optional()
-        .messages({
-            'date.base': 'Deleted at should be a valid date',
         }),
 });
 

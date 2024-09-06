@@ -9,6 +9,11 @@ const router = express.Router();
 const kioskService = new KioskService(prisma);
 const kioskController = new KioskController(kioskService);
 
-router.post('/create', validateRequest(createKioskSchema), (req, res) => kioskController.createKiosk(req, res));
+router.post('/create', validateRequest(createKioskSchema), (req, res) => kioskController.createKiosk(req, res));//tested
+router.get('/get-all', (req, res) => kioskController.getAllKiosks(req, res));
+
+router.get('/:id', (req, res) => kioskController.getKioskById(req, res));
+router.put('/:id', (req, res) => kioskController.updateKiosk(req, res));
+router.delete('/:id', (req, res) => kioskController.deleteKiosk(req, res));
 
 export default router;

@@ -6,12 +6,14 @@ import { Outlet } from "react-router-dom"
 import { clearCredentials } from "@/store/slices/authSlice/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { title } = useSelector((state: RootState) => state.global);
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
@@ -62,18 +64,16 @@ const Sidebar = () => {
                     >
                         <FaBars />
                     </button>
+                    <p>{title}</p>
                     <button
                         onClick={handleLogout}
                         className="text-2xl focus:outline-none "
                     >
                         <FaSignOutAlt />
                     </button>
-                    {/* <h1 className="text-xl font-semibold">Header</h1> */}
                 </header>
 
-                <main className="flex-1 p-6 bg-gray-50 scrollbar-style">
-                    {/* <h2 className="text-2xl font-bold mb-4">Welcome to the Dashboard</h2>
-                    <p>Your content goes here...</p> */}
+                <main className="flex-1 p-4 bg-gray-50 scrollbar-style">
                     <Outlet />
                 </main>
             </div>

@@ -17,6 +17,7 @@ const UserTable = () => {
         setActiveTab(tab);
     };
 
+    // Framer Motion handles the dynamic positioning and size changes without manually calculating offsets
     const { data } = useGetAllUsersQuery();
     console.log(data);
 
@@ -34,7 +35,6 @@ const UserTable = () => {
                     }}
                 ></motion.div>
 
-                {/* Add Vendor Button */}
                 <button
                     ref={addVendorRef}
                     onClick={() => toggleTab(Tab.addVendor)}

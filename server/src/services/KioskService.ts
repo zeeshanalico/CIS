@@ -1,13 +1,13 @@
 import { PrismaClient, Prisma, Kiosk } from '@prisma/client';
 
 class KioskService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient) { }
 
   async createKiosk(
     createKioskInput: Prisma.KioskCreateInput
   ): Promise<Kiosk> {
     return await this.prisma.kiosk.create({
-      data: createKioskInput,
+      data: createKioskInput
     });
   }
 
@@ -45,10 +45,16 @@ class KioskService {
     });
   }
 
-  // Retrieve all kiosks (with an option to include deleted ones)
-  async getAllKiosks(includeDeleted: boolean = false): Promise<Kiosk[]> {
+  async getAllKiosks({ skip, take }: { skip?: number; take?: number | undefined }): Promise<Kiosk[]> {
     return await this.prisma.kiosk.findMany({
-      where: includeDeleted ? {} : { is_deleted: false },
+      skip,
+      take,
+      where: {
+        is_deleted: false, 
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
     });
   }
 }

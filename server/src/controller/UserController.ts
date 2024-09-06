@@ -52,10 +52,12 @@ class UserController {
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
-      const take = parseInt(req.query.limit as string, 10) || 10;
-      const skip = (page - 1) * take;//offset
+      const take = parseInt(req.query.limit as string, 10) || undefined;//for all results
+      const skip = (page - 1) * (take || 0);//offset
 
       const users = await this.userService.getAllUsers({ skip, take });
+
+
 
       const filteredUsers = users.map((user) =>
         _.pick(user, [
@@ -68,13 +70,11 @@ class UserController {
           'updated_at',
         ])
       );
-
       sendSuccess(res, filteredUsers, 'Users fetched successfully');
     } catch (error) {
       sendError(res, error);
     }
   }
-
 }
 
 export default UserController;
