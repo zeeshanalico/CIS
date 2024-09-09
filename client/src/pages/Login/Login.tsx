@@ -1,18 +1,19 @@
 import { Formik, FormikHelpers } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLoginMutation, } from '@/store/slices/authSlice/authApiSlice';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, } from 'react-redux';
+import { useNavigate, useLocation, replace } from 'react-router-dom';
+import { useDispatch, useSelector, } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle, FaEyeSlash, FaEye } from "../../assets/icons";
 import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
 import { useToast } from '@/components/ui/use-toast';
-import { ApiResponseFailed } from '@/types/apiResponse';
 import { Role } from '@/types/Roles';
-import { Toast } from '@radix-ui/react-toast';
+import { errorHandler } from '@/components/error/errorHandler';
+import { RootState } from '@/store/store';
+import { successHandler } from '@/utils/successHandler';
 
 export interface FormValues {
   email: string;
@@ -20,14 +21,18 @@ export interface FormValues {
   remember: boolean;
 }
 
-
 const LoginPage = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const dispatch = useDispatch();
+  const auth = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   const [login, { isLoading }] = useLoginMutation();
   const { toast } = useToast()
-  
+
+  useEffect(() => {
+    if (auth.accessToken && auth.user) navigate('/dashboard', { replace: true })
+  })
+
   const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     try {
       const response = await login(values).unwrap();
@@ -41,25 +46,13 @@ const LoginPage = () => {
         navigate('/userdashboard', { replace: true })
       }
       setSubmitting(false);
-      toast({
-        title: "Success",
-        description: message,
-        // action: <ToastAction altText="Try again">Try again</ToastAction>,
-      })
+      successHandler(response);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.log(err.message);
-        return;
-      }
-      console.error('Failed to login:', err);
+      errorHandler(err)
+    } finally {
       clearCredentials();
       setSubmitting(false);
-      toast({
-        title: "Failure",
-        variant: "destructive",
-        description: (err as ApiResponseFailed).error,
-        // action: <ToastAction altText="Try again">Try again</ToastAction>,
-      })
+
     }
   };
 
@@ -138,7 +131,7 @@ const LoginPage = () => {
                     name="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    autoComplete='on'
+                    autoComplete='off'
                     value={values.password}
                     className={`pl-10 w-full py-2 border ${errors.password && touched.password
                       ? "border-red-500"

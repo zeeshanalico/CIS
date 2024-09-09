@@ -14,3 +14,11 @@ export interface FailedResponse {
     data: ApiResponseFailed;
 }
 
+export interface ExtraInfo {
+    count: number,
+    pageNumber: number,
+    pageSize: number,
+    from: number,
+    to: number
+}
+

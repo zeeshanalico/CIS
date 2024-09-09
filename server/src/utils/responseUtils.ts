@@ -17,13 +17,13 @@ import loggerService from '../logger/loggerService';
  * @param {string} message - The error message.
  * @param {number} [statusCode=200] - The HTTP status code (default is 200).
  */
-function sendSuccess<T>(res: Response, result: T, message: string | null = null, statusCode: number = 200): void {
+function sendSuccess<T>(res: Response, result: T, message: string | null = null, extraInfo?: any, statusCode: number = 200,): void {
     loggerService.info(`Response: ${JSON.stringify(result, null, 2)}`, `responseUtils`);
-    // const {...rest}=result;
     res.status(statusCode).json({
         success: true,
         message,
         result,
+        extraInfo
     });
 }
 
@@ -43,7 +43,7 @@ function sendError(res: Response, err: unknown, message?: string, statusCode: nu
         res.status(err.status).json({
             success: false,
             error: err.message,
-            result:null,
+            result: null,
         });
         return;
     }
@@ -51,14 +51,14 @@ function sendError(res: Response, err: unknown, message?: string, statusCode: nu
         res.status(statusCode).json({
             success: false,
             error: err.message,
-            result:null,
+            result: null,
         });
         return;
     } else {
         res.status(statusCode).json({
             success: false,
             error: "Internal Server Error",
-            result:null,
+            result: null,
         });
         return;
     }

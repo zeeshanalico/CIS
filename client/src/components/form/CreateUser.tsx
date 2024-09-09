@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { FaUserAlt, FaUserShield, FaLock, FaExclamationCircle, MdOutlineAlternateEmail, FaEyeSlash, FaEye } from "../../assets/icons";
 import { useState } from 'react';
 import { useCreateUserMutation } from '@/store/slices/userSlice/userApiSlice';
-import { useToast } from '@/components/ui/use-toast';
 import { Role } from '@/types/Roles';
 import { errorHandler } from '../error/errorHandler';
+import { successHandler } from '@/utils/successHandler';
 
 export interface FormValues {
     name: string;
@@ -20,18 +20,11 @@ export interface FormValues {
 const CreateUser = () => {
     const [passwordVisibility, setPasswordVisibility] = useState(false)
     const [createUser, { isLoading }] = useCreateUserMutation();
-    const { toast } = useToast();
 
     const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
         try {
             const response = await createUser(values).unwrap();
-            const { message, success } = response;
-            if (success) {
-                toast({
-                    title: "Success",
-                    description: message,
-                });
-            }
+            successHandler(response)
             setSubmitting(false);
         } catch (err: unknown) {
             setSubmitting(false);

@@ -18,9 +18,9 @@ export const userApiSlice = createApi({
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['User']
         }),
-        getAllUsers: builder.query<ApiResponseSuccess<User[]>, void>({
-            query: () => ({
-                url: '/get-all',
+        getAllUsers: builder.query<ApiResponseSuccess<User[]>, { available?: boolean }>({
+            query: ({ available }) => ({
+                url: '/get-all?available=' + available,
                 method: 'GET',
             }),
             providesTags: ['User'],

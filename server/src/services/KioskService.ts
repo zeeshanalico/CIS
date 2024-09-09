@@ -45,17 +45,30 @@ class KioskService {
     });
   }
 
-  async getAllKiosks({ skip, take }: { skip?: number; take?: number | undefined }): Promise<Kiosk[]> {
-    return await this.prisma.kiosk.findMany({
+  async getAllKiosks({ skip, take }: { skip?: number; take?: number | undefined }): Promise<{
+    count: number, kiosks: Array<Prisma.KioskGetPayload<{
+      include: { user: true, internal_user: true };
+    }>>
+  }> {
+    const kiosks = await this.prisma.kiosk.findMany({
       skip,
       take,
       where: {
-        is_deleted: false, 
+        is_deleted: false,
+      },
+      include: {
+        user: true,
+        internal_user: true
+
       },
       orderBy: {
         created_at: 'desc',
       },
     });
+
+
+    const count = await this.prisma.kiosk.count({ where: { is_deleted: false } });
+    return { count, kiosks };
   }
 }
 

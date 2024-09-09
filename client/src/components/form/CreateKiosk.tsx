@@ -3,12 +3,11 @@ import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { FaMapMarkerAlt, FaStore, FaUserAlt } from "../../assets/icons";
 import { useCreateKioskMutation } from '@/store/slices/kioskSlice/kioskApiSlice';
-import { useToast } from '@/components/ui/use-toast';
 import FormSelect from '../core/FormSelect';
 import FormInput from '../core/FormInput';
 import { errorHandler } from '../error/errorHandler';
 import { useGetAllUsersQuery } from '@/store/slices/userSlice/userApiSlice';
-
+import { successHandler } from '@/utils/successHandler';
 
 export interface KioskFormValues {
     name: string;
@@ -18,23 +17,18 @@ export interface KioskFormValues {
 
 const CreateKiosk = () => {
     const [createKiosk, { isLoading }] = useCreateKioskMutation();
-    const { toast } = useToast();
-    const { data } = useGetAllUsersQuery(undefined)
+    const { data, refetch } = useGetAllUsersQuery({ available: true });//all users who has a kiosk_id null
 
-    const handleSubmit = async (values: KioskFormValues, { setSubmitting }: FormikHelpers<KioskFormValues>) => {
+    const handleSubmit = async (values: KioskFormValues, { setSubmitting, resetForm }: FormikHelpers<KioskFormValues>) => {
         try {
             const response = await createKiosk(values).unwrap();
-            const { message, success } = response;
-            if (success) {
-                toast({
-                    title: "Success",
-                    description: message,
-                });
-            }
+            successHandler(response);
+            refetch()
         } catch (err: unknown) {
             errorHandler(err)
         } finally {
             setSubmitting(false);
+            resetForm()
         }
     };
 
@@ -102,9 +96,9 @@ const CreateKiosk = () => {
                                 icon={<FaUserAlt />}
                                 error={errors.user}
                                 touched={touched.user}
-                                onChange={handleChange}  
-                                onBlur={handleBlur}  
-                                value={values.user}  
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.user}
                                 options={data?.result.map((user) => ({ value: user.id, label: user.name }))}
                             />
                             <Button

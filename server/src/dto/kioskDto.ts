@@ -1,6 +1,5 @@
 import Joi from 'joi';
 
-// Create Kiosk Schema
 export const createKioskSchema = Joi.object({
     name: Joi.string()
         .max(255)
@@ -12,12 +11,17 @@ export const createKioskSchema = Joi.object({
             'any.required': 'Name is required',
         }),
     location: Joi.string()
-		.min(0)
+        .min(0)
         .max(255)
         .optional().allow(null)
         .messages({
             'string.base': 'Location should be a type of string',
             'string.max': 'Location cannot exceed 255 characters',
+        }),
+    user: Joi.number().required()
+        .messages({
+            'number.base': 'user should be a type of number',
+            'any.required': 'user is required',
         }),
 });
 

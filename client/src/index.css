@@ -70,23 +70,25 @@
   }
 
   .scrollbar-style {
-    --sb-thumb-color: rgb(89, 58, 202);
-    --sb-track-color: rgb(139, 146, 231);
+    --sb-thumb-color: #C1C1C1;
+    --sb-track-color: #F1F1F1;
     --sb-size: 6px;
   }
 
   .scrollbar-style::-webkit-scrollbar {
-    width: var(--sb-size)
+    width: var(--sb-size);
+    height: var(--sb-size);
+
   }
 
   .scrollbar-style::-webkit-scrollbar-track {
     background: var(--sb-track-color);
-    border-radius: 3px;
+    border-radius: 2px;
   }
 
   .scrollbar-style::-webkit-scrollbar-thumb {
     background: var(--sb-thumb-color);
-    border-radius: 3px;
+    border-radius: 2px;
 
   }
 

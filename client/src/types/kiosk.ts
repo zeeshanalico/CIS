@@ -1,5 +1,5 @@
-import { ApiResponseFailed, ApiResponseSuccess } from "./apiResponse";
-
+import { ApiResponseFailed, ApiResponseSuccess, ExtraInfo } from "./apiResponse";
+import { User } from './User'
 export class Kiosk {
     id: number;
     name: string;
@@ -9,6 +9,8 @@ export class Kiosk {
     created_at: string;  // You might use Date for more sophisticated handling
     updated_at: string;  // You might use Date for more sophisticated handling
     deleted_at: string | null;
+    user: User[] 
+    internal_user: User 
     constructor(
         id: number,
         name: string,
@@ -18,6 +20,9 @@ export class Kiosk {
         created_at: string,
         updated_at: string,
         deleted_at: string | null,
+        user: User[],
+        internal_user: User 
+
     ) {
         this.id = id;
         this.name = name;
@@ -27,9 +32,10 @@ export class Kiosk {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.deleted_at = deleted_at;
+        this.user = user;
+        this.internal_user = internal_user;
     }
 }
 
-export type KiosksResponse = ApiResponseSuccess<{
-    kiosks: Kiosk[];
-}>;
+type KioskRes = Kiosk[] & ExtraInfo
+export type KiosksResponse = ApiResponseSuccess<KioskRes>

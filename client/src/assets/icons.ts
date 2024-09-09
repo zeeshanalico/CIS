@@ -11,6 +11,8 @@ export {
     FaEye,
     FaUserShield,
     FaMapMarkerAlt,
-    FaStore
+    FaStore,
+    FaEdit
 } from "react-icons/fa";
-export { MdOutlineAlternateEmail } from "react-icons/md";
+export { FaDeleteLeft } from "react-icons/fa6";
+export { MdOutlineAlternateEmail ,MdDeleteForever} from "react-icons/md";

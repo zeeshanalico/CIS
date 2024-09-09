@@ -33,12 +33,14 @@ class UserService {
         });
     }
 
-    async getAllUsers({ skip, take }: { skip?: number; take?: number|undefined }): Promise<User[]> {
+    async getAllUsers({ skip, take, available }: { skip?: number; take?: number | undefined, available?: boolean }): Promise<User[]> {
+        
         return await this.prisma.user.findMany({
             skip,
             take,
             where: {
                 is_deleted: false, // Assuming you want to fetch only non-deleted users
+                kiosk_id: available ? { equals: null } : undefined,
             },
             orderBy: {
                 created_at: 'desc', // Optional: Order users by creation date

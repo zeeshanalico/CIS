@@ -4,12 +4,14 @@ import { authApiSlice } from "./slices/authSlice/authApiSlice";
 import authSlice from "./slices/authSlice/authSlice";
 import { userApiSlice } from "./slices/userSlice/userApiSlice";
 import { kioskApiSlice } from "./slices/kioskSlice/kioskApiSlice";
+import kioskSlice from './slices/kioskSlice/kioskSlice'
 import globalSlice from "./slices/globalSlice.ts/globalSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
 	[authApiSlice.reducerPath]: authApiSlice.reducer,
 	[userApiSlice.reducerPath]: userApiSlice.reducer,
 	[kioskApiSlice.reducerPath]: kioskApiSlice.reducer,
+	[kioskSlice.name]: kioskSlice.reducer,
 	[globalSlice.name]: globalSlice.reducer,
 
 };

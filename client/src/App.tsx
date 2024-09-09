@@ -6,6 +6,7 @@ import { Role } from './types/Roles';
 import { setTitle } from './store/slices/globalSlice.ts/globalSlice';
 import { useDispatch } from 'react-redux';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
+import useRouteHistory from './components/hooks/useRouteHistory';
 interface RouteInfo {
     label: string;
     path: RoutesEnum;
@@ -21,6 +22,7 @@ export enum RoutesEnum {
     USER = '/user',
     KIOSK = '/kiosk',
     USER_DASHBOARD = '/userdashboard',
+    TESTING = '/testing',
     NOT_FOUND = '*',
 }
 
@@ -71,12 +73,22 @@ const routes: RouteInfo[] = [
         element: lazy(() => import('./pages/UserDashboard/UserDashboard')),
         roles: [Role.USER],
         isPrivate: true
+    },
+    {
+        label: 'Testing',
+        path: RoutesEnum.TESTING,
+        element: lazy(() => import('./pages/Testing/Testing')),
+        isPrivate: false
     }
 ];
 
 const App = () => {
     const dispatch = useDispatch()
     const location = useLocation()
+
+    // const routeHistory = useRouteHistory();
+    // console.log(routeHistory);
+
     useEffect(() => {
         const currentRoute = routes.find(route => route.path === location.pathname);
         if (currentRoute) {
@@ -86,8 +98,6 @@ const App = () => {
     return (
         <Suspense fallback={<FullPageLoader />}>
             <Routes>
-
-                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />
 
                 {routes.map(({ path, element: Element, isPrivate, roles }) =>
                     isPrivate ? (
@@ -104,6 +114,7 @@ const App = () => {
                     )
                 )}
 
+                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />// if this will be the first route then blink of sidebar wil not shown
                 <Route path="*" element={<Navigate to={RoutesEnum.NOT_FOUND} />} />
 
             </Routes>

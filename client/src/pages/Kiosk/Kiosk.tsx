@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CreateKiosk from '@/components/form/CreateKiosk'
-import KioskTable from './KioskTable'
+import ExistingKiosksTable from '@/components/Tables/ExistingKiosksTable'
 const enum Tab {
   addNewKiosk,
   existedKiosks
@@ -22,7 +22,9 @@ const Kiosk = () => {
           <button onClick={() => toggleTab(Tab.existedKiosks)} className={`inline-block p-2 rounded-t-lg hover:bg-gray-100 ${tab == Tab.existedKiosks ? 'text-indigo-600 bg-gray-100' : ''}`}>Existed Kiosks</button>
         </li>
       </ul>
-      {tab === Tab.addNewKiosk ? <CreateKiosk /> : <KioskTable />}
+      <div className='overflow-hidden'>
+        {tab === Tab.addNewKiosk ? <CreateKiosk /> : <ExistingKiosksTable />}
+      </div>
     </div>
   )
 }

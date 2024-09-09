@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import ErrorBoundary from './components/error/ErrorBoundary';
 import { Toaster } from './components/ui/toaster';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const Main = () => {
   return <StrictMode>
