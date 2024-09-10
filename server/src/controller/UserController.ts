@@ -74,6 +74,17 @@ class UserController {
       sendError(res, error);
     }
   }
+
+  updateKioskUsers = async (req: Request, res: Response): Promise<void> => {
+    const id = req.params.id;//kiosk_id
+    const { users } = req.body;
+    try {
+      const updatedUsers = await this.userService.updateKioskUsers({ id: Number(id), users });
+      sendSuccess(res, updatedUsers, 'Users updated successfully');
+    } catch (error) {
+      sendError(res, error);
+    }
+  }
 }
 
 export default UserController;

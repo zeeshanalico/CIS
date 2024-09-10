@@ -10,7 +10,16 @@ export const kioskApiSlice = createApi({
     endpoints: (builder) => ({
         getKiosks: builder.query<KiosksResponse, { limit?: number, page?: number, search?: string }>({
             query: ({ limit, page, search }) => ({
-                url: `/get-all${limit ? `?limit=${limit}` : ''}${page ? `?page=${page}` : ''}${search ? `?search=${search}` : ''}`,
+                url: `/get-all?limit=${limit}&page=${page}&search=${search}`,
+                method: 'GET',
+            }),
+            transformResponse: (response: KiosksResponse) => response,
+            transformErrorResponse: (response: FailedResponse) => response.data,
+            providesTags: ['Kiosk'],
+        }),
+        getKioskById: builder.query<KiosksResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/${id}`,
                 method: 'GET',
             }),
             transformResponse: (response: KiosksResponse) => response,
@@ -36,4 +45,4 @@ export const kioskApiSlice = createApi({
     }),
 });
 
-export const { useCreateKioskMutation, useGetKiosksQuery ,useDeleteKioskMutation} = kioskApiSlice;
+export const { useCreateKioskMutation,useGetKioskByIdQuery, useGetKiosksQuery, useDeleteKioskMutation } = kioskApiSlice;

@@ -98,6 +98,8 @@ const App = () => {
     return (
         <Suspense fallback={<FullPageLoader />}>
             <Routes>
+                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} replace />} />// if this will be the first route then blink of sidebar wil not shown
+                {/* <Route path="/" element={<Navigate to={isAuthenticated ? RoutesEnum.DASHBOARD : RoutesEnum.LOGIN} replace />} /> */}
 
                 {routes.map(({ path, element: Element, isPrivate, roles }) =>
                     isPrivate ? (
@@ -114,7 +116,6 @@ const App = () => {
                     )
                 )}
 
-                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />// if this will be the first route then blink of sidebar wil not shown
                 <Route path="*" element={<Navigate to={RoutesEnum.NOT_FOUND} />} />
 
             </Routes>

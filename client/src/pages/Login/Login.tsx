@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLoginMutation, } from '@/store/slices/authSlice/authApiSlice';
-import { useNavigate, useLocation, replace } from 'react-router-dom';
+import { useNavigate,} from 'react-router-dom';
 import { useDispatch, useSelector, } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle, FaEyeSlash, FaEye } from "../../assets/icons";
 import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
@@ -27,30 +27,29 @@ const LoginPage = () => {
   const auth = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   const [login, { isLoading }] = useLoginMutation();
-  const { toast } = useToast()
 
-  useEffect(() => {
-    if (auth.accessToken && auth.user) navigate('/dashboard', { replace: true })
-  })
+  // useEffect(() => {
+  //   if (auth.accessToken && auth.user) navigate('/dashboard', { replace: true })
+  // })
 
   const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
     try {
       const response = await login(values).unwrap();
-      const { message, success, result } = response;
-      const { accessToken, user } = result;
+      const { accessToken, user } = response.result;
+      
       dispatch(setCredentials({ accessToken, user }));
       if (user.roles?.includes(Role.SUPER_ADMIN)) {
         navigate('/dashboard', { replace: true })
       }
-      else if (user.roles?.includes(Role.USER)) {
+      if (user.roles?.includes(Role.USER)) {
         navigate('/userdashboard', { replace: true })
       }
-      setSubmitting(false);
       successHandler(response);
     } catch (err: unknown) {
       errorHandler(err)
     } finally {
       clearCredentials();
+      setSubmitting(false);
       setSubmitting(false);
 
     }

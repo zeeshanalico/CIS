@@ -25,7 +25,15 @@ export const userApiSlice = createApi({
             }),
             providesTags: ['User'],
         }),
+
+        updateKioskUsers: builder.mutation<ApiResponseSuccess<User[]>, { id: number; users: { user_id: number, name: string }[] }>({
+            query: ({ users, id }) => ({
+                url: `/update-kiosk-users/${id}`,
+                method: 'POST',
+                body: { users },
+            }),
+        })
     }),
 });
 
-export const { useCreateUserMutation, useGetAllUsersQuery } = userApiSlice;
+export const { useCreateUserMutation, useUpdateKioskUsersMutation, useGetAllUsersQuery } = userApiSlice;

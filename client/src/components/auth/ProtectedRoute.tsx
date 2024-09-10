@@ -13,6 +13,8 @@ interface ProtectedRouteProps {
 
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) => {
+    console.log('ProtectedRoute');
+    
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { accessToken, user } = useSelector((state: RootState) => state.auth);
@@ -46,7 +48,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) =
             console.log(requiredRoles, user?.roles);
 
             if (requiredRoles.length > 0 && !requiredRoles.some(role => user?.roles?.includes(role))) {
-                navigate('/unauthorized', { replace: true });
+                navigate('/unauthorized');
             }
         }
     }, [isAuthChecked, accessToken, requiredRoles, user, navigate]);

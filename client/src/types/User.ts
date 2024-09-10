@@ -41,3 +41,10 @@ export type UsersResponse = ApiResponseSuccess<{
     users: User[];
 }>;
 
+
+
+export interface SelectUser{
+    label:string;
+    value:number;
+}
+

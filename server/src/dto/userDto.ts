@@ -43,7 +43,27 @@ export const createUserSchema = Joi.object({
         }),
 });
 
-// Update User Schema
+export const updateKioskUsersSchema = Joi.object({
+    users: Joi.array().items(Joi.object({
+        user_id: Joi.number()
+            .required()
+            .messages({
+                'number.base': 'User ID should be a valid number',
+                'any.required': 'User ID is required',
+            }),
+        name: Joi.string()
+            .max(255)
+            .required()
+            .messages({
+                'string.base': 'Name should be a type of string',
+                'string.max': 'Name cannot exceed 255 characters',
+                'any.required': 'Name is required',
+            }),
+    }))
+
+})
+
+
 export const updateUserSchema = Joi.object({
     email: Joi.string()
         .email()

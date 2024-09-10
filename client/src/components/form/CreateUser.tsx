@@ -21,14 +21,16 @@ const CreateUser = () => {
     const [passwordVisibility, setPasswordVisibility] = useState(false)
     const [createUser, { isLoading }] = useCreateUserMutation();
 
-    const handleSubmit = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+    const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
         try {
             const response = await createUser(values).unwrap();
             successHandler(response)
-            setSubmitting(false);
         } catch (err: unknown) {
             setSubmitting(false);
             errorHandler(err)
+        } finally {
+            resetForm()
+            setSubmitting(false);
         }
     };
 

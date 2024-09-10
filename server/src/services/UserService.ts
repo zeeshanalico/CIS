@@ -34,7 +34,7 @@ class UserService {
     }
 
     async getAllUsers({ skip, take, available }: { skip?: number; take?: number | undefined, available?: boolean }): Promise<User[]> {
-        
+
         return await this.prisma.user.findMany({
             skip,
             take,
@@ -43,9 +43,26 @@ class UserService {
                 kiosk_id: available ? { equals: null } : undefined,
             },
             orderBy: {
-                created_at: 'desc', // Optional: Order users by creation date
+                created_at: 'desc', 
             },
         });
+    }
+
+    async updateKioskUsers({ id, users }: { id: number, users: { user_id: number, name: string }[] }) {//id is kiosks_id
+        // if(users.length === 1){//nextday
+        //    await this.prisma.user.findFirst({
+        //        where:{kiosk_id:id}
+        //    })
+        // }
+        const userUpdates = users.map(user =>
+            this.prisma.user.update({
+                where: { id: user.user_id },
+                data: { kiosk_id: id }
+            })
+        )
+        return await Promise.all(userUpdates);
+
+
     }
 }
 

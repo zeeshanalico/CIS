@@ -70,7 +70,7 @@
   }
 
   .scrollbar-style {
-    --sb-thumb-color: #C1C1C1;
+    --sb-thumb-color: #b7b1c4;
     --sb-track-color: #F1F1F1;
     --sb-size: 6px;
   }
@@ -83,12 +83,12 @@
 
   .scrollbar-style::-webkit-scrollbar-track {
     background: var(--sb-track-color);
-    border-radius: 2px;
+    border-radius: 3px;
   }
 
   .scrollbar-style::-webkit-scrollbar-thumb {
     background: var(--sb-thumb-color);
-    border-radius: 2px;
+    border-radius: 3px;
 
   }
 

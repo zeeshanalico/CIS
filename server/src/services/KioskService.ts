@@ -11,9 +11,19 @@ class KioskService {
     });
   }
 
-  async getKioskById(id: number): Promise<Kiosk | null> {
+  async getKioskById(id: number): Promise<Prisma.KioskGetPayload<{
+    include: { user: true, internal_user: true };
+  }> | null> {
     return await this.prisma.kiosk.findUnique({
-      where: { id },
+      where: {
+        is_deleted: false,
+        id,
+      },
+      include: {
+        user: true,
+        internal_user: true
+
+      },
     });
   }
 
@@ -27,22 +37,45 @@ class KioskService {
     });
   }
 
-  // Soft delete 
   async softDeleteKiosk(id: number): Promise<Kiosk> {
-    return await this.prisma.kiosk.update({
-      where: { id },
-      data: {
-        is_deleted: true,
-        deleted_at: new Date(),
-      },
-    });
+    return await this.prisma.$transaction(async trx => {
+      await trx.user.updateMany({
+        where: { kiosk_id: id },
+        data: { kiosk_id: null }
+      })
+      const kiosk = await trx.kiosk.update({
+        where: { id },
+        data: {
+          is_deleted: true,
+          deleted_at: new Date(),
+        },
+      });
+      return kiosk;
+    })
+  }
+  
+  async hardDeleteKiosk(id: number): Promise<Kiosk> {
+    return await this.prisma.$transaction(async (trx) => {
+      await trx.user.updateMany({
+        where: { kiosk_id: id },
+        data: { kiosk_id: null }
+      })
+      const kiosk = await trx.kiosk.delete({
+        where: { id },
+      });
+      return kiosk;
+    })
   }
 
-  // Hard delete
-  async deleteKiosk(id: number): Promise<Kiosk> {
-    return await this.prisma.kiosk.delete({
-      where: { id },
-    });
+  async deleteKiosk({ id, deleteType }: { id: number, deleteType: string }): Promise<Kiosk | null> {
+    if (deleteType === 'hard') {
+      return await this.hardDeleteKiosk(id);
+    } else if (deleteType === 'soft') {
+      return await this.softDeleteKiosk(id);
+    }
+    else {
+      return null;
+    }
   }
 
   async getAllKiosks({ skip, take }: { skip?: number; take?: number | undefined }): Promise<{

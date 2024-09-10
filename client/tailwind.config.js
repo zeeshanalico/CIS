@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: ['selector', '[data-mode="dark"]'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      boxShadow: {
+        'custom-inner': 'inset 0 6px 6px rgb(23, 255, 255)',
+      },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
       },

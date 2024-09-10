@@ -1,22 +1,31 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Kiosk } from '@/types/kiosk';
+import { ExtraInfo } from '@/types/apiResponse';
 
 interface KioskState {
     kiosks: Kiosk[];
-    showModal: boolean;
-    selectedKiosk: {
-        id: number | null;
-        name: string;
-    };
+    showDeleteConfirmationModal: boolean;
+    showEditModal: boolean;
+    selectedKiosk: Kiosk | null;
+    extraInfo: ExtraInfo,
+    page: number;
+    limit: number;
 }
 
 const initialState: KioskState = {
     kiosks: [],
-    showModal: false,
-    selectedKiosk: {
-        id: null,
-        name: '',
+    showDeleteConfirmationModal: false,
+    selectedKiosk: null,
+    showEditModal: false,
+    extraInfo: {
+        count: 0,
+        pageNumber: 0,
+        pageSize: 0,
+        from: 0,
+        to: 0
     },
+    page: 1,
+    limit: 10,
 };
 
 const kioskSlice = createSlice({
@@ -26,17 +35,30 @@ const kioskSlice = createSlice({
         setKiosks(state, action: PayloadAction<Kiosk[]>) {
             state.kiosks = action.payload;
         },
+        setExtraInfo(state, action: PayloadAction<ExtraInfo>) {
+            state.extraInfo = action.payload;
+        },
+        setPage(state, action: PayloadAction<number>) {
+            state.page = action.payload;
+        },
+        setLimit(state, action: PayloadAction<number>) {
+            state.limit = action.payload;
+        },
+
         addKiosk(state, action: PayloadAction<Kiosk>) {
             state.kiosks.push(action.payload);
         },
-        setSelectedKiosk(state, action: PayloadAction<{ id: number | null; name: string }>) {
+        setSelectedKiosk(state, action: PayloadAction<Kiosk>) {
             state.selectedKiosk = action.payload;
         },
-        toggleModal(state, action: PayloadAction<boolean>) {
-            state.showModal = action.payload;
+        toggleDeleteConfirmationModal(state) {
+            state.showDeleteConfirmationModal = !state.showDeleteConfirmationModal;
+        },
+        toggleEditModal(state) {
+            state.showEditModal = !state.showEditModal;
         },
     },
 });
 
-export const { setKiosks, addKiosk, setSelectedKiosk, toggleModal } = kioskSlice.actions;
+export const { setKiosks, addKiosk, setSelectedKiosk, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo, setPage, setLimit } = kioskSlice.actions;
 export default kioskSlice;

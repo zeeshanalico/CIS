@@ -1,4 +1,4 @@
-import { ApiResponseFailed, ApiResponseSuccess, ExtraInfo } from "./apiResponse";
+import { ApiResponseSuccess, ExtraInfo } from "./apiResponse";
 import { User } from './User'
 export class Kiosk {
     id: number;
@@ -9,8 +9,8 @@ export class Kiosk {
     created_at: string;  // You might use Date for more sophisticated handling
     updated_at: string;  // You might use Date for more sophisticated handling
     deleted_at: string | null;
-    user: User[] 
-    internal_user: User 
+    user: User[]
+    internal_user: User
     constructor(
         id: number,
         name: string,
@@ -21,7 +21,7 @@ export class Kiosk {
         updated_at: string,
         deleted_at: string | null,
         user: User[],
-        internal_user: User 
+        internal_user: User
 
     ) {
         this.id = id;
@@ -36,6 +36,7 @@ export class Kiosk {
         this.internal_user = internal_user;
     }
 }
+export interface KiosksResponse extends ApiResponseSuccess<Kiosk[]> {
+    extraInfo: ExtraInfo
+}
 
-type KioskRes = Kiosk[] & ExtraInfo
-export type KiosksResponse = ApiResponseSuccess<KioskRes>
