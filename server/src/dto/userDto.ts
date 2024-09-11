@@ -1,6 +1,4 @@
 import Joi from 'joi';
-
-// Create User Schema
 export const createUserSchema = Joi.object({
     email: Joi.string()
         .email()
@@ -72,17 +70,6 @@ export const updateUserSchema = Joi.object({
             'string.base': 'Email should be a type of string',
             'string.email': 'A valid email is required',
         }),
-    password: Joi.string()
-        .min(6)
-        .max(30)
-        .optional()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-        .messages({
-            'string.base': 'Password should be a type of string',
-            'string.min': 'Password must be at least 6 characters',
-            'string.max': 'Password cannot exceed 30 characters',
-            'string.pattern.base': 'Password can only contain alphanumeric characters',
-        }),
     name: Joi.string()
         .max(255)
         .optional()
@@ -90,21 +77,14 @@ export const updateUserSchema = Joi.object({
             'string.base': 'Name should be a type of string',
             'string.max': 'Name cannot exceed 255 characters',
         }),
-    role: Joi.string()
-        .valid('ADMIN', 'USER', 'SUPER_ADMIN')
-        .optional()
-        .messages({
-            'string.base': 'Role should be a type of string',
-            'any.only': 'Role must be one of ADMIN, USER, or SUPER_ADMIN',
-        }),
 });
 
-// User ID Param Schema
-export const userIdParamSchema = Joi.object({
-    id: Joi.number()
-        .required()
-        .messages({
-            'number.base': 'ID should be a valid number',
-            'any.required': 'ID is required',
-        }),
-});
+// // User ID Param Schema
+// export const userIdParamSchema = Joi.object({
+//     id: Joi.number()
+//         .required()
+//         .messages({
+//             'number.base': 'ID should be a valid number',
+//             'any.required': 'ID is required',
+//         }),
+// });

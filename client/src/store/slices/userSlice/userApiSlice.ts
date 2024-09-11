@@ -3,6 +3,9 @@ import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
 import { User } from '@/types/User';
 import { FormValues } from '@/components/form/CreateUser';
+import { UserResponse } from '../../../types/User';
+
+
 export const userApiSlice = createApi({
     reducerPath: 'user',
     tagTypes: ['User'],
@@ -18,9 +21,9 @@ export const userApiSlice = createApi({
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['User']
         }),
-        getAllUsers: builder.query<ApiResponseSuccess<User[]>, { available?: boolean }>({
-            query: ({ available }) => ({
-                url: '/get-all?available=' + available,
+        getAllUsers: builder.query<UserResponse, { available?: boolean, limit?: number, page?: number, search?: string }>({
+            query: ({ available, limit, page, search }) => ({
+                url: `/get-all?available=${available}&limit=${limit}&page=${page}&search=${search}`,
                 method: 'GET',
             }),
             providesTags: ['User'],
@@ -32,8 +35,24 @@ export const userApiSlice = createApi({
                 method: 'POST',
                 body: { users },
             }),
+            invalidatesTags: ['User'],
+        }),
+        updateUser: builder.mutation<ApiResponseSuccess<User>, { id: number, name: string, email: string }>({
+            query: ({ id, ...body }) => ({
+                url: `/update/${id}`,
+                method: 'PUT',
+                body: body,
+            }),
+            invalidatesTags: ['User'],
+        }),
+        deleteUser: builder.mutation<ApiResponseSuccess<User>, { id: number, deleteType: string }>({
+            query: ({ id, deleteType }) => ({
+                url: `/${id}?deleteType=${deleteType}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['User'],
         })
     }),
 });
 
-export const { useCreateUserMutation, useUpdateKioskUsersMutation, useGetAllUsersQuery } = userApiSlice;
+export const { useCreateUserMutation,useDeleteUserMutation, useUpdateUserMutation, useUpdateKioskUsersMutation, useGetAllUsersQuery } = userApiSlice;

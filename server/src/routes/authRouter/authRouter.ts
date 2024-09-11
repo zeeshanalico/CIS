@@ -4,8 +4,6 @@ import AuthController from '../../controller/AuthController';
 import { validateRequest } from '../../middleware/validateRequest';
 import AuthService from '../../services/AuthService';
 import { loginSchema } from '../../dto/LoginDto';
-import InternalUserService from '../../services/InternalUserService';
-import UserService from '../../services/UserService';
 const authService = new AuthService(prisma);
 const authController = new AuthController(authService);
 

@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma, User } from '@prisma/client';
+import { CustomError } from '../utils/CustomError';
 
 class UserService {
     constructor(private readonly prisma: PrismaClient) { }
@@ -6,6 +7,14 @@ class UserService {
     async createUser(
         createUserInput: Prisma.UserCreateInput
     ): Promise<User> {
+        const existingUser = await this.prisma.user.findFirst({
+            where: { email: createUserInput.email }
+        })
+        const existingInternalUser = await this.prisma.internal_user.findFirst({
+            where: { email: createUserInput.email }
+        })
+        if (existingUser || existingInternalUser)
+            throw new CustomError('User already exists', 400);
         return await this.prisma.user.create({
             data: createUserInput,
         });
@@ -17,25 +26,44 @@ class UserService {
         });
     }
 
-    async updateUser(
-        id: number,
-        updateUserInput: Prisma.UserUpdateInput
+    async updateUser({ id, updateUserInput }:
+        {
+            id: number,
+            updateUserInput: Prisma.UserUpdateInput
+        }
     ): Promise<User> {
         return await this.prisma.user.update({
             where: { id },
-            data: updateUserInput,
+            data: { ...updateUserInput, updated_at: new Date() },
         });
     }
 
-    async deleteUser(id: number): Promise<User> {
+    async deleteUser({ id, deleteType }: { id: number, deleteType: 'soft' | 'hard' | undefined }): Promise<User | null> {
+        if (deleteType === 'soft') {
+            return await this.softDeleteUser(id);
+        }
+        else if (deleteType === 'hard') {
+            return await this.hardDeleteUser(id);
+        }
+        else throw new CustomError('Invalid delete type', 400);
+    }
+    async hardDeleteUser(id: number): Promise<User> {
         return await this.prisma.user.delete({
             where: { id },
         });
     }
+    async softDeleteUser(id: number): Promise<User> {
+        return await this.prisma.user.update({
+            where: { id },
+            data: { is_deleted: true, deleted_at: new Date() },
 
-    async getAllUsers({ skip, take, available }: { skip?: number; take?: number | undefined, available?: boolean }): Promise<User[]> {
+        });
+    }
 
-        return await this.prisma.user.findMany({
+
+    async getAllUsers({ skip, take, available }: { skip?: number; take?: number | undefined, available?: boolean | undefined }): Promise<{ count: number; users: User[] }> {
+
+        const users = await this.prisma.user.findMany({
             skip,
             take,
             where: {
@@ -43,17 +71,21 @@ class UserService {
                 kiosk_id: available ? { equals: null } : undefined,
             },
             orderBy: {
-                created_at: 'desc', 
+                created_at: 'desc',
             },
         });
+        const count = await this.prisma.user.count({ where: { is_deleted: false } });
+
+        return { count, users }
     }
 
     async updateKioskUsers({ id, users }: { id: number, users: { user_id: number, name: string }[] }) {//id is kiosks_id
-        // if(users.length === 1){//nextday
-        //    await this.prisma.user.findFirst({
-        //        where:{kiosk_id:id}
-        //    })
-        // }
+
+        await this.prisma.user.updateMany({
+            where: { kiosk_id: id },
+            data: { kiosk_id: null }
+        })
+
         const userUpdates = users.map(user =>
             this.prisma.user.update({
                 where: { id: user.user_id },

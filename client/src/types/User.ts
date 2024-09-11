@@ -1,5 +1,6 @@
 import { Role } from "./Roles";
 import { ApiResponseSuccess } from "./apiResponse";
+import { ExtraInfo } from "./apiResponse";
 export class User {
     id: number;
     kiosk_id?: number;
@@ -37,14 +38,9 @@ export class User {
     }
 }
 
-export type UsersResponse = ApiResponseSuccess<{
-    users: User[];
-}>;
 
 
-
-export interface SelectUser{
-    label:string;
-    value:number;
+export interface UserResponse extends ApiResponseSuccess<User[]> {
+    extraInfo: ExtraInfo
 }
 

@@ -1,6 +1,7 @@
 import FullPageLoader from './components/ui/FullPageLoader';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Sidebar from './layout/Sidebar';
+import UserSidebar from './layout/UserSidebar';
 import { LazyExoticComponent, lazy, Suspense, useEffect, FC } from 'react';
 import { Role } from './types/Roles';
 import { setTitle } from './store/slices/globalSlice.ts/globalSlice';
@@ -21,9 +22,13 @@ export enum RoutesEnum {
     DASHBOARD = '/dashboard',
     USER = '/user',
     KIOSK = '/kiosk',
-    USER_DASHBOARD = '/userdashboard',
     TESTING = '/testing',
     NOT_FOUND = '*',
+    USER_DASHBOARD = '/userdashboard',
+    VENDOR = '/vendor',
+    REPORT = '/report',
+    SETTING = '/setting',
+    INVENTORY = '/inventory'
 }
 
 const routes: RouteInfo[] = [
@@ -66,14 +71,48 @@ const routes: RouteInfo[] = [
         roles: [Role.SUPER_ADMIN, Role.ADMIN],
         isPrivate: true
     },
+    {
+        label: 'Vendor',
+        path: RoutesEnum.VENDOR,
+        element: lazy(() => import('./pages/Vendor/Vendor')),
+        roles: [Role.SUPER_ADMIN, Role.ADMIN],
+
+        isPrivate: true
+    },
+    {
+        label: 'Report',
+        path: RoutesEnum.REPORT,
+        element: lazy(() => import('./pages/Report/Report')),
+        roles: [Role.SUPER_ADMIN, Role.ADMIN],
+
+        isPrivate: true
+    },
+    {
+        label: 'Setting',
+        path: RoutesEnum.SETTING,
+        element: lazy(() => import('./pages/Setting/Setting')),
+        roles: [Role.SUPER_ADMIN, Role.ADMIN],
+
+        isPrivate: true
+    },
     //role:USER
     {
-        label: 'User Dashboard',
+        label: 'Dashboard',
         path: RoutesEnum.USER_DASHBOARD,
         element: lazy(() => import('./pages/UserDashboard/UserDashboard')),
         roles: [Role.USER],
         isPrivate: true
     },
+    {
+        label: 'Inventory',
+        path: RoutesEnum.INVENTORY,
+        element: lazy(() => import('./pages/Inventory/Inventory')),
+        roles: [Role.USER],
+        isPrivate: true
+    },
+
+
+    //public
     {
         label: 'Testing',
         path: RoutesEnum.TESTING,
@@ -107,7 +146,7 @@ const App = () => {
                             key={path}
                             element={<ProtectedRoute requiredRoles={roles!} />}
                         >
-                            <Route path="/" element={<Sidebar />}>
+                            <Route path="/" element={roles?.includes(Role.USER) ? <UserSidebar /> : <Sidebar />}>
                                 <Route path={path} element={<Element />} />
                             </Route>
                         </Route>

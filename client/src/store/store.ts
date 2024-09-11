@@ -6,6 +6,7 @@ import { userApiSlice } from "./slices/userSlice/userApiSlice";
 import { kioskApiSlice } from "./slices/kioskSlice/kioskApiSlice";
 import kioskSlice from './slices/kioskSlice/kioskSlice'
 import globalSlice from "./slices/globalSlice.ts/globalSlice";
+import userSlice from "./slices/userSlice/userSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
 	[authApiSlice.reducerPath]: authApiSlice.reducer,
@@ -13,9 +14,8 @@ const reducer = {
 	[kioskApiSlice.reducerPath]: kioskApiSlice.reducer,
 	[kioskSlice.name]: kioskSlice.reducer,
 	[globalSlice.name]: globalSlice.reducer,
-
+	[userSlice.name]: userSlice.reducer,
 };
-
 
 const store = configureStore({
 	reducer,

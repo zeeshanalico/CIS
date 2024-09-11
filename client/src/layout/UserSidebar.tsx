@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { RoutesEnum } from "@/App";
-const Sidebar = () => {
+const UserSidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
     const dispatch = useDispatch()
@@ -49,16 +49,12 @@ const Sidebar = () => {
                             <FaTimes />
                         </button>
                         <ul className="mt-6 space-y-2">
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.DASHBOARD} className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</Link></li>
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.KIOSK} className="block py-2 px-4 rounded hover:bg-indigo-500">Kiosk</Link></li>
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.USER} className="block py-2 px-4 rounded hover:bg-indigo-500">User</Link></li>
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.VENDOR} className="block py-2 px-4 rounded hover:bg-indigo-500">Vendor</Link></li>
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.REPORT} className="block py-2 px-4 rounded hover:bg-indigo-500">Report</Link></li>
-                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.SETTING} className="block py-2 px-4 rounded hover:bg-indigo-500">Setting</Link></li>
+                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.USER_DASHBOARD} className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</Link></li>
+                            <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.INVENTORY} className="block py-2 px-4 rounded hover:bg-indigo-500">Inventory</Link></li>
                         </ul>
                     </div>
                 </div>
-                {/* Main Content */}
+
                 <div className="flex-1 flex flex-col overflow-x-visible">
                     <header className="w-full flex items-center justify-between sticky bg-indigo-700 text-white p-4">
                         <button
@@ -76,7 +72,6 @@ const Sidebar = () => {
                         </button>
                     </header>
                     <main className="flex-1 p-4 bg-gray-50 scrollbar-style overflow-x-visible ">
-                        {/* Main content */}
                         <Outlet />
                     </main>
                 </div>
@@ -86,4 +81,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default UserSidebar;

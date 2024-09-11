@@ -33,16 +33,17 @@ class UserController {
 
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
-      const updatedUser = await this.userService.updateUser(Number(req.params.id), req.body);
-      sendSuccess(res, updatedUser, 'User updated successfully');
+      const updatedUser = await this.userService.updateUser({ id: Number(req.params.id), updateUserInput: req.body, });
+      sendSuccess(res, updatedUser, `User  "${updatedUser.name}" updated successfully`);
     } catch (error) {
       sendError(res, error);
     }
   }
 
   async deleteUser(req: Request, res: Response): Promise<void> {
+    const deleteType = req.query.deleteType as string as ('soft' | 'hard' | undefined);
     try {
-      const deletedUser = await this.userService.deleteUser(Number(req.params.id));
+      const deletedUser = await this.userService.deleteUser({id:Number(req.params.id),deleteType});
       sendSuccess(res, deletedUser, 'User deleted successfully');
     } catch (error) {
       sendError(res, error);
@@ -56,7 +57,7 @@ class UserController {
       const skip = (page - 1) * (take || 0);//offset
       const available = parseBoolean(req.query.available as string) || false
 
-      const users = await this.userService.getAllUsers({ skip, take, available });
+      const { users, count } = await this.userService.getAllUsers({ skip, take, available });
 
       const filteredUsers = users.map((user) =>
         _.pick(user, [
@@ -69,7 +70,9 @@ class UserController {
           'updated_at',
         ])
       );
-      sendSuccess(res, filteredUsers, 'Users fetched successfully');
+      const extraInfo = { count, pageNumber: page, pageSize: take, from: skip + 1, to: skip + filteredUsers.length }
+
+      sendSuccess(res, filteredUsers, 'Users fetched successfully', extraInfo);
     } catch (error) {
       sendError(res, error);
     }

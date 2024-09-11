@@ -1,18 +1,20 @@
 import { toast } from '@/components/ui/use-toast';
-import {  FailedResponse } from '@/types/apiResponse';
+import { ApiResponseFailed } from '@/types/apiResponse';
 
-const isFailedResponse = (error: any): error is FailedResponse => {
-    return error && typeof error.data === 'object' && typeof error.data.error === 'string';
+const isFailedResponse = (error: any): error is ApiResponseFailed => {
+    return error && typeof error === 'object' && typeof error.error == 'string';
 };
 
 export const errorHandler = (error: unknown) => {
+    console.log('errorHandlerFrontend', error);
+
     const title = "Error";
     const variant = 'destructive'
     if (isFailedResponse(error)) {
         toast({
             title,
             variant,
-            description: error.data.error || 'An unknown error occurred',
+            description: error.error || 'An unknown error occurred 1',
         });
     } else if (error instanceof Error) {
         toast({
