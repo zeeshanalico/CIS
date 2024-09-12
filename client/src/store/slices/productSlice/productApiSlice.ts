@@ -3,7 +3,7 @@ import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
 import { Product } from '@/types/Product';
 
-export const authApiSlice = createApi({
+export const productApiSlice = createApi({
     reducerPath: 'product',
     baseQuery: baseQuery({ url: '/product' }),
     endpoints: (builder) => ({
@@ -15,13 +15,16 @@ export const authApiSlice = createApi({
             transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
         }),
-        getProductById: builder.mutation<Product, number>({
-            query: (id: number) => ({
-                url: `/:${id}`,
+        
+        getCategories: builder.query<ApiResponseSuccess<Product[]>, void>({
+            query: () => ({
+                url: '/categories',
                 method: 'GET',
             }),
+            transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
+            transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
         }),
     }),
 });
 
-export const { useGetProductByIdMutation, useGetProductsMutation } = authApiSlice;
+export const {  useGetProductsMutation ,useGetCategoriesQuery} = productApiSlice;

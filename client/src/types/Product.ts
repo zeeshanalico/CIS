@@ -1,4 +1,5 @@
 import { ApiResponseFailed,ApiResponseSuccess } from "./apiResponse";
+
 export class Product {
     id: number;
     category_id: number;

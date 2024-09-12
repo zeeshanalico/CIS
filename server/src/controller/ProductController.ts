@@ -24,7 +24,15 @@ class ProductController {
     async getProducts(req: Request, res: Response): Promise<void> {
         try {
             const products = await this.productService.getProducts();
-            sendSuccess(res, { products });
+            sendSuccess(res, products );
+        } catch (error) {
+            sendError(res, error);
+        }
+    }
+    async getCategories(req: Request, res: Response): Promise<void> {
+        try {
+            const categories = await this.productService.getCategories();
+            sendSuccess(res, categories);
         } catch (error) {
             sendError(res, error);
         }
