@@ -5,12 +5,17 @@ import { CustomError } from '../utils/CustomError';
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 import { parseBoolean } from '../utils/parseBoolean';
+import { checkEmailExistence } from '../utils/checkEmailExists';
 class UserController {
   constructor(private readonly userService: UserService) { }
 
   async createUser(req: Request, res: Response): Promise<void> {
     const { name, email, password, role } = req.body
     try {
+      const exists = await checkEmailExistence(req.body.email);
+      if (!exists) {
+        throw new CustomError('Email does not exist', 400)
+      }
       const hashedPassword = await bcrypt.hash(password, 10)
       const newUser = await this.userService.createUser({ name, email, password: hashedPassword, role });
       sendSuccess(res, newUser, 'User created successfully');
@@ -43,7 +48,7 @@ class UserController {
   async deleteUser(req: Request, res: Response): Promise<void> {
     const deleteType = req.query.deleteType as string as ('soft' | 'hard' | undefined);
     try {
-      const deletedUser = await this.userService.deleteUser({id:Number(req.params.id),deleteType});
+      const deletedUser = await this.userService.deleteUser({ id: Number(req.params.id), deleteType });
       sendSuccess(res, deletedUser, 'User deleted successfully');
     } catch (error) {
       sendError(res, error);

@@ -2,20 +2,30 @@ import FullPageLoader from './components/ui/FullPageLoader';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Sidebar from './layout/Sidebar';
 import UserSidebar from './layout/UserSidebar';
-import { LazyExoticComponent, lazy, Suspense, useEffect, FC } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Role } from './types/Roles';
 import { setTitle } from './store/slices/globalSlice.ts/globalSlice';
 import { useDispatch } from 'react-redux';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import useRouteHistory from './components/hooks/useRouteHistory';
-interface RouteInfo {
-    label: string;
-    path: RoutesEnum;
-    element: LazyExoticComponent<FC<{}>>;
-    isPrivate: boolean;
-    roles?: Role[]
-}
+import Layout from './pages/Vendor/Layout';
 
+// Lazy-loaded components
+const Login = lazy(() => import('./pages/Login/Login'));
+const Unauthorized = lazy(() => import('./components/error/Unauthorized'));
+const NotFound = lazy(() => import('./components/error/NotFound'));
+const Home = lazy(() => import('./pages/Home/Home'));
+const User = lazy(() => import('./pages/User/User'));
+const Kiosk = lazy(() => import('./pages/Kiosk/Kiosk'));
+const Vendor = lazy(() => import('./pages/Vendor/Vendor'));
+const AddVendor = lazy(() => import('./pages/Vendor/AddVendor/AddVendor'));
+const AddVendorPurchase = lazy(() => import('./pages/Vendor/AddVendorPurchase/AddVendorPurchase'));
+const Report = lazy(() => import('./pages/Report/Report'));
+const Setting = lazy(() => import('./pages/Setting/Setting'));
+const UserDashboard = lazy(() => import('./pages/UserDashboard/UserDashboard'));
+const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
+const Testing = lazy(() => import('./pages/Testing/Testing'));
+
+// Enum for route paths
 export enum RoutesEnum {
     LOGIN = '/login',
     UNAUTHORIZED = '/unauthorized',
@@ -25,141 +35,99 @@ export enum RoutesEnum {
     TESTING = '/testing',
     NOT_FOUND = '*',
     USER_DASHBOARD = '/userdashboard',
-    VENDOR = '/vendor',
     REPORT = '/report',
     SETTING = '/setting',
-    INVENTORY = '/inventory'
+    INVENTORY = '/inventory',
+    VENDOR = '/vendor',
+    ADD_VENDOR = 'add-vendor',//
+    ADD_VENDOR_PURCHASE = 'add-purchase'
 }
 
-const routes: RouteInfo[] = [
-    {
-        label: 'Login',
-        path: RoutesEnum.LOGIN,
-        element: lazy(() => import('./pages/Login/Login')),
-        isPrivate: false
-    },
-    {
-        label: 'Unauthorized',
-        path: RoutesEnum.UNAUTHORIZED,
-        element: lazy(() => import('./components/error/Unauthorized')),
-        isPrivate: false
-    },
-    {
-        label: 'Not Found',
-        path: RoutesEnum.NOT_FOUND,
-        element: lazy(() => import('./components/error/NotFound')),
-        isPrivate: false
-    },
-    {
-        label: 'Dashboard',
-        path: RoutesEnum.DASHBOARD,
-        element: lazy(() => import('./pages/Home/Home')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-        isPrivate: true
-    },
-    {
-        label: 'User',
-        path: RoutesEnum.USER,
-        element: lazy(() => import('./pages/User/User')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-        isPrivate: true
-    },
-    {
-        label: 'Kiosk',
-        path: RoutesEnum.KIOSK,
-        element: lazy(() => import('./pages/Kiosk/Kiosk')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-        isPrivate: true
-    },
-    {
-        label: 'Vendor',
-        path: RoutesEnum.VENDOR,
-        element: lazy(() => import('./pages/Vendor/Vendor')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-
-        isPrivate: true
-    },
-    {
-        label: 'Report',
-        path: RoutesEnum.REPORT,
-        element: lazy(() => import('./pages/Report/Report')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-
-        isPrivate: true
-    },
-    {
-        label: 'Setting',
-        path: RoutesEnum.SETTING,
-        element: lazy(() => import('./pages/Setting/Setting')),
-        roles: [Role.SUPER_ADMIN, Role.ADMIN],
-
-        isPrivate: true
-    },
-    //role:USER
-    {
-        label: 'Dashboard',
-        path: RoutesEnum.USER_DASHBOARD,
-        element: lazy(() => import('./pages/UserDashboard/UserDashboard')),
-        roles: [Role.USER],
-        isPrivate: true
-    },
-    {
-        label: 'Inventory',
-        path: RoutesEnum.INVENTORY,
-        element: lazy(() => import('./pages/Inventory/Inventory')),
-        roles: [Role.USER],
-        isPrivate: true
-    },
-
-
-    //public
-    {
-        label: 'Testing',
-        path: RoutesEnum.TESTING,
-        element: lazy(() => import('./pages/Testing/Testing')),
-        isPrivate: false
-    }
-];
-
 const App = () => {
-    const dispatch = useDispatch()
-    const location = useLocation()
-
-    // const routeHistory = useRouteHistory();
-    // console.log(routeHistory);
+    const dispatch = useDispatch();
+    const location = useLocation();
 
     useEffect(() => {
-        const currentRoute = routes.find(route => route.path === location.pathname);
-        if (currentRoute) {
-            dispatch(setTitle({ title: currentRoute.label }));
+        const currentRoute = location.pathname;
+        let title = '';
+        switch (currentRoute) {
+            case RoutesEnum.LOGIN:
+                title = 'Login';
+                break;
+            case RoutesEnum.UNAUTHORIZED:
+                title = 'Unauthorized';
+                break;
+            case RoutesEnum.DASHBOARD:
+                title = 'Dashboard';
+                break;
+            case RoutesEnum.USER:
+                title = 'User';
+                break;
+            case RoutesEnum.KIOSK:
+                title = 'Kiosk';
+                break;
+            case RoutesEnum.VENDOR:
+                title = 'Vendor';
+                break;
+            case RoutesEnum.REPORT:
+                title = 'Report';
+                break;
+            case RoutesEnum.SETTING:
+                title = 'Setting';
+                break;
+            case RoutesEnum.USER_DASHBOARD:
+                title = 'User Dashboard';
+                break;
+            case RoutesEnum.INVENTORY:
+                title = 'Inventory';
+                break;
+            default:
+                title = 'Not Found';
+                break;
         }
+        dispatch(setTitle({ title }));
     }, [location, dispatch]);
+
     return (
         <Suspense fallback={<FullPageLoader />}>
             <Routes>
-                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} replace />} />// if this will be the first route then blink of sidebar wil not shown
-                {/* <Route path="/" element={<Navigate to={isAuthenticated ? RoutesEnum.DASHBOARD : RoutesEnum.LOGIN} replace />} /> */}
+                {/* Public Routes */}
+                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} replace />} />
+                <Route path={RoutesEnum.LOGIN} element={<Login />} />
+                <Route path={RoutesEnum.UNAUTHORIZED} element={<Unauthorized />} />
+                <Route path={RoutesEnum.TESTING} element={<Testing />} />
 
-                {routes.map(({ path, element: Element, isPrivate, roles }) =>
-                    isPrivate ? (
-                        <Route
-                            key={path}
-                            element={<ProtectedRoute requiredRoles={roles!} />}
-                        >
-                            <Route path="/" element={roles?.includes(Role.USER) ? <UserSidebar /> : <Sidebar />}>
-                                <Route path={path} element={<Element />} />
-                            </Route>
+                {/* Protected Routes for Admins */}
+                <Route element={<ProtectedRoute requiredRoles={[Role.SUPER_ADMIN, Role.ADMIN]} />}>
+                    <Route path="/" element={<Sidebar />}>
+                        <Route path={RoutesEnum.DASHBOARD} element={<Home />} />
+                        <Route path={RoutesEnum.USER} element={<User />} />
+                        <Route path={RoutesEnum.KIOSK} element={<Kiosk />} />
+                        <Route path={RoutesEnum.REPORT} element={<Report />} />
+                        <Route path={RoutesEnum.SETTING} element={<Setting />} />
+                        {/* <Route path={RoutesEnum.VENDOR} element={<Vendor />} /> */}
+
+                        <Route path={RoutesEnum.VENDOR} element={<Layout />} >
+                            <Route path={RoutesEnum.ADD_VENDOR} element={<AddVendor />} />
+                            <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
                         </Route>
-                    ) : (
-                        <Route key={path} path={path} element={<Element />} />
-                    )
-                )}
 
-                <Route path="*" element={<Navigate to={RoutesEnum.NOT_FOUND} />} />
+                    </Route>
+                </Route>
 
+                {/* Protected Routes for Users */}
+                <Route element={<ProtectedRoute requiredRoles={[Role.USER]} />}>
+                    <Route path="/" element={<UserSidebar />}>
+                        <Route path={RoutesEnum.USER_DASHBOARD} element={<UserDashboard />} />
+                        <Route path={RoutesEnum.INVENTORY} element={<Inventory />} />
+                    </Route>
+                </Route>
+
+                {/* Not Found Route */}
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </Suspense>
-    )
-}
+    );
+};
 
-export default App
+export default App;

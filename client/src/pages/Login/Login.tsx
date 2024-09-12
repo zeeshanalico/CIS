@@ -1,18 +1,17 @@
 import { Formik, FormikHelpers } from 'formik';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLoginMutation, } from '@/store/slices/authSlice/authApiSlice';
 import { useNavigate,} from 'react-router-dom';
-import { useDispatch, useSelector, } from 'react-redux';
+import { useDispatch,  } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle, FaEyeSlash, FaEye } from "../../assets/icons";
 import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
-import { useToast } from '@/components/ui/use-toast';
 import { Role } from '@/types/Roles';
 import { errorHandler } from '@/components/error/errorHandler';
-import { RootState } from '@/store/store';
+// import { RootState } from '@/store/store';
 import { successHandler } from '@/utils/successHandler';
 
 export interface FormValues {
@@ -24,7 +23,7 @@ export interface FormValues {
 const LoginPage = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const dispatch = useDispatch();
-  const auth = useSelector((state: RootState) => state.auth)
+  // const auth = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   const [login, { isLoading }] = useLoginMutation();
 

@@ -2,14 +2,17 @@ import { Request, Response } from 'express';
 import AuthService from '../services/AuthService';
 import { LoginDto } from '../dto/LoginDto';
 import { sendError, sendSuccess } from '../utils/responseUtils';
-import { UserPayload } from '../types/UserPayload';
 import { CustomError } from '../utils/CustomError';
-import _ from 'lodash'
+import { checkEmailExistence } from '../utils/checkEmailExists';
 class AuthController {
     constructor(private readonly authService: AuthService) { }
     async login(req: Request, res: Response): Promise<void> {// res: {authToken(accessToken): string,  user: User}
         const { email, password, remember = false }: LoginDto = req.body;
         try {
+            // const exists = await checkEmailExistence(req.body.email);
+            // if (!exists) {
+            //     throw new CustomError('Email does not exist', 400)
+            // }
             const { accessToken, refreshToken, user } = await this.authService.login({ email, password });
             res.cookie('refreshToken', refreshToken, { httpOnly: true });
             sendSuccess(res, { accessToken, user }, 'Login successful');

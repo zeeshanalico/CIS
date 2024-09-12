@@ -4,6 +4,13 @@ import { ApiResponseFailed } from '@/types/apiResponse';
 const isFailedResponse = (error: any): error is ApiResponseFailed => {
     return error && typeof error === 'object' && typeof error.error == 'string';
 };
+interface NETWORK_ERROR{
+    error:string,
+    status:string;
+}
+const isNetworkError=(error:any):error is NETWORK_ERROR=>{
+    return error.status=='FETCH_ERROR';
+}
 
 export const errorHandler = (error: unknown) => {
     console.log('errorHandlerFrontend', error);
