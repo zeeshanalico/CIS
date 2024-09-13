@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, User } from '@prisma/client';
+import { PrismaClient, Prisma, User, Kiosk } from '@prisma/client';
 import { CustomError } from '../utils/CustomError';
 
 class UserService {
@@ -20,10 +20,12 @@ class UserService {
         });
     }
 
-    async getUserById(id: number): Promise<User | null> {
-        return await this.prisma.user.findUnique({
+    async getUserById(id: number): Promise<User> {
+        const user = await this.prisma.user.findUnique({
             where: { id },
         });
+        if (!user) throw new CustomError('User not found', 404);
+        return user
     }
 
     async updateUser({ id, updateUserInput }:
@@ -93,8 +95,15 @@ class UserService {
             })
         )
         return await Promise.all(userUpdates);
+    }
 
+    async getKioskByUserId(id: number): Promise<Kiosk | null> {
+        const user = await this.getUserById(id);
 
+        const kiosk = await this.prisma.kiosk.findUnique({
+            where: { id: user.kiosk_id as number },
+        })
+        return kiosk;
     }
 }
 

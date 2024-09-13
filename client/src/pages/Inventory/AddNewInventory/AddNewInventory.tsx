@@ -1,19 +1,34 @@
-import React from 'react'
-import { Formik } from 'formik'
+import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { FaRupeeSign, FaBoxOpen, FaDollarSign, FaListAlt, MdCategory } from '../../../assets/icons'
+import { FaRupeeSign, FaBoxOpen, FaListAlt, MdCategory } from '../../../assets/icons'
 import FormInput from '@/components/core/FormInput'
 import FormSelect from '@/components/core/FormSelect'
 import { Button } from '@/components/ui/button'
-import { useGetCategoriesQuery } from '@/store/slices/productSlice/productApiSlice'
+import { useGetCategoriesQuery, useCreateProductMutation } from '@/store/slices/productSlice/productApiSlice'
+import { successHandler } from '@/utils/successHandler'
+import { errorHandler } from '@/components/error/errorHandler'
 
+export interface FormValues {
+  name: string;
+  category: number | undefined;
+  sale_price: number | string;
+  quantity: number | string;
+}
 const AddNewInventory = () => {
   const { data: categoriesResponse } = useGetCategoriesQuery()
+  const [addProduct, { isLoading }] = useCreateProductMutation()
+  const handleSubmit =async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
+    try {
+      const response = await addProduct(values).unwrap();
+      successHandler(response)
+    } catch (err: unknown) {
+      setSubmitting(false);
+      errorHandler(err)
+    } finally {
+      resetForm()
+      setSubmitting(false);
+    }
 
-  const handleSubmit = (values: any, { setSubmitting }: any) => {
-    // Handle form submission logic here
-    console.log('Form values:', values)
-    setSubmitting(false)
   }
 
   return (
@@ -25,11 +40,14 @@ const AddNewInventory = () => {
         <Formik
           initialValues={{
             name: '',
-            sale_price: '',
-            quantity: '',
             category: undefined as number | undefined,
-          }}
+            sale_price: '',
+            quantity: 0,
+          } as FormValues}
           validationSchema={Yup.object({
+            category: Yup.number()
+              .nullable()
+              .required('Category is required'),
             name: Yup.string().required('Name is required'),
             sale_price: Yup.number()
               .required('Sale price is required')
@@ -37,9 +55,6 @@ const AddNewInventory = () => {
             quantity: Yup.number()
               .required('Quantity is required')
               .min(0, 'Quantity must be greater than or equal to 0'),
-            category: Yup.number()
-              .nullable()
-              .required('Category is required'),
           })}
           onSubmit={handleSubmit}
         >
@@ -53,17 +68,6 @@ const AddNewInventory = () => {
             isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
-              <FormInput
-                label="Name"
-                name="name"
-                icon={<FaBoxOpen />}
-                error={errors.name}
-                touched={touched.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.name}
-                placeholder="Enter the product name"
-              />
               <FormSelect
                 label="Category"
                 name="category"
@@ -79,29 +83,42 @@ const AddNewInventory = () => {
                 }))}
               />
               <FormInput
-                label="Sale Price"
-                name="sale_price"
-                icon={<FaRupeeSign />}
-                error={errors.sale_price}
-                touched={touched.sale_price}
+                label="Name"
+                name="name"
+                icon={<FaBoxOpen />}
+                error={errors.name}
+                touched={touched.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.sale_price}
-                placeholder="Enter the sale price"
-                type="number"
+                value={values.name}
+                placeholder="Enter the product name"
               />
-              <FormInput
-                label="Quantity"
-                name="quantity"
-                icon={<FaListAlt />}
-                error={errors.quantity}
-                touched={touched.quantity}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.quantity}
-                placeholder="Enter the quantity"
-                type="number"
-              />
+              <div className='grid grid-cols-2 gap-4'>
+                <FormInput
+                  label="Sale Price"
+                  name="sale_price"
+                  icon={<FaRupeeSign />}
+                  error={errors.sale_price}
+                  touched={touched.sale_price}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.sale_price}
+                  placeholder="Enter the sale price"
+                  type="number"
+                />
+                <FormInput
+                  label="Quantity"
+                  name="quantity"
+                  icon={<FaListAlt />}
+                  error={errors.quantity}
+                  touched={touched.quantity}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.quantity}
+                  placeholder="Enter the quantity"
+                  type="number"
+                />
+              </div>
               <Button
                 type="submit"
                 className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"

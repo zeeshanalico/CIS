@@ -7,7 +7,7 @@ import _ from 'lodash';
 class VendorController {
     private readonly vendorKeysArray;
 
-    constructor(private readonly vendorService: VendorService,) {
+    constructor(private readonly vendorService: VendorService) {
         this.vendorKeysArray = ['id', 'name', 'contact_info', 'created_at', 'updated_at'];
     }
 

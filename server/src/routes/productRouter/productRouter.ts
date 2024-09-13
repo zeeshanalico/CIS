@@ -3,13 +3,15 @@ import ProductController from '../../controller/ProductController';
 import { prisma } from '../../connection/prisma';
 import { validateRequest } from '../../middleware/validateRequest';
 import ProductService from '../../services/ProductService';
-import { loginSchema } from '../../dto/LoginDto';
+import { createProductSchema } from '../../dto/productDto';
+import UserService from '../../services/UserService';
 const router = express.Router();
 
 const productService = new ProductService(prisma);
-const productController = new ProductController(productService);
+const userService = new UserService(prisma)
+const productController = new ProductController(productService, userService);
 
-router.post('/', validateRequest(loginSchema), (req, res) => productController.createProduct(req, res));
+router.post('/create', validateRequest(createProductSchema), (req, res) => productController.createProduct(req, res));
 router.get('/', (req, res) => productController.getProducts(req, res));
 
 

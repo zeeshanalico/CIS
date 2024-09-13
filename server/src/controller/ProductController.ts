@@ -1,19 +1,25 @@
 import { Request, Response } from 'express';
 import ProductService from '../services/ProductService';
-import { sendError,sendSuccess } from '../utils/responseUtils';
+import { sendError, sendSuccess } from '../utils/responseUtils';
+import UserService from '../services/UserService';
+import { CustomError } from '../utils/CustomError';
 
 class ProductController {
-    constructor(private readonly productService: ProductService) { }
+    constructor(private readonly productService: ProductService, private readonly userService: UserService) { }
 
     async createProduct(req: Request, res: Response): Promise<void> {
-        const { name, sale_price, quantity, category_id, kiosk_id = null } = req.body;
+        const { name, sale_price, quantity, category: category_id, kiosk_id = null } = req.body;
+        const user_id = req.user?.user_id
+
         try {
+            const kiosk = await this.userService.getKioskByUserId(user_id as number)
+            if(!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
             const product = await this.productService.createProduct({
                 name,
                 sale_price,
                 quantity,
                 category: { connect: { id: category_id } },
-                kiosk: { connect: { id: kiosk_id } }
+                kiosk: { connect: { id: kiosk.id } }
             });
             sendSuccess(res, { product });
         } catch (error) {
@@ -24,7 +30,7 @@ class ProductController {
     async getProducts(req: Request, res: Response): Promise<void> {
         try {
             const products = await this.productService.getProducts();
-            sendSuccess(res, products );
+            sendSuccess(res, products);
         } catch (error) {
             sendError(res, error);
         }
