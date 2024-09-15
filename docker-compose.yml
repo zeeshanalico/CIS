@@ -1,0 +1,46 @@
+services:
+  frontend:
+    container_name: sub-cis-frontend
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app # Only mount the frontend project folder to avoid issues
+      - /app/node_modules # Ensure node_modules is not overwritten
+    environment:
+      NODE_ENV: production
+
+  backend:
+    container_name: sub-cis-backend
+    build: ./server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:admin@db:5432/cis?schema=public # Use `db` instead of localhost
+      ACCESS_TOKEN_SECRET: spqldf23@@@^2320230-234i221@@
+      REFRESH_TOKEN_SECRET: sfsldsldf2@@@%^%%WFSDFSER@%@@WFSDFG
+    env_file: 
+      - ./server/.env.production
+    volumes:
+      - ./server:/app # Only mount the backend project folder
+      - /app/node_modules # Ensure node_modules is not overwritten
+    depends_on:
+      - database
+    command: sh -c "npx prisma db push && npx prisma generate && npx prisma migrate deploy"
+
+  database:
+    image: postgres:14-alpine
+    container_name: db
+    environment:
+    # POSTGRES_HOST_AUTH_METHOD: #trust to allow all connections without a password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: cis
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
