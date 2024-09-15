@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:serve":"serve dist",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,0 +1,11 @@
+node_modules
+eslint.config.js
+# .env*
+# README.md
+# *.lock
+# .vscode
+# *.log
+# tsconfig.*
+# vite.config.ts
+# tailwind.config.js
+# postcss.config.js
