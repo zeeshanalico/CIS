@@ -7,29 +7,32 @@ import { CustomError } from '../utils/CustomError';
 class ProductController {
     constructor(private readonly productService: ProductService, private readonly userService: UserService) { }
 
-    async createProduct(req: Request, res: Response): Promise<void> {
-        const { name, sale_price, quantity, category: category_id, kiosk_id = null } = req.body;
+    async addInventory(req: Request, res: Response): Promise<void> {
+        const { name, cost_price, sale_price, quantity, category: category_id, isNew = false } = req.body;
         const user_id = req.user?.user_id
 
         try {
             const kiosk = await this.userService.getKioskByUserId(user_id as number)
-            if(!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
-            const product = await this.productService.createProduct({
+            if (!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
+            const product = await this.productService.addInventory({
                 name,
+                cost_price,
                 sale_price,
                 quantity,
+                isNew,
                 category: { connect: { id: category_id } },
                 kiosk: { connect: { id: kiosk.id } }
             });
-            sendSuccess(res, { product });
+            sendSuccess(res, product);
         } catch (error) {
             sendError(res, error);
         }
     }
 
     async getProducts(req: Request, res: Response): Promise<void> {
+        const category_id = req.query.category_id as string | undefined;
         try {
-            const products = await this.productService.getProducts();
+            const products = await this.productService.getProducts({ category_id: category_id ? parseInt(category_id) : undefined });
             sendSuccess(res, products);
         } catch (error) {
             sendError(res, error);

@@ -11,7 +11,7 @@ const productService = new ProductService(prisma);
 const userService = new UserService(prisma)
 const productController = new ProductController(productService, userService);
 
-router.post('/create', validateRequest(createProductSchema), (req, res) => productController.createProduct(req, res));
+router.post('/create', validateRequest(createProductSchema), (req, res) => productController.addInventory(req, res));//batch,product,purchase? table will inserted
 router.get('/', (req, res) => productController.getProducts(req, res));
 
 

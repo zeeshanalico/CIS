@@ -36,7 +36,18 @@ const handleTokenRefresh = async (
 ): Promise<{ data?: any; error?: FetchBaseQueryError; meta?: FetchBaseQueryMeta }> => {
   console.log('Received 401 Unauthorized. Attempting to refresh token...');
 
-  const refreshResult = await baseQueryInstance({ url: '/refresh-token', method: 'POST' }, api, extraOptions);
+   // Create a custom base query instance specifically for the refresh token endpoint
+   const refreshTokenQueryInstance = fetchBaseQuery({
+    baseUrl: BASE_URL,  // Custom base URL for refresh token call
+    credentials: 'include',
+  });
+
+  const refreshResult = await refreshTokenQueryInstance(
+    { url: '/auth/refresh-token', method: 'POST' },
+    api,
+    extraOptions
+  );
+  // const refreshResult = await baseQueryInstance({ url: '/refresh-token', method: 'POST' }, api, extraOptions);
 
   if (refreshResult.data) {
     const response = (refreshResult.data as { accessToken: string; user: UserPayload });

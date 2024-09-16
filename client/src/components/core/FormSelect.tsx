@@ -48,7 +48,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
                     <IoChevronUp className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
                 {isOpen && (
-                    <ul className="absolute max-h-40 overflow-y-scroll left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                    <ul className="absolute max-h-40 overflow-y-scroll scrollbar-style left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
                         {options.map((option, index) => (
                             <li
                                 key={option.value}

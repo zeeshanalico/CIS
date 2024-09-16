@@ -12,7 +12,7 @@ export interface FormValues {
   contact_info: string | undefined;
 }
 
-const AddVendor = () => {
+const AddVendor = ({ isOpen, toggleModal }: { toggleModal?: () => void, isOpen?: boolean }) => {
   const [createVendor, { isLoading }] = useCreateVendorMutation();
 
   const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
@@ -29,6 +29,7 @@ const AddVendor = () => {
     } finally {
       setSubmitting(false);
       resetForm();
+      toggleModal && toggleModal();
     }
   };
 

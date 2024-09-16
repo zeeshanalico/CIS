@@ -20,9 +20,9 @@ export const vendorApiSlice = createApi({
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['Vendor']
         }),
-        getAllVendors: builder.query<VendorResponse, { available?: boolean, limit?: number, page?: number, search?: string }>({
-            query: ({ available, limit, page, search }) => ({
-                url: `/get-all?available=${available}&limit=${limit}&page=${page}&search=${search}`,
+        getAllVendors: builder.query<VendorResponse, { limit?: number, page?: number, search?: string }>({
+            query: ({ limit, page, search }) => ({
+                url: `/get-all?limit=${limit}&page=${page}&search=${search}`,
                 method: 'GET',
             }),
             providesTags: ['Vendor'],
@@ -38,4 +38,4 @@ export const vendorApiSlice = createApi({
     }),
 });
 
-export const { useCreateVendorMutation,useGetAllVendorsQuery,useDeleteVendorMutation} = vendorApiSlice;
+export const { useCreateVendorMutation, useGetAllVendorsQuery, useDeleteVendorMutation } = vendorApiSlice;

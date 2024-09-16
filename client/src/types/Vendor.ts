@@ -1,6 +1,7 @@
 import { ApiResponseSuccess } from "./apiResponse";
 import { ExtraInfo } from "./apiResponse";
 export interface Vendor {
+    id:number
     name: string;
     contact_info?: string | null;
     is_deleted?: boolean;

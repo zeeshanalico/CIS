@@ -14,12 +14,11 @@ export const autheticateUser = (req: Request, res: Response, next: NextFunction)
         const [scheme, token] = authHeader.split(' ');
         if (scheme === 'Bearer' && token) {
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
-                if (err) throw new CustomError('Invalid access token', 403); 
+                if (err) throw new CustomError('Invalid access token', 401); 
                 req.user = user as (UserPayload);
             });
 
         } else {
-            console.log('Invalid authorization scheme');
             return res.status(401).json({ error: 'Invalid authorization header' });
         }
     } else {

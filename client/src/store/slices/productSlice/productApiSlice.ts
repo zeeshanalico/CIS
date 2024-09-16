@@ -9,9 +9,9 @@ export const productApiSlice = createApi({
     baseQuery: baseQuery({ url: '/product' }),
     tagTypes: ['Product'],
     endpoints: (builder) => ({
-        getProducts: builder.mutation<ApiResponseSuccess<Product[]>, void>({
-            query: () => ({
-                url: '/',
+        getProducts: builder.query<ApiResponseSuccess<Product[]>, { category: number | null }>({
+            query: ({ category: category_id }) => ({
+                url: `/?category_id=${category_id}`,
                 method: 'GET',
             }),
             transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
@@ -26,7 +26,7 @@ export const productApiSlice = createApi({
             transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
         }),
-        createProduct: builder.mutation<ApiResponseSuccess<Product>, FormValues>({
+        createInventory: builder.mutation<ApiResponseSuccess<Product>, FormValues>({
             query: (body) => ({
                 url: `/create`,
                 body: body,
@@ -37,4 +37,4 @@ export const productApiSlice = createApi({
     }),
 });
 
-export const { useGetProductsMutation, useGetCategoriesQuery,useCreateProductMutation } = productApiSlice;
+export const { useGetProductsQuery, useGetCategoriesQuery, useCreateInventoryMutation } = productApiSlice;

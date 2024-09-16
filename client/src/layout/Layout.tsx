@@ -35,7 +35,7 @@ const Layout = ({ tabs }: LayoutProps) => {
           </li>
         ))}
       </ul>
-      <div className="overflow-hidden">
+      <div className="">
         <Outlet />
       </div>
     </div>

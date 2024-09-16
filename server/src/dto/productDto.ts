@@ -1,7 +1,6 @@
 import Joi from 'joi'
 export const createProductSchema = Joi.object({
-      name: Joi.string()
-        .max(255)
+      name: Joi.alternatives().try(Joi.string().max(255), Joi.number())
         .required()
         .messages({
             'any.required': 'Name is required',
@@ -13,6 +12,12 @@ export const createProductSchema = Joi.object({
         .messages({
             'any.required': 'Category is required',
             'number.base': 'Category should be a valid number',
+        }),
+      cost_price: Joi.number()
+        .required()
+        .messages({
+            'any.required': 'Cost price is required',
+            'number.base': 'Cost price should be a valid number',
         }),
       sale_price: Joi.number()
         .required()
@@ -26,6 +31,7 @@ export const createProductSchema = Joi.object({
             'any.required': 'Quantity is required',
             'number.base': 'Quantity should be a valid number',
         }),
+        isNew: Joi.boolean().optional()
     //   description: Joi.string()
     //     .max(255)
     //     .required()

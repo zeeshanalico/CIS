@@ -1,118 +1,81 @@
-// import React from 'react'
-// import { Formik,FormikHelpers } from 'formik'
+import { useState } from 'react';
+import { useMultistepForm } from '@/components/hooks/useMultipleForm';
+import { Button } from '@/components/ui/button';
+import SelectVendor from './SelectVendor';
+import { useFormik, FormikHelpers } from 'formik';
+import * as yup from 'yup';
 
-// const AddVendorPurchase = () => {
-//   return (
-// <div className="flex items-center justify-center">
-//       <div className="w-full p-6 bg-white rounded-lg shadow-md">
-//         <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
-//           Add Vendor Purchase
-//         </h2>
-//         <Formik
-//           initialValues={{
-//             name: '',
-//             category: undefined as number | undefined,
-//             sale_price: '',
-//             quantity: 0,
-//           } as FormValues}
-//           validationSchema={Yup.object({
-//             category: Yup.number()
-//               .nullable()
-//               .required('Category is required'),
-//             name: Yup.string().required('Name is required'),
-//             sale_price: Yup.number()
-//               .required('Sale price is required')
-//               .min(0, 'Sale price must be greater than or equal to 0'),
-//             quantity: Yup.number()
-//               .required('Quantity is required')
-//               .min(0, 'Quantity must be greater than or equal to 0'),
-//           })}
-//           onSubmit={handleSubmit}
-//         >
-//           {({
-//             values,
-//             errors,
-//             touched,
-//             handleChange,
-//             handleBlur,
-//             handleSubmit,
-//             isSubmitting,
-//           }) => (
-//             <form onSubmit={handleSubmit}>
-//               <FormSelect
-//                 label="Category"
-//                 name="category"
-//                 error={errors.category}
-//                 icon={<MdCategory />}
-//                 touched={touched.category}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 value={values.category}
-//                 options={categoriesResponse?.result.map((category) => ({
-//                   value: category.id,
-//                   label: category.name,
-//                 }))}
-//               />
-//               <FormInput
-//                 label="Name"
-//                 name="name"
-//                 icon={<FaBoxOpen />}
-//                 error={errors.name}
-//                 touched={touched.name}
-//                 onChange={handleChange}
-//                 onBlur={handleBlur}
-//                 value={values.name}
-//                 placeholder="Enter the product name"
-//               />
-//               <div className='grid grid-cols-2 gap-4'>
-//                 <FormInput
-//                   label="Sale Price"
-//                   name="sale_price"
-//                   icon={<FaRupeeSign />}
-//                   error={errors.sale_price}
-//                   touched={touched.sale_price}
-//                   onChange={handleChange}
-//                   onBlur={handleBlur}
-//                   value={values.sale_price}
-//                   placeholder="Enter the sale price"
-//                   type="number"
-//                 />
-//                 <FormInput
-//                   label="Quantity"
-//                   name="quantity"
-//                   icon={<FaListAlt />}
-//                   error={errors.quantity}
-//                   touched={touched.quantity}
-//                   onChange={handleChange}
-//                   onBlur={handleBlur}
-//                   value={values.quantity}
-//                   placeholder="Enter the quantity"
-//                   type="number"
-//                 />
-//               </div>
-//               <Button
-//                 type="submit"
-//                 className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-//                 disabled={isSubmitting}
-//               >
-//                 {isSubmitting ? 'Creating...' : 'Create Inventory'}
-//               </Button>
-//             </form>
-//           )}
-//         </Formik>
-//       </div>
-//     </div>  )
-// }
-
-// export default AddVendorPurchase
-
-
-import React from 'react'
-
-const AddVendorPurchase = () => {
-  return (
-    <div>AddVendorPurchase</div>
-  )
+interface FormValues {
+  vendorId?: number | undefined;
+  vendor_name?: string;
+  vendor_contact_info?: string;
+  productId: string;
+  quantity: number;
+  costPrice: number;
+  purchaseId: string;
 }
 
-export default AddVendorPurchase
+const validationSchema = yup.object({
+  vendorId: yup.string().required('Vendor selection is required'),
+  vendor_name: yup.string().required('Vendor name is required'),
+  productId: yup.string().required('Product selection is required'),
+  quantity: yup.number().required('Quantity is required').min(1, 'Quantity must be at least 1'),
+  costPrice: yup.number().required('Cost price is required').min(0, 'Cost price must be at least 0'),
+  purchaseId: yup.string().required('Purchase ID is required'),
+});
+
+const AddVendorPurchase = () => {
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      vendorId: undefined,
+      vendor_contact_info: '',
+      vendor_name: '',
+      productId: '',
+      quantity: 0,
+      costPrice: 0,
+      purchaseId: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values: FormValues, actions: FormikHelpers<any>) => {
+      console.log(values);
+      actions.setSubmitting(false);
+    },
+  });
+
+  const { steps, currentStepIndex, next, back, isFirstStep, goTo, isLastStep, step } = useMultistepForm([
+    <SelectVendor formik={formik} />,
+    <div>Two</div>,
+    <div>Three</div>,
+  ]);
+
+  return (
+    <div className="border border-spacing-1 rounded-md p-4 shadow-lg">
+      <div>
+        {currentStepIndex + 1} / {steps.length}
+      </div>
+      <form onSubmit={formik.handleSubmit}>
+        {step}
+        <div className="p-4 flex justify-end space-x-2">
+          {!isFirstStep && (
+            <Button
+              onClick={back}
+              className="px-4 py-2 bg-indigo-600 text-white hover:cursor-pointer transition-transform transform hover:scale-105 active:scale-100 duration-200 rounded"
+            >
+              Previous
+            </Button>
+          )}
+          <Button
+            onClick={next}
+            type="submit"
+            className="z-0 px-4 py-2 bg-indigo-600 text-white hover:cursor-pointer transition-transform transform hover:scale-105 active:scale-100 duration-200 rounded"
+          >
+            {isLastStep ? 'Finish' : 'Next'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default AddVendorPurchase;
+export type FormikType = ReturnType<typeof import('formik').useFormik<FormValues>>;
