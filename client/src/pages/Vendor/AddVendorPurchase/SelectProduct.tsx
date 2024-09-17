@@ -28,7 +28,7 @@ const SelectProduct = ({ formik, productList }: { formik: FormikType, productLis
             {formik.errors.productId && formik.touched.productId && (
                 <p className="mt-2 text-sm text-red-600">{formik.errors.productId}</p>
             )}
-            {/* qty, cost-price,purchase_date, amount */}
+            {/* qty, cost-price,purchase_date, amount //it requires kiosk id, so should be handle at user side*/} 
 
 
         </>

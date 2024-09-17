@@ -64,13 +64,26 @@ class ProductService {
     }
 
 
-    async getProducts({ category_id }: { category_id: number | undefined  }): Promise<Product[]> {
-        console.log(category_id);
+    async getProducts({ skip, take, category_id }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined }): Promise<{ products: Product[], count: number }> {
+        const products = await this.prisma.product.findMany({
+            skip,
+            take,
+            where: { category_id: category_id, is_deleted: false },
+            include: {
+                category: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                },
+            },
+            orderBy: { created_at: 'desc', },
 
-        return await this.prisma.product.findMany({
-            where: { category_id: category_id }
         });
+        const count = await this.prisma.product.count({ where: { is_deleted: false } });
+        return { products, count }
     }
+
 
 
     async getCategories(): Promise<Category[]> {
