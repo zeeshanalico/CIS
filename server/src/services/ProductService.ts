@@ -21,7 +21,7 @@ class ProductService {
 
             if (isNew) {
                 product = await trx.product.create({
-                    data: {name, quantity, ...rest,}
+                    data: { name, quantity, ...rest, }
                 });
 
                 batch = await trx.batch.create({
@@ -64,9 +64,11 @@ class ProductService {
     }
 
 
-    async getProducts({ category_id }: { category_id: number | undefined }): Promise<Product[]> {
+    async getProducts({ category_id }: { category_id: number | undefined  }): Promise<Product[]> {
+        console.log(category_id);
+
         return await this.prisma.product.findMany({
-            where: { category_id }
+            where: { category_id: category_id }
         });
     }
 

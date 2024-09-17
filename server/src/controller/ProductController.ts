@@ -30,9 +30,9 @@ class ProductController {
     }
 
     async getProducts(req: Request, res: Response): Promise<void> {
-        const category_id = req.query.category_id as string | undefined;
+        const category_id = req.query.category_id as string ;//'34'|'undefined'
         try {
-            const products = await this.productService.getProducts({ category_id: category_id ? parseInt(category_id) : undefined });
+            const products = await this.productService.getProducts({ category_id: category_id && category_id !== 'undefined' ? parseInt(category_id) : undefined });
             sendSuccess(res, products);
         } catch (error) {
             sendError(res, error);

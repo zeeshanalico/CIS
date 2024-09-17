@@ -1,125 +1,138 @@
-import React, { useState } from 'react';
-import CreatableSelect from 'react-select/creatable';
+import React, { useState, useEffect, useCallback } from 'react';
+import Select from 'react-select';
 import { FormikType } from './AddVendorPurchase';
-import { useGetAllVendorsQuery } from '@/store/slices/vendorSlice/vendorApiSlice';
-import { Formik, Form, Field } from 'formik';
+import { BsFillTelephoneFill, FaStore } from "../../../assets/icons";
+import { useFormik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
+import FormInput from '@/components/core/FormInput';
+import { successHandler } from '@/utils/successHandler';
+import { errorHandler } from '@/components/error/errorHandler';
+import { useCreateVendorMutation, useGetAllVendorsQuery } from '@/store/slices/vendorSlice/vendorApiSlice';
+import { Vendor } from '@/types/Vendor';
 
 interface VendorOption {
-  value: number;
-  label: string;
-  contact_info: string; // additional field
+    value: number;
+    label: string;
 }
 
-const validationSchema = yup.object({
-  vendor_name: yup.string().required('Vendor name is required'),
-  vendor_contact_info: yup.string().required('Vendor contact info is required'),
-});
+// interface FormValues {
+//     vendor_name: string;
+//     vendor_contact_info: string;
+// }
 
-const SelectVendor = ({ formik }: { formik: FormikType }) => {
-  const { data: vendorsResponse } = useGetAllVendorsQuery({});
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [options, setOptions] = useState<VendorOption[]>(
-    vendorsResponse?.result?.map((vendor:any) => ({
-      value: vendor.id,
-      label: vendor.name,
-      contact_info: vendor.contact_info,
-    })) || []
-  );
+// const validationSchema = yup.object({
+//     vendor_name: yup.string().required('Name is required'),
+//     vendor_contact_info: yup
+//         .string()
+//         .nullable()
+//         .transform((value, originalValue) => (originalValue.trim() === '' ? undefined : value)),
+// });
 
-  const toggleModal = () => {
-    setModalOpen(!isModalOpen);
-  };
+const SelectVendor = ({ formik, vendorsList }: { formik: FormikType, vendorsList: VendorOption[] | undefined }) => {
+    // const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleCreateVendor = (newVendor: VendorOption) => {
-    const newOptions = [...options, newVendor];
-    setOptions(newOptions);
-    formik.setFieldValue('vendorId', newVendor.value);
-  };
+    // const toggleModal = () => {
+    //     setModalOpen(!isModalOpen);
+    // };
 
-  return (
-    <>
-      <CreatableSelect
-        className="basic-single"
-        classNamePrefix="select"
-        defaultValue={formik.values.vendorId}
-        isSearchable
-        options={options.map((vendor) => ({
-          value: vendor.value,
-          label: vendor.label,
-        }))}
-        onChange={(value) => formik.setFieldValue('vendorId', value?.value)}
-        onCreateOption={toggleModal} // Trigger modal when "Create New Vendor" is selected
-        placeholder="Select or Create Vendor"
-      />
+    // const [createVendor, { isLoading }] = useCreateVendorMutation();
 
-      {/* Modal to create a new vendor */}
-      <Modal isOpen={isModalOpen} onClose={toggleModal}>
-        <Formik
-          initialValues={{
-            vendor_name: '',
-            vendor_contact_info: '',
-          }}
-          validationSchema={validationSchema}
-          onSubmit={(values, { resetForm }) => {
-            const newVendor = {
-              value: Date.now(), // Generate a unique ID
-              label: values.vendor_name,
-              contact_info: values.vendor_contact_info,
-            };
-            handleCreateVendor(newVendor); // Add vendor to the options
-            resetForm();
-            toggleModal();
-          }}
-        >
-          {({ errors, touched }) => (
-            <Form className="p-4">
-              <div>
-                <label>Vendor Name</label>
-                <Field name="vendor_name" className="input" />
-                {errors.vendor_name && touched.vendor_name && <div>{errors.vendor_name}</div>}
-              </div>
+    // const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
+    //     try {
+    //         const payload = {
+    //             contact_info: values.vendor_contact_info || undefined,
+    //             name: values.vendor_name,
+    //         };
 
-              <div>
-                <label>Contact Info</label>
-                <Field name="vendor_contact_info" className="input" />
-                {errors.vendor_contact_info && touched.vendor_contact_info && <div>{errors.vendor_contact_info}</div>}
-              </div>
+    //         const response = await createVendor(payload).unwrap();
+    //         successHandler(response);
+    //         refetch(); // Refresh the vendor options after adding a new one
+    //         toggleModal(); // Close modal
+    //     } catch (err: unknown) {
+    //         errorHandler(err);
+    //     } finally {
+    //         setSubmitting(false);
+    //         resetForm();
+    //     }
+    // };
 
-              <button type="submit" className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded">
-                Add Vendor
-              </button>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
-    </>
-  );
+    // const modalFormik = useFormik({
+    //     initialValues: {
+    //         vendor_name: '',
+    //         vendor_contact_info: '',
+    //     },
+    //     validationSchema,
+    //     onSubmit: handleSubmit,
+    // });
+
+    return (
+        <>
+            <h3 className="text-lg font-bold mb-2 ">Select Vendor</h3>
+            <Select
+                className="basic-single"
+                classNamePrefix="select"
+                value={vendorsList?.find((option) => option.value === formik.values.vendorId) || null}
+                isSearchable
+                options={vendorsList}
+                onChange={(value) => {
+                    if (value) {
+                        formik.setFieldValue('vendorId', (value as VendorOption).value);
+                    }
+                }}
+                // onCreateOption={toggleModal}
+                placeholder="Select or Create Vendor"
+            />
+
+            {/* {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                    <form
+                        onSubmit={modalFormik.handleSubmit}
+                        className="z-44 bg-white p-4 rounded shadow-lg"
+                    >
+                        <FormInput
+                            label="Vendor Name"
+                            name="vendor_name"
+                            icon={<FaStore />}
+                            error={modalFormik.errors.vendor_name}
+                            touched={modalFormik.touched.vendor_name}
+                            onChange={modalFormik.handleChange}
+                            onBlur={modalFormik.handleBlur}
+                            value={modalFormik.values.vendor_name}
+                            placeholder="Enter the vendor name"
+                        />
+                        <FormInput
+                            label="Contact Details"
+                            name="vendor_contact_info"
+                            icon={<BsFillTelephoneFill />}
+                            error={modalFormik.errors.vendor_contact_info}
+                            touched={modalFormik.touched.vendor_contact_info}
+                            onChange={modalFormik.handleChange}
+                            onBlur={modalFormik.handleBlur}
+                            value={modalFormik.values.vendor_contact_info}
+                            placeholder="Enter the contact details"
+                        />
+
+                        <div className="py-4 border-t flex justify-end space-x-2">
+                            <button
+                                type="button"
+                                onClick={toggleModal}
+                                className="px-4 py-2 bg-gray-300 text-gray-700 hover:bg-gray-400 hover:cursor-pointer transition-transform transform hover:scale-110 active:scale-90 duration-200 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none hover:cursor-pointer transition-transform transform hover:scale-110 active:scale-45 duration-200"
+                                disabled={modalFormik.isSubmitting}
+                            >
+                                {modalFormik.isSubmitting ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )} */}
+        </>
+    );
 };
 
-export default SelectVendor;
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}
-
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-      <div className="z-44 bg-white p-4 rounded shadow-lg">
-        {children}
-        <button
-          onClick={onClose}
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  );
-};
-
+export default React.memo(SelectVendor);
