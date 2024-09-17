@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useGetKiosksQuery, useDeleteKioskMutation } from '@/store/slices/kioskSlice/kioskApiSlice';
-import { setKiosks, setSelectedKiosk, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo, setLimit, setPage } from '@/store/slices/kioskSlice/kioskSlice';
+import { setKiosks, setSelectedKiosk, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo } from '@/store/slices/kioskSlice/kioskSlice';
 import { useUpdateKioskUsersMutation } from '@/store/slices/userSlice/userApiSlice';
 import { Kiosk } from '@/types/kiosk';
 import { User } from '@/types/User';
@@ -12,13 +12,24 @@ import { errorHandler } from '../error/errorHandler';
 import { successHandler } from '@/utils/successHandler';
 import EditKiosk from '@/pages/Kiosk/EditKiosk';
 import Table, { Th, Td, Tr } from '../ui/Table';
-
+import usePagination from '../hooks/usePagination';
 const ExistingKiosksTable = () => {
   const [updateKioskUsers] = useUpdateKioskUsersMutation();
-  const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit, page: pageNumber } = useSelector((state: RootState) => state.kioskSlice);
+  const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit } = useSelector((state: RootState) => state.kioskSlice);
   const dispatch = useDispatch();
-  const { data, isLoading, error, refetch } = useGetKiosksQuery({ limit, page: pageNumber });
+  const { data, isLoading, error, refetch } = useGetKiosksQuery({ limit });
   const [deleteKiosk] = useDeleteKioskMutation();
+
+  const {
+    currentPage,
+    totalPages,
+    goToNextPage,
+    goToPrevPage,
+    goToPage,
+  } = usePagination({
+    totalItems: extraInfo.count,
+    itemsPerPage: limit,
+  });
 
   useEffect(() => {
     if (data?.result) {
@@ -66,19 +77,12 @@ const ExistingKiosksTable = () => {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error fetching kiosks.</div>;
 
-  const totalPages = Math.ceil(extraInfo.count / limit);
-
   return (
     <div className="mx-auto flex flex-col">
       <div className="flex flex-row justify-between">
         <h1 className="text-2xl font-semibold mb-4">Existing Kiosks</h1>
         <div className="flex flex-row gap-2 items-center">
           <p className="text-sm text-gray-500">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>
-          <select className="h-8 outline-none border border-gray-300 rounded" onChange={(e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setLimit(Number(e.target.value)))}>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-          </select>
         </div>
       </div>
       <div className="overflow-x-auto scrollbar-style shadow-xl">
@@ -96,7 +100,7 @@ const ExistingKiosksTable = () => {
           <tbody>
             {kiosks.map((kiosk, index) => (
               <Tr key={kiosk.id}>
-                <Td>{index + 1 + (pageNumber - 1) * limit}</Td>
+                <Td>{index + 1 + (currentPage - 1) * limit}</Td>
                 <Td>{kiosk.name}</Td>
                 <Td>{kiosk.location || ''}</Td>
                 <Td>{(kiosk.internal_user as User)?.name}</Td>
@@ -122,8 +126,8 @@ const ExistingKiosksTable = () => {
           <button
             type="button"
             className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
-            onClick={() => dispatch(setPage(pageNumber - 1))}
-            disabled={pageNumber === 1}
+            onClick={goToPrevPage}
+            disabled={currentPage === 1}
           >
             Prev
           </button>
@@ -131,8 +135,8 @@ const ExistingKiosksTable = () => {
             <button
               key={i}
               type="button"
-              className={`px-4 py-2 text-sm font-medium ${pageNumber === i + 1 ? 'text-blue-700 bg-gray-200' : 'text-gray-900 bg-white'} border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white`}
-              onClick={() => dispatch(setPage(i + 1))}
+              className={`px-4 py-2 text-sm font-medium ${currentPage === i + 1 ? 'text-blue-700 bg-gray-200' : 'text-gray-900 bg-white'} border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white`}
+              onClick={() => goToPage(i + 1)}
             >
               {i + 1}
             </button>
@@ -140,8 +144,8 @@ const ExistingKiosksTable = () => {
           <button
             type="button"
             className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
-            onClick={() => dispatch(setPage(pageNumber + 1))}
-            disabled={pageNumber === totalPages}
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages}
           >
             Next
           </button>

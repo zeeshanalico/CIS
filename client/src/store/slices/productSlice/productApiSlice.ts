@@ -9,9 +9,9 @@ export const productApiSlice = createApi({
     baseQuery: baseQuery({ url: '/product' }),
     tagTypes: ['Product'],
     endpoints: (builder) => ({
-        getProducts: builder.query<ApiResponseSuccess<Product[]>, { category?: number | null }>({
-            query: ({ category: category_id }) => ({
-                url: `/?category_id=${category_id}`,
+        getProducts: builder.query<ApiResponseSuccess<Product[]>, { page?: number, limit: number, category?: number | null }>({
+            query: ({ category: category_id, page, limit }) => ({
+                url: `/?category_id=${category_id}&page=${page}&limit=${limit}`,
                 method: 'GET',
             }),
             transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
