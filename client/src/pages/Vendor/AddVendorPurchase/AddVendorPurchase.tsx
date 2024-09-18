@@ -40,7 +40,7 @@ const AddVendorPurchase = () => {
   });
 
   const { data: vendorsResponse, } = useGetAllVendorsQuery({});
-  const { data: productsResponse } = useGetProductsQuery({});
+  const { data: productsResponse } = useGetProductsQuery({limit:10});
   console.log(productsResponse);
 
   const { steps, currentStepIndex, next, back, isFirstStep, isLastStep, step } = useMultistepForm([

@@ -25,7 +25,7 @@ const initialState: KioskState = {
         to: 0
     },
     page: 1,
-    limit: 10,
+    limit: 6,
 };
 
 const kioskSlice = createSlice({

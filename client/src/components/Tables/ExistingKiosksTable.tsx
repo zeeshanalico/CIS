@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useGetKiosksQuery, useDeleteKioskMutation } from '@/store/slices/kioskSlice/kioskApiSlice';
-import { setKiosks, setSelectedKiosk, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo } from '@/store/slices/kioskSlice/kioskSlice';
+import { setKiosks, setSelectedKiosk, setPage, setLimit, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo } from '@/store/slices/kioskSlice/kioskSlice';
+
 import { useUpdateKioskUsersMutation } from '@/store/slices/userSlice/userApiSlice';
 import { Kiosk } from '@/types/kiosk';
 import { User } from '@/types/User';
@@ -15,9 +16,9 @@ import Table, { Th, Td, Tr } from '../ui/Table';
 import usePagination from '../hooks/usePagination';
 const ExistingKiosksTable = () => {
   const [updateKioskUsers] = useUpdateKioskUsersMutation();
-  const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit } = useSelector((state: RootState) => state.kioskSlice);
+  const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit, page } = useSelector((state: RootState) => state.kioskSlice);
   const dispatch = useDispatch();
-  const { data, isLoading, error, refetch } = useGetKiosksQuery({ limit });
+  const { data, isLoading, error, refetch } = useGetKiosksQuery({ limit, page });
   const [deleteKiosk] = useDeleteKioskMutation();
 
   const {
@@ -83,6 +84,16 @@ const ExistingKiosksTable = () => {
         <h1 className="text-2xl font-semibold mb-4">Existing Kiosks</h1>
         <div className="flex flex-row gap-2 items-center">
           <p className="text-sm text-gray-500">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>
+          <select
+            className="h-8 outline-none border border-gray-300 rounded"
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setLimit(Number(e.target.value)))}
+            value={limit}
+          >
+            <option value="6">6</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
         </div>
       </div>
       <div className="overflow-x-auto scrollbar-style shadow-xl">
@@ -126,7 +137,10 @@ const ExistingKiosksTable = () => {
           <button
             type="button"
             className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
-            onClick={goToPrevPage}
+            onClick={() => {
+              dispatch(setPage(page - 1))
+              goToPrevPage()
+            }}
             disabled={currentPage === 1}
           >
             Prev
@@ -136,7 +150,10 @@ const ExistingKiosksTable = () => {
               key={i}
               type="button"
               className={`px-4 py-2 text-sm font-medium ${currentPage === i + 1 ? 'text-blue-700 bg-gray-200' : 'text-gray-900 bg-white'} border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white`}
-              onClick={() => goToPage(i + 1)}
+              onClick={() => {
+                dispatch(setPage(i + 1))
+                goToPage(i + 1)
+              }}
             >
               {i + 1}
             </button>
@@ -144,7 +161,10 @@ const ExistingKiosksTable = () => {
           <button
             type="button"
             className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
-            onClick={goToNextPage}
+            onClick={() => {
+              dispatch(setPage(page + 1))
+              goToNextPage()
+            }}
             disabled={currentPage === totalPages}
           >
             Next

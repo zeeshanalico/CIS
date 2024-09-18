@@ -9,11 +9,13 @@ import globalSlice from "./slices/globalSlice.ts/globalSlice";
 import userSlice from "./slices/userSlice/userSlice";
 import { vendorApiSlice } from "./slices/vendorSlice/vendorApiSlice";
 import { productApiSlice } from "./slices/productSlice/productApiSlice";
+import productSlice from "./slices/productSlice/productSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
 	[kioskSlice.name]: kioskSlice.reducer,
 	[globalSlice.name]: globalSlice.reducer,
 	[userSlice.name]: userSlice.reducer,
+	[productSlice.name]: productSlice.reducer,
 
 	[authApiSlice.reducerPath]: authApiSlice.reducer,
 	[userApiSlice.reducerPath]: userApiSlice.reducer,

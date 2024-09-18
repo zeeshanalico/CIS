@@ -1,5 +1,5 @@
-import { ApiResponseFailed,ApiResponseSuccess } from "./apiResponse";
-
+import { ApiResponseFailed, ApiResponseSuccess } from "./apiResponse";
+import { ExtraInfo } from "./apiResponse";
 export class Product {
     id: number;
     category_id: number;
@@ -13,6 +13,7 @@ export class Product {
     created_at: string;  // You might use Date for more sophisticated handling
     updated_at: string;  // You might use Date for more sophisticated handling
     deleted_at: string | null;
+    category?: { id: number, name: string };
 
     constructor(
         id: number,
@@ -26,7 +27,8 @@ export class Product {
         is_deleted: boolean,
         created_at: string,
         updated_at: string,
-        deleted_at: string | null
+        deleted_at: string | null,
+        category: { id: number, name: string }
     ) {
         this.id = id;
         this.category_id = category_id;
@@ -40,10 +42,11 @@ export class Product {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.deleted_at = deleted_at;
+        this.category = category
     }
 }
 
 
-export type ProductsResponse = ApiResponseSuccess<{
-    products: Product[];
-}>;
+export interface ProductsResponse extends ApiResponseSuccess<Product[]> {
+    extraInfo: ExtraInfo
+}
