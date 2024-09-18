@@ -9,7 +9,7 @@ export const productApiSlice = createApi({
     baseQuery: baseQuery({ url: '/product' }),
     tagTypes: ['Product'],
     endpoints: (builder) => ({
-        getProducts: builder.query<ProductsResponse, { page?: number, limit: number, category?: number | null }>({
+        getProducts: builder.query<ProductsResponse, { page?: number, limit?: number, category?: number | null }>({
             query: ({ category: category_id, page, limit }) => ({
                 url: `/?category_id=${category_id}&page=${page}&limit=${limit}`,
                 method: 'GET',
@@ -32,6 +32,8 @@ export const productApiSlice = createApi({
                 body: body,
                 method: 'POST',
             }),
+            // transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
+            transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['Product',],
         }),
     }),

@@ -14,9 +14,9 @@ import { SingleValue } from 'react-select';
 export interface FormValues {
   name: string | number; // Can be a string if new, or number if existing
   category: number | undefined;
-  sale_price: number | string;
-  quantity: number | string;
-  cost_price: number | string;
+  sale_price: number | undefined;
+  quantity: number | undefined;
+  cost_price: number | undefined;
   isNew?: boolean;
 }
 
@@ -32,7 +32,15 @@ const AddNewInventory = () => {
       console.log(values);
       const response = await addInventory({ ...values, isNew }).unwrap();
       successHandler(response);
-      resetForm()
+      resetForm({
+        values: {
+          name: '',
+          category: undefined,
+          sale_price: 0,
+          cost_price: 0,
+          quantity: 0,
+        },
+      })
     } catch (err: unknown) {
       setSubmitting(false);
       errorHandler(err);
@@ -49,9 +57,9 @@ const AddNewInventory = () => {
           initialValues={{
             name: '',
             category: undefined as number | undefined,
-            sale_price: '',
-            cost_price: '',
-            quantity: 0,
+            sale_price: undefined,
+            cost_price: undefined,
+            quantity: undefined,
           } as FormValues}
           validationSchema={Yup.object({
             category: Yup.number()
@@ -65,8 +73,12 @@ const AddNewInventory = () => {
               .required('Cost price is required')
               .min(0, 'Cost price must be greater than or equal to 0'),
             sale_price: Yup.number()
-              .required('Sale price is required')
-              .min(0, 'Sale price must be greater than or equal to 0'),
+              .min(0, 'Sale price must be greater than or equal to 0')
+              .when('isNew', {
+                is: true,
+                then: (schema) => schema.required('Sale price is required for new products'),
+                otherwise: (schema) => schema.optional(),
+              }),
           })}
           onSubmit={handleSubmit}
         >
