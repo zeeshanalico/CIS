@@ -13,6 +13,7 @@
     "prisma:create": "dotenv -e .env.development -- npx prisma migrate dev --create-only",
     "prisma:migrate": "dotenv -e .env.development -- npx prisma migrate dev",
     "prisma:pull": "dotenv -e .env.development -- npx prisma db pull",
+    "prisma:migration-status": "dotenv -e .env.development -- npx prisma migrate status",
     "seed": "dotenv -e .env.development -- ts-node prisma/seed.ts"
   },
   "author": "Zeeshan Ali",

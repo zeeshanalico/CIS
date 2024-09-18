@@ -10,25 +10,6 @@ services:
     environment:
       NODE_ENV: production
 
-  backend:
-    container_name: sub-cis-backend
-    build: ./server
-    ports:
-      - "3001:3001"
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:admin@db:5432/cis?schema=public # Use `db` instead of localhost
-      ACCESS_TOKEN_SECRET: spqldf23@@@^2320230-234i221@@
-      REFRESH_TOKEN_SECRET: sfsldsldf2@@@%^%%WFSDFSER@%@@WFSDFG
-    env_file: 
-      - ./server/.env.production
-    volumes:
-      - ./server:/app # Only mount the backend project folder
-      - /app/node_modules # Ensure node_modules is not overwritten
-    depends_on:
-      - database
-    command: sh -c "npx prisma db push && npx prisma generate && npx prisma migrate deploy"
-
   database:
     image: postgres:14-alpine
     container_name: db
@@ -40,7 +21,26 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432" #here i expose PostgreSQL port 5433 to the host ("5433:5432"), but inside the Docker network, PostgreSQL still listens on port 5432
+
+  backend:
+    container_name: sub-cis-backend
+    build: ./server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:admin@db:5432/cis?schema=public # Use `db` instead of localhost
+      ACCESS_TOKEN_SECRET: spqldf23@@@^2320230-234i221@@
+      REFRESH_TOKEN_SECRET: sfsldsldf2@@@%^%%WFSDFSER@%@@WFSDFG
+    volumes:
+      - ./server:/app # Only mount the backend project folder
+      - /app/node_modules # Ensure node_modules is not overwritten
+    depends_on:
+      - database
+    command: sh -c "npx prisma db push && npx prisma generate && npx prisma migrate deploy"
+
+  
 
 volumes:
   db-data:

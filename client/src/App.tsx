@@ -18,7 +18,6 @@ const Login = lazy(() => import('./pages/Login/Login'));
 const Unauthorized = lazy(() => import('./components/error/Unauthorized'));
 const NotFound = lazy(() => import('./components/error/NotFound'));
 const Home = lazy(() => import('./pages/Home/Home'));
-const User = lazy(() => import('./pages/User/User'));
 const AddVendor = lazy(() => import('./pages/Vendor/AddVendor/AddVendor'));
 const AddVendorPurchase = lazy(() => import('./pages/Vendor/AddVendorPurchase/AddVendorPurchase'));
 const Report = lazy(() => import('./pages/Report/Report'));
@@ -29,7 +28,7 @@ const AddNewInventory = lazy(() => import('./pages/Inventory/AddNewInventory/Add
 const Stock = lazy(() => import('./pages/Inventory/Stock/Stock'))
 const CreateKiosk = lazy(() => import('./pages/Kiosk/CreateKiosk'));
 const ExistingKiosksTable = lazy(() => import('./pages/Kiosk/ExistingKiosksTable'));
-const CreateUser = lazy(() => import('./components/form/CreateUser'));
+const CreateUser = lazy(() => import('./pages/User/CreateUser'));
 const UserTable = lazy(() => import('./pages/User/UserTable'));
 
 

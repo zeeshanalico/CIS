@@ -20,7 +20,7 @@ const FormInput: React.FC<FormInputProps> = ({
     ...props
 }) => {
     return (
-        <div className="mb-4">
+        <div className="mb-4 w-full">
             <Label htmlFor={name} className="block mb-1 text-sm font-medium text-gray-700">
                 {label}
             </Label>

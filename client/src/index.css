@@ -78,7 +78,10 @@
   .scrollbar-style::-webkit-scrollbar {
     width: var(--sb-size);
     height: var(--sb-size);
+  }
 
+  .customize-hover-border div:nth-child(3):hover {
+    @apply border-indigo-600
   }
 
   .scrollbar-style::-webkit-scrollbar-track {
@@ -97,4 +100,8 @@
       scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
     }
   }
+}
+
+.check {
+  color: black;
 }

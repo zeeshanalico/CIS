@@ -2,10 +2,12 @@ import { useMultistepForm } from '@/components/hooks/useMultipleForm';
 import { Button } from '@/components/ui/button';
 import SelectVendor from './SelectVendor';
 import SelectProduct from './SelectProduct';
-import { useFormik, FormikHelpers } from 'formik';
+import { useFormik, Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { useGetAllVendorsQuery } from '@/store/slices/vendorSlice/vendorApiSlice';
 import { useGetProductsQuery } from '@/store/slices/productSlice/productApiSlice';
+import FormCreatableSelect from '@/components/core/FormCreatableSelect';
+import { Fa42Group } from 'react-icons/fa6';
 
 interface FormValues {
   vendorId?: number | undefined;
@@ -39,20 +41,50 @@ const AddVendorPurchase = () => {
     },
   });
 
+
+  const handleSubmit = (values: { vendorId?: number | undefined }, { resetForm, setSubmitting }: FormikHelpers<{ vendorId?: number | undefined }>) => {
+    console.log('submitvalue', values);
+  }
   const { data: vendorsResponse, } = useGetAllVendorsQuery({});
-  const { data: productsResponse } = useGetProductsQuery({limit:10});
+  const { data: productsResponse } = useGetProductsQuery({ limit: 10 });
   console.log(productsResponse);
 
   const { steps, currentStepIndex, next, back, isFirstStep, isLastStep, step } = useMultistepForm([
     <SelectVendor formik={formik} vendorsList={vendorsResponse?.result.map((vendor) => ({ value: vendor.id, label: vendor.name }))} />,
     <SelectProduct formik={formik} productList={productsResponse?.result.map((product) => ({ value: product.id, label: product.name }))} />,
-    <div>Two</div>,
-    <div>Three</div>
   ]);
+
+  const handleCreate = (newItem: string) => {
+    console.log(newItem);
+
+  };
 
   return (
     <div className="border border-spacing-1 rounded-md p-4 shadow-lg">
-      <div>
+      <Formik
+        initialValues={{ vendorId: undefined } as { vendorId?: number | undefined }}
+        onSubmit={handleSubmit}
+        validationSchema={yup.object({
+          vendorId: yup.number().required('Vendor selection is required'),
+        })}
+      >
+        {({ errors, touched, handleSubmit, setFieldValue }) => (
+          <form onSubmit={handleSubmit}>
+            <FormCreatableSelect
+              icon={<Fa42Group/>}
+              name="vendorId"
+              label="Vendor"
+              options={vendorsResponse?.result.map((vendor) => ({ value: vendor.id, label: vendor.name }))}
+              onChange={(value) => setFieldValue('vendorId', value)}
+              error={errors.vendorId}
+              touched={touched.vendorId}
+              onCreate={handleCreate}
+            />
+            <button type="submit">Submit</button>
+          </form>
+        )}
+      </Formik>
+      {/* <div>
         {currentStepIndex + 1} / {steps.length}
       </div>
       <form onSubmit={formik.handleSubmit}>
@@ -79,7 +111,7 @@ const AddVendorPurchase = () => {
             {isLastStep ? 'Finish' : 'Next'}
           </Button>
         </div>
-      </form>
+      </form> */}
     </div>
   );
 };

@@ -32,7 +32,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
     };
 
     return (
-        <div className="relative mb-6">
+        <div className="relative mb-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
             <div
                 onClick={() => setIsOpen(!isOpen)}

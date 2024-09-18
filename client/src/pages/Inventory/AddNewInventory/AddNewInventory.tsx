@@ -42,8 +42,9 @@ const AddNewInventory = () => {
         },
       })
     } catch (err: unknown) {
-      setSubmitting(false);
       errorHandler(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -116,7 +117,7 @@ const AddNewInventory = () => {
 
               <CreatableSelect
                 isClearable
-                className="focus:border-0"
+                className="focus:border-0 mb-2"
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
@@ -166,7 +167,7 @@ const AddNewInventory = () => {
                 type="number"
               />
 
-              <div className={`${isNew ? 'flex flex-row gap-2' : null}`}>
+              <div className={`${isNew ? 'flex flex-row justify-between gap-2' : null}`}>
                 <FormInput
                   label="Cost per Item"
                   name="cost_price"

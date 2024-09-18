@@ -23,16 +23,17 @@ class ProductService {
                 product = await trx.product.create({
                     data: { name, quantity, ...rest, }
                 });
+                if (quantity < 0) {
+                    batch = await trx.batch.create({
+                        data: {
+                            product: { connect: { id: product.id } },
+                            quantity,
+                            cost_price: cost_price, // cost per item of a batch
+                        }
+                    });
+                }
 
-                batch = await trx.batch.create({
-                    data: {
-                        product: { connect: { id: product.id } },
-                        quantity,
-                        cost_price: cost_price, // cost per item of a batch
-                    }
-                });
-
-            } else {//bug:what to do with sale_price when product is not new 
+            } else {
                 // Find the existing product
                 product = await trx.product.findUnique({
                     where: { id: Number(name) },  // assuming name is the product ID if not new

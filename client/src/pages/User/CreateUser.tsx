@@ -7,7 +7,7 @@ import { FaUserAlt, FaUserShield, FaLock, FaExclamationCircle, MdOutlineAlternat
 import { useState } from 'react';
 import { useCreateUserMutation } from '@/store/slices/userSlice/userApiSlice';
 import { Role } from '@/types/Roles';
-import { errorHandler } from '../error/errorHandler';
+import { errorHandler } from '@/components/error/errorHandler';
 import { successHandler } from '@/utils/successHandler';
 
 export interface FormValues {

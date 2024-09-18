@@ -48,6 +48,7 @@ const handleTokenRefresh = async (
     extraOptions
   );
   // const refreshResult = await baseQueryInstance({ url: '/refresh-token', method: 'POST' }, api, extraOptions);
+console.log(refreshResult);
 
   if (refreshResult.data) {
     const response = (refreshResult.data as { accessToken: string; user: UserPayload });
