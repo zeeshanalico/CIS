@@ -135,7 +135,7 @@ const CreateUser = () => {
                                         <FaLock />
                                     </span>
                                     <Input
-                                        type="password"
+                                        type={passwordVisibility ? "text" : "password"}
                                         name="password"
                                         autoComplete='off'
                                         onChange={handleChange}
