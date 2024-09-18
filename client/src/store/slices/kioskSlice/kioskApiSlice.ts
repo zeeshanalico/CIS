@@ -2,7 +2,7 @@ import { createApi, } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/store/baseQuery';
 import { FailedResponse } from '@/types/apiResponse';
 import { KiosksResponse, } from '@/types/kiosk';
-import { KioskFormValues } from '@/components/form/CreateKiosk';
+import { KioskFormValues } from '@/pages/Kiosk/CreateKiosk';
 export const kioskApiSlice = createApi({
     reducerPath: 'kiosk',
     baseQuery: baseQuery({ url: '/kiosk' }),

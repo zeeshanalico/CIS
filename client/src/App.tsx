@@ -9,6 +9,9 @@ import { useDispatch } from 'react-redux';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import VendorLayout from './pages/Vendor/Layout';
 import InventoryLayout from './pages/Inventory/Layout';
+import KioskLayout from './pages/Kiosk/Layout';
+import UserLayout from './pages/User/Layout';
+
 
 // Lazy-loaded components
 const Login = lazy(() => import('./pages/Login/Login'));
@@ -16,7 +19,6 @@ const Unauthorized = lazy(() => import('./components/error/Unauthorized'));
 const NotFound = lazy(() => import('./components/error/NotFound'));
 const Home = lazy(() => import('./pages/Home/Home'));
 const User = lazy(() => import('./pages/User/User'));
-const Kiosk = lazy(() => import('./pages/Kiosk/Kiosk'));
 const AddVendor = lazy(() => import('./pages/Vendor/AddVendor/AddVendor'));
 const AddVendorPurchase = lazy(() => import('./pages/Vendor/AddVendorPurchase/AddVendorPurchase'));
 const Report = lazy(() => import('./pages/Report/Report'));
@@ -25,22 +27,34 @@ const UserDashboard = lazy(() => import('./pages/UserDashboard/UserDashboard'));
 const Testing = lazy(() => import('./pages/Testing/Testing'));
 const AddNewInventory = lazy(() => import('./pages/Inventory/AddNewInventory/AddNewInventory'));
 const Stock = lazy(() => import('./pages/Inventory/Stock/Stock'))
+const CreateKiosk = lazy(() => import('./pages/Kiosk/CreateKiosk'));
+const ExistingKiosksTable = lazy(() => import('./pages/Kiosk/ExistingKiosksTable'));
+const CreateUser = lazy(() => import('./components/form/CreateUser'));
+const UserTable = lazy(() => import('./pages/User/UserTable'));
 
 
 export enum RoutesEnum {
     LOGIN = '/login',
     UNAUTHORIZED = '/unauthorized',
     DASHBOARD = '/dashboard',
-    USER = '/user',
-    KIOSK = '/kiosk',
     TESTING = '/testing',
     NOT_FOUND = '*',
     USER_DASHBOARD = '/userdashboard',
     REPORT = '/report',
     SETTING = '/setting',
+
+    USER = '/user',//for naming purpose
+    CREATE_USER = 'create-user',
+    EXISTING_USERS = 'existing-users',
+
+    KIOSK = '/kiosk',//for naming purpose
+    ADD_NEW_KIOSK = 'add-new-kiosk',
+    EXISTED_KIOSKS = 'exsited-kiosks',
+
     INVENTORY = '/inventory',//for naming purpose
     ADD_NEW_INVENTORY = 'add-new-inventory',
     STOCK = 'stock',
+
     VENDOR = '/vendor',//for naming purpose
     ADD_VENDOR = 'add-vendor',
     ADD_VENDOR_PURCHASE = 'add-purchase'
@@ -64,6 +78,12 @@ const App = () => {
                 title = 'Dashboard';
                 break;
             case RoutesEnum.USER:
+                title = 'User';
+                break;
+            case `${RoutesEnum.USER}/${RoutesEnum.CREATE_USER}`:
+                title = 'User';
+                break;
+            case `${RoutesEnum.USER}/${RoutesEnum.EXISTING_USERS}`:
                 title = 'User';
                 break;
             case RoutesEnum.KIOSK:
@@ -93,6 +113,12 @@ const App = () => {
             case `${RoutesEnum.INVENTORY}/${RoutesEnum.STOCK}`:
                 title = 'Inventory';
                 break;
+            case `${RoutesEnum.KIOSK}/${RoutesEnum.ADD_NEW_KIOSK}`:
+                title = 'Kiosk';
+                break;
+            case `${RoutesEnum.KIOSK}/${RoutesEnum.EXISTED_KIOSKS}`:
+                title = 'Kiosk';
+                break;
             default:
                 title = 'Not Found';
                 break;
@@ -113,10 +139,21 @@ const App = () => {
                 <Route element={<ProtectedRoute requiredRoles={[Role.SUPER_ADMIN, Role.ADMIN]} />}>
                     <Route path="/" element={<Sidebar />}>
                         <Route path={RoutesEnum.DASHBOARD} element={<Home />} />
-                        <Route path={RoutesEnum.USER} element={<User />} />
-                        <Route path={RoutesEnum.KIOSK} element={<Kiosk />} />
+                        {/* <Route path={RoutesEnum.USER} element={<User />} /> */}
+                        <Route path={RoutesEnum.USER} element={<UserLayout />} >
+                            <Route path={RoutesEnum.CREATE_USER} element={<CreateUser />} />
+                            <Route path={RoutesEnum.EXISTING_USERS} element={<UserTable />} />
+                        </Route>
+
+
+
                         <Route path={RoutesEnum.REPORT} element={<Report />} />
                         <Route path={RoutesEnum.SETTING} element={<Setting />} />
+
+                        <Route path={RoutesEnum.KIOSK} element={<KioskLayout />} >
+                            <Route path={RoutesEnum.ADD_NEW_KIOSK} element={<CreateKiosk />} />
+                            <Route path={RoutesEnum.EXISTED_KIOSKS} element={<ExistingKiosksTable />} />
+                        </Route>
 
                         <Route path={RoutesEnum.VENDOR} element={<VendorLayout />} >
                             <Route path={RoutesEnum.ADD_VENDOR} element={<AddVendor />} />

@@ -3,9 +3,9 @@ import * as Yup from 'yup';
 import { Button } from "@/components/ui/button";
 import { FaMapMarkerAlt, FaStore, FaUserAlt } from "../../assets/icons";
 import { useCreateKioskMutation } from '@/store/slices/kioskSlice/kioskApiSlice';
-import FormSelect from '../core/FormSelect';
-import FormInput from '../core/FormInput';
-import { errorHandler } from '../error/errorHandler';
+import FormSelect from '../../components/core/FormSelect';
+import FormInput from '../../components/core/FormInput';
+import { errorHandler } from '../../components/error/errorHandler';
 import { useGetAllUsersQuery } from '@/store/slices/userSlice/userApiSlice';
 import { successHandler } from '@/utils/successHandler';
 

@@ -8,12 +8,12 @@ import { useUpdateKioskUsersMutation } from '@/store/slices/userSlice/userApiSli
 import { Kiosk } from '@/types/kiosk';
 import { User } from '@/types/User';
 import { MdDeleteForever, FaEdit } from '../../assets/icons';
-import ConfirmationModal from '../ui/ConfirmationModal';
-import { errorHandler } from '../error/errorHandler';
+import ConfirmationModal from '../../components/ui/ConfirmationModal';
+import { errorHandler } from '../../components/error/errorHandler';
 import { successHandler } from '@/utils/successHandler';
 import EditKiosk from '@/pages/Kiosk/EditKiosk';
-import Table, { Th, Td, Tr } from '../ui/Table';
-import usePagination from '../hooks/usePagination';
+import Table, { Th, Td, Tr } from '../../components/ui/Table';
+import usePagination from '../../components/hooks/usePagination';
 const ExistingKiosksTable = () => {
   const [updateKioskUsers] = useUpdateKioskUsersMutation();
   const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit, page } = useSelector((state: RootState) => state.kioskSlice);
@@ -80,9 +80,7 @@ const ExistingKiosksTable = () => {
 
   return (
     <div className="mx-auto flex flex-col">
-      <div className="flex flex-row justify-between">
-        <h1 className="text-2xl font-semibold mb-4">Existing Kiosks</h1>
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row justify-between items-center my-2">
           <p className="text-sm text-gray-500">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>
           <select
             className="h-8 outline-none border border-gray-300 rounded"
@@ -94,7 +92,6 @@ const ExistingKiosksTable = () => {
             <option value="20">20</option>
             <option value="50">50</option>
           </select>
-        </div>
       </div>
       <div className="overflow-x-auto scrollbar-style shadow-xl">
         <Table>
