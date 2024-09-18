@@ -2,8 +2,8 @@ import Layout from "@/layout/Layout";
 
 const VendorLayout = () => {
     const vendorTabs = [
-        { label: 'Add Vendor', to: '/vendor/add-vendor' },
-        { label: 'Add Vendor Purchase', to: '/vendor/add-purchase' }
+        {index:0, label: 'Add Vendor', to: '/vendor/add-vendor' },
+        {index:1, label: 'Add Vendor Purchase', to: '/vendor/add-purchase' }
     ];
     
     return <Layout tabs={vendorTabs} />;

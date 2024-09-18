@@ -1,8 +1,9 @@
 
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 interface TabInfo {
+  index: number;
   label: string;
   to: string;
 }
@@ -12,7 +13,11 @@ interface LayoutProps {
 }
 
 const Layout = ({ tabs }: LayoutProps) => {
-  const [activeTab, setActiveTab] = useState<number>(0); // Manage active tab index
+  const location = useLocation()
+  console.log(tabs.find(tab => { return tab.to == location.pathname }));
+  console.log(location.pathname);
+  
+  const [activeTab, setActiveTab] = useState<number>(tabs.find(tab => { return tab.to == location.pathname })?.index || 0); // Manage active tab index
 
   const toggleTab = (index: number) => {
     setActiveTab(index);
@@ -26,9 +31,8 @@ const Layout = ({ tabs }: LayoutProps) => {
             <Link
               onClick={() => toggleTab(index)}
               to={tab.to}
-              className={`inline-block p-2 rounded-t-lg hover:bg-gray-100 ${
-                activeTab === index ? "text-indigo-600 bg-gray-100" : ""
-              }`}
+              className={`inline-block p-2 rounded-t-lg hover:bg-gray-100 ${activeTab === index ? "text-indigo-600 bg-gray-100" : ""
+                }`}
             >
               {tab.label}
             </Link>
