@@ -11,19 +11,26 @@ class ProductService {
         return product;
     }
     async addInventory(data: {
-        name: string, cost_price: number, isNew: boolean, sale_price: number, quantity: number, category: { connect: { id: number } }, kiosk: { connect: { id: number } }
+        name: string, cost_price: number, isNew: boolean, sale_price: number, quantity: number,
+        category: { connect: { id: number } },
+        kiosk: { connect: { id: number } },
+        user: { connect: { id: number } }
     }): Promise<any> {
-        const { cost_price, isNew, name, quantity, ...rest } = data;
+        const { cost_price, isNew, name, quantity, user, ...rest } = data;
 
         return await this.prisma.$transaction(async (trx) => {
             let product;
             let batch;
+            let purchase;
+            let vendor_product_purchase;
+            const totalAmount = quantity * cost_price;
 
             if (isNew) {
                 product = await trx.product.create({
                     data: { name, quantity, ...rest, }
                 });
-                if (quantity < 0) {
+                // here if we are adding new product with qty more than 0 then create batch and purchase
+                if (quantity > 0) {//if qty >&!=0
                     batch = await trx.batch.create({
                         data: {
                             product: { connect: { id: product.id } },
@@ -31,8 +38,23 @@ class ProductService {
                             cost_price: cost_price, // cost per item of a batch
                         }
                     });
+                    purchase = await trx.purchase.create({
+                        data: {
+                            user,
+                            kiosk: data.kiosk,
+                            amount: totalAmount,
+                        }
+                    })
+                    vendor_product_purchase = await trx.vendor_product_purchase.create({
+                        data: {
+                            product: { connect: { id: product.id } },
+                            purchase: { connect: { id: purchase.id } },
+                            qty: quantity,
+                            vendor: { connect: { id: -1 } },// vendor_id =-1 means vendor undefined
+                            cost_price: cost_price
+                        }
+                    })
                 }
-
             } else {
                 // Find the existing product
                 product = await trx.product.findUnique({
@@ -51,20 +73,37 @@ class ProductService {
                     }
                 });
 
-                // Update the product's total quantity
-                await trx.product.update({
+                product = await trx.product.update({
                     where: { id: product.id },
                     data: {
                         quantity: product.quantity + quantity,
                     }
                 });
-            }
+                purchase = await trx.purchase.create({
+                    data: {
+                        user,
+                        kiosk: data.kiosk,
+                        amount: totalAmount,
+                    }
+                })
+                vendor_product_purchase = await trx.vendor_product_purchase.create({
+                    data: {
+                        product: { connect: { id: product.id } },
+                        purchase: { connect: { id: purchase.id } },
+                        qty: quantity,
+                        vendor: { connect: { id: -1 } },// vendor_id =-1 means vendor undefined
+                        cost_price: cost_price
+                    }
+                })
 
-            return { product, batch };
+            }
+            return { product, batch, purchase, vendor_product_purchase };
         });
     }
 
+    async addVendorPurchase() {
 
+    }
     async getProducts({ skip, take, category_id }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined }): Promise<{ products: Product[], count: number }> {
         const products = await this.prisma.product.findMany({
             skip,

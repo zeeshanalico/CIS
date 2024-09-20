@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import { FormikType } from './AddVendorPurchase';
+import { FormikType } from './endorPurchase';
 
 interface VendorOption {
     value: number;

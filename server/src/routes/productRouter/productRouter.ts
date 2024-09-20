@@ -19,7 +19,7 @@ router.get('/categories', (req, res) => productController.getCategories(req, res
 
 // Routes for /product/:id
 router.get('/:id', (req, res) => productController.getProductById(req, res));
-router.put('/:id', (req, res) => productController.updateProduct(req, res));
+router.put('/update/:id', (req, res) => productController.updateProduct(req, res));//futurework:validation schema
 router.delete('/:id', (req, res) => productController.deleteProduct(req, res));
 
 export default router;

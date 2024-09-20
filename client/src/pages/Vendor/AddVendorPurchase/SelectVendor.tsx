@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Select from 'react-select';
-import { FormikType } from './AddVendorPurchase';
+import { FormikType } from './endorPurchase';
 import { BsFillTelephoneFill, FaStore } from "../../../assets/icons";
 import { useFormik, FormikHelpers } from 'formik';
 import * as yup from 'yup';

@@ -21,9 +21,10 @@ class ProductController {
                 quantity,
                 isNew,
                 category: { connect: { id: category_id } },
-                kiosk: { connect: { id: kiosk.id } }
+                kiosk: { connect: { id: kiosk.id } },
+                user: { connect: { id: user_id as number } }
             });
-            sendSuccess(res, product);
+            sendSuccess(res, product, 'Inventory added successfully');
         } catch (error) {
             sendError(res, error);
         }
@@ -34,7 +35,7 @@ class ProductController {
         const take = parseInt(req.query.limit as string, 10) || undefined;//for all results
         const skip = (page - 1) * (take || 0);//offset
         const category_id = req.query.category_id as string;//'34'|'undefined'
-        
+
         try {
             const { products, count } = await this.productService.getProducts({ skip, take, category_id: category_id && category_id !== 'undefined' ? parseInt(category_id) : undefined });
             const extraInfo = { count, pageNumber: page, pageSize: take, from: skip + 1, to: skip + products.length }

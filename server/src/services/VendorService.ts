@@ -2,7 +2,7 @@ import { PrismaClient, Prisma, Vendor } from '@prisma/client';
 import { CustomError } from '../utils/CustomError';
 
 class VendorService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaClient) { }
 
     async createVendor(createVendorInput: Prisma.VendorCreateInput): Promise<Vendor> {
         const existingVendor = await this.prisma.vendor.findFirst({
@@ -59,8 +59,10 @@ class VendorService {
             skip,
             take,
             where: {
-                is_deleted: false, // Fetch non-deleted vendors
+                is_deleted: false,
+                id: { not: -1 }//check for undefined vendor that manually added in db
             },
+
             orderBy: {
                 created_at: 'desc',
             },

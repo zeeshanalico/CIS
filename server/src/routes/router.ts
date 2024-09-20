@@ -14,7 +14,7 @@ router.use('/auth', authRouter)//decodeAccessToken will not work for it
 router.use('/product', productRouter)
 router.use('/user', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN]), userRouter)
 router.use('/kiosk', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN]), kioskRouter)
-router.use('/vendor', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN]), vendorRouter)
+router.use('/vendor', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), vendorRouter)
 router.use('/vendor-purchase', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN]), vendorPurchaseRouter)
 
 export default router

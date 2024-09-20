@@ -6,8 +6,8 @@ import { Product } from '@/types/Product';
 interface ProductState {
     products: Product[];
     // showDeleteConfirmationModal: boolean;
-    // showEditModal: boolean;
-    // selectedProduct: Product | null;
+    showEditModal: boolean;
+    selectedProduct: Product | null;
     extraInfo: ExtraInfo,
     page: number;
     limit: number;
@@ -16,8 +16,8 @@ interface ProductState {
 const initialState: ProductState = {
     products: [],
     // showDeleteConfirmationModal: false,
-    // selectedKiosk: null,
-    // showEditModal: false,
+    selectedProduct: null,
+    showEditModal: false,
     extraInfo: {
         count: 0,
         pageNumber: 0,
@@ -49,17 +49,17 @@ const productSlice = createSlice({
         // addKiosk(state, action: PayloadAction<Kiosk>) {
         //     state.kiosks.push(action.payload);
         // },
-        // setSelectedKiosk(state, action: PayloadAction<Kiosk>) {
-        //     state.selectedKiosk = action.payload;
-        // },
+        setSelectedProduct(state, action: PayloadAction<Product>) {
+            state.selectedProduct = action.payload;
+        },
         // toggleDeleteConfirmationModal(state) {
         //     state.showDeleteConfirmationModal = !state.showDeleteConfirmationModal;
         // },
-        // toggleEditModal(state) {
-        //     state.showEditModal = !state.showEditModal;
-        // },
+        toggleEditModal(state) {
+            state.showEditModal = !state.showEditModal;
+        },
     },
 });
 
-export const { setProducts, setPage,setExtraInfo,setLimit } = productSlice.actions;
+export const { setProducts, setPage, setExtraInfo, setLimit, toggleEditModal, setSelectedProduct } = productSlice.actions;
 export default productSlice;

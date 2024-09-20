@@ -22,7 +22,8 @@ export interface FormValues {
 
 const AddNewInventory = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [isNew, setIsNew] = useState<boolean>(false);
+
   const { data: categoriesResponse } = useGetCategoriesQuery();
   const [addInventory, { isLoading: addInventoryIsSubmitting }] = useCreateInventoryMutation();
   const { data: productsResponse } = useGetProductsQuery({ category: selectedCategory });
@@ -30,10 +31,12 @@ const AddNewInventory = () => {
   const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
     try {
       console.log(values);
-      const response = await addInventory({ ...values, isNew }).unwrap();
+
+      const response = await addInventory({ ...values, }).unwrap();
       successHandler(response);
       resetForm({
         values: {
+          isNew: false,
           name: '',
           category: undefined,
           sale_price: 0,
@@ -47,6 +50,10 @@ const AddNewInventory = () => {
       setSubmitting(false);
     }
   };
+  // console.log('isNew:', values.isNew);
+  // console.log('quantity:', values.quantity);
+
+  console.log(isNew);
 
   return (
     <div className="flex items-center justify-center">
@@ -56,6 +63,7 @@ const AddNewInventory = () => {
         </h2>
         <Formik
           initialValues={{
+            isNew: false,
             name: '',
             category: undefined as number | undefined,
             sale_price: undefined,
@@ -68,20 +76,24 @@ const AddNewInventory = () => {
               .required('Category is required'),
             name: Yup.mixed().required('Name is required'),
             quantity: Yup.number()
-              .required('Quantity is required')
-              .min(0, 'Quantity must be greater than or equal to 0'),
+              .when('$isNew', {
+                is: true,
+                then: (schema) => schema.required('Quantity is required for new products').min(0, 'Quantity must be greater than or equal to 0'),
+                otherwise: (schema) => schema.required('Quantity is required for existing products').min(1, 'Quantity must be greater than 0'),
+              }),
             cost_price: Yup.number()
               .required('Cost price is required')
               .min(0, 'Cost price must be greater than or equal to 0'),
             sale_price: Yup.number()
               .min(0, 'Sale price must be greater than or equal to 0')
-              .when('isNew', {
+              .when('$isNew', {
                 is: true,
                 then: (schema) => schema.required('Sale price is required for new products'),
                 otherwise: (schema) => schema.optional(),
               }),
           })}
           onSubmit={handleSubmit}
+          context={{ isNew }} // Passed external state to context
         >
           {({
             values,
@@ -92,6 +104,7 @@ const AddNewInventory = () => {
             setFieldValue,
             handleSubmit,
             isSubmitting,
+
           }) => (
             <form onSubmit={handleSubmit}>
               <FormSelect
@@ -138,7 +151,7 @@ const AddNewInventory = () => {
                   : null
                 }
                 onChange={(option: SingleValue<{ value: number | string; label: string; __isNew__?: boolean | undefined }>) => {
-
+                  setFieldValue('isNew', option?.__isNew__ ? true : false);
                   if (option?.__isNew__) {
                     setIsNew(true);
                     setFieldValue('name', option.label);

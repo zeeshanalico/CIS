@@ -1,14 +1,21 @@
 import React from 'react'
-import { useGetProductsQuery } from '@/store/slices/productSlice/productApiSlice'
+import { useGetProductsQuery, useUpdateProductMutation } from '@/store/slices/productSlice/productApiSlice'
 import usePagination from '@/components/hooks/usePagination';
 import Table, { Th, Td, Tr } from '@/components/ui/Table';
+import { FaEdit } from '../../../assets/icons'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProducts,setPage, setExtraInfo, setLimit } from '@/store/slices/productSlice/productSlice';
+import { setProducts, setPage, setExtraInfo, setLimit, toggleEditModal, setSelectedProduct, } from '@/store/slices/productSlice/productSlice';
 import { RootState } from '@/store/store';
+import UpdateProduct, { UpdateProductFormState } from './UpdateProduct';
+import { Product } from '@/types/Product';
+import { successHandler } from '@/utils/successHandler';
+import { errorHandler } from '@/components/error/errorHandler';
+import _ from 'lodash'
 const Stock = () => {
-  const { products, extraInfo, limit, page } = useSelector((state: RootState) => state.productSlice);
+  const { products, extraInfo, limit, page, showEditModal, selectedProduct } = useSelector((state: RootState) => state.productSlice);
   const { data: productsResponse } = useGetProductsQuery({ limit, page });
+  const [updateProduct] = useUpdateProductMutation()
   const dispatch = useDispatch();
 
 
@@ -31,6 +38,23 @@ const Stock = () => {
     }
   }, [productsResponse, dispatch]);
 
+
+  const confirmEdit =async (values: UpdateProductFormState) => {
+    try {
+      const response = await updateProduct(values).unwrap();
+      successHandler(response);
+      dispatch(toggleEditModal());
+    } catch (error) {
+      errorHandler(error);
+    }
+    console.log("VALUES___", values);
+
+  }
+
+  const handleEditClick = (product: Product) => {
+    dispatch(setSelectedProduct(product));
+    dispatch(toggleEditModal());
+  };
 
   return (
     <div className="mx-auto flex flex-col">
@@ -59,6 +83,7 @@ const Stock = () => {
               <Th heading="Category" />
               <Th heading="Qty" />
               <Th heading="Sale Price" />
+              <Th heading="Actions" />
             </tr>
           </thead>
           <tbody>
@@ -69,6 +94,11 @@ const Stock = () => {
                 <Td>{product.category?.name}</Td>
                 <Td>{product.quantity}</Td>
                 <Td>{product.sale_price}</Td>
+                <Td>
+                  <span onClick={() => handleEditClick(product)}>
+                    <FaEdit className="w-6 h-6 hover:cursor-pointer transition-transform transform hover:scale-110 active:scale-90 duration-200 text-indigo-600 hover:text-indigo-800" />
+                  </span>
+                </Td>
 
               </Tr>
             ))}
@@ -113,6 +143,12 @@ const Stock = () => {
           </button>
         </div>
         <div></div>
+        <UpdateProduct
+          isOpen={showEditModal}
+          onSubmit={confirmEdit}
+          onClose={() => dispatch(toggleEditModal())}
+          product={_.pick(selectedProduct, ['id', 'name', 'sale_price']) as unknown as UpdateProductFormState}
+        />
       </div>
     </div>
 

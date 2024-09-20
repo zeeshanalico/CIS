@@ -14,9 +14,6 @@ interface LayoutProps {
 
 const Layout = ({ tabs }: LayoutProps) => {
   const location = useLocation()
-  console.log(tabs.find(tab => { return tab.to == location.pathname }));
-  console.log(location.pathname);
-  
   const [activeTab, setActiveTab] = useState<number>(tabs.find(tab => { return tab.to == location.pathname })?.index || 0); // Manage active tab index
 
   const toggleTab = (index: number) => {

@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "SET NODE_ENV=production&& node dist/index.js",
     "start:fordocker": "node dist/index.js",
-    "dev": "SET NODE_ENV=development&&  ts-node --files src/index.ts",
+    "dev": "SET NODE_ENV=development&&  ts-node ts-node --files src/index.ts",
     "dev:nodemon": "SET NODE_ENV=development&& nodemon --watch src --exec ts-node --files src/index.ts",
     "prisma:generate": "dotenv -e .env.development -- npx prisma generate",
     "prisma:create": "dotenv -e .env.development -- npx prisma migrate dev --create-only",

@@ -2,8 +2,8 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
 import { User } from '@/types/User';
-import { FormValues } from '@/components/form/CreateUser';
 import { UserResponse } from '../../../types/User';
+import { FormValues } from '@/pages/User/CreateUser';
 
 
 export const userApiSlice = createApi({

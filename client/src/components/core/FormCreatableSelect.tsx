@@ -4,20 +4,49 @@ import { Label } from '../ui/label'; // Adjust path as needed
 import Modal from '../ui/GenericModal';
 import { SingleValue } from 'react-select';
 
+interface Option {
+    value: string | number;
+    label: string;
+    __isNew__?: boolean;
+}
+
 interface CreatableSelectProps {
     label: string;
     name: string;
     icon: React.ReactNode;
     error?: string;
     touched?: boolean;
-    options: { value: string | number; label: string; }[] | undefined;
+    options: Option[] | undefined;
     onChange: (value: string | number) => void;
-    onCreate: (newItem: string) => void;
+    onCreate: (item: string) => void;
+    placeholder?: string;
+    [x: string]: any; // This allows additional props to be passed
 }
 
-const FormCreatableSelect: React.FC<CreatableSelectProps> = ({ name, icon, label, error, touched, options, onChange, onCreate }) => {
+const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
+    name,
+    icon,
+    label,
+    error,
+    touched,
+    options,
+    onChange,
+    onCreate,
+    placeholder,
+    ...props
+}) => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [newItem, setNewItem] = useState('');
+    const [selectedItem, setSelectedItem] = useState<Option | null>(null);
+    const [newItem, setNewItem] = useState<string>('');
+
+    const handleCreate = (newValue: string) => {
+        // Pass the new value to the parent component through onCreate
+        onCreate(newValue);
+        setSelectedItem({ value: newValue, label: newValue });
+        setSelectedItem(null)
+        setNewItem('')
+        setModalOpen(false);
+    };
 
     return (
         <div className="mb-4">
@@ -31,27 +60,27 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({ name, icon, label
                 <CreatableSelect
                     isClearable
                     isSearchable
-                    
+                    {...props}
+                    value={selectedItem}
+                    placeholder={placeholder || 'Select or create an item'}
                     className="focus:border-0 customize-hover-border"
                     styles={{
                         control: (baseStyles, state) => ({
                             ...baseStyles,
-                            borderColor: state.isFocused ? 'red' : 'grey',
                             outline: 'none',
                             boxShadow: 'none',
                             border: '1px solid #D1D5DB',
                         }),
                     }}
                     name={name}
-                    onChange={(option: SingleValue<{
-                        value: string | number;
-                        label: string;
-                        __isNew__?: boolean | undefined;
-                    }>) => {
+                    onChange={(option: SingleValue<Option>) => {
                         if (option?.__isNew__) {
+                            // New option created
+                            setNewItem(option.label);
                             setModalOpen(true);
-                            setNewItem(option?.label);
                         } else {
+                            // Existing option selected
+                            setSelectedItem(option || null);
                             onChange(option?.value || '');
                         }
                     }}
@@ -61,11 +90,12 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({ name, icon, label
             {error && touched && (
                 <p className="mt-2 text-sm text-red-600">{error}</p>
             )}
+
             <Modal
                 isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onCreate={onCreate}
+                onClose={() => { setModalOpen(false), setSelectedItem(null), setNewItem('') }}
                 value={newItem}
+                onCreate={handleCreate}
             />
         </div>
     );

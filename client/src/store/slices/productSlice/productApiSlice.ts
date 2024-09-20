@@ -1,9 +1,9 @@
 import { createApi, } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
-import { Product ,ProductsResponse} from '@/types/Product';
+import { Product, ProductsResponse } from '@/types/Product';
 import { FormValues } from '@/pages/Inventory/AddNewInventory/AddNewInventory';
-
+import { UpdateProductFormState } from '@/pages/Inventory/Stock/UpdateProduct';
 export const productApiSlice = createApi({
     reducerPath: 'product',
     baseQuery: baseQuery({ url: '/product' }),
@@ -16,6 +16,7 @@ export const productApiSlice = createApi({
             }),
             transformResponse: (response: ProductsResponse) => response,
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
+            providesTags: ['Product'],
         }),
 
         getCategories: builder.query<ApiResponseSuccess<Product[]>, void>({
@@ -36,7 +37,20 @@ export const productApiSlice = createApi({
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['Product',],
         }),
+
+
+        updateProduct: builder.mutation<ApiResponseSuccess<Product>, UpdateProductFormState>({
+            query: ({ id, ...body }) => ({
+                url: `/update/${id}`,
+                body: body,
+                method: 'PUT',
+            }),
+            transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
+            invalidatesTags: ['Product'],
+        }),
+
+
     }),
 });
 
-export const { useGetProductsQuery, useGetCategoriesQuery, useCreateInventoryMutation } = productApiSlice;
+export const { useGetProductsQuery, useUpdateProductMutation, useGetCategoriesQuery, useCreateInventoryMutation } = productApiSlice;

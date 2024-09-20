@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 
 export interface FormValues {
   name: string;
-  contact_info: string | undefined;
+  contact_info?: string | undefined;
 }
 
-const AddVendor = ({ isOpen, toggleModal }: { toggleModal?: () => void, isOpen?: boolean }) => {
+
+const AddVendor = ({ name, onClose, toggleModal }: { name?: string, toggleModal?: () => void, onClose?: () => void, }) => {
+  console.log(name);
+  
   const [createVendor, { isLoading }] = useCreateVendorMutation();
 
   const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
@@ -24,12 +27,12 @@ const AddVendor = ({ isOpen, toggleModal }: { toggleModal?: () => void, isOpen?:
 
       const response = await createVendor(payload).unwrap();
       successHandler(response);
+      toggleModal && toggleModal();
+      resetForm();
     } catch (err: unknown) {
       errorHandler(err);
     } finally {
       setSubmitting(false);
-      resetForm();
-      toggleModal && toggleModal();
     }
   };
 
@@ -41,9 +44,10 @@ const AddVendor = ({ isOpen, toggleModal }: { toggleModal?: () => void, isOpen?:
         </h2>
         <Formik
           initialValues={{
-            name: '',
+            name: name ?? '',
             contact_info: undefined,
           } as FormValues}
+          enableReinitialize
           validationSchema={Yup.object({
             name: Yup.string().required('Name is required'),
             contact_info: Yup.string().nullable().transform((value, originalValue) => originalValue.trim() === '' ? undefined : value),
@@ -82,14 +86,16 @@ const AddVendor = ({ isOpen, toggleModal }: { toggleModal?: () => void, isOpen?:
                 value={values.contact_info ?? ''}
                 placeholder="Enter the contact details"
               />
-
-              <Button
-                type="submit"
-                className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                disabled={isSubmitting || isLoading}
-              >
-                {isSubmitting || isLoading ? 'Creating...' : 'Add Vendor'}
-              </Button>
+              <div className="flex flex-row gap-2 ">
+                <Button
+                  type="submit"
+                  className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isSubmitting || isLoading}
+                >
+                  {isSubmitting || isLoading ? 'Creating...' : 'Add Vendor'}
+                </Button>
+                {onClose && <Button onClick={onClose} variant="secondary">Cancel</Button>}
+              </div>
             </form>
           )}
         </Formik>
