@@ -53,7 +53,7 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
             <Label htmlFor={name} className="block mb-1 text-sm font-medium text-gray-700">
                 {label}
             </Label>
-            <div className="relative check">
+            <div className="relative check ">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     {icon}
                 </span>
@@ -63,7 +63,7 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
                     {...props}
                     value={selectedItem}
                     placeholder={placeholder || 'Select or create an item'}
-                    className="focus:border-0 customize-hover-border"
+                    className="focus:border-0 customize-hover-border "
                     styles={{
                         control: (baseStyles, state) => ({
                             ...baseStyles,

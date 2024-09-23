@@ -2,16 +2,15 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/store/baseQuery';
 import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
 import { Vendor } from '@/types/Vendor';
-import { FormValues } from '@/pages/Vendor/AddVendor/AddVendor';
-
-export const vendorApiSlice = createApi({
+import { AddVendorPurchaseFormState } from '@/pages/Inventory/AddVendorPurchase/AddVendorPurchase';
+export const vendorPurchaseApiSlice = createApi({
     reducerPath: 'vendorPurchase',
     tagTypes: ['VendorPurchase'],
     baseQuery: baseQuery({ url: '/vendor-purchase' }),
     endpoints: (builder) => ({
-        addVendorPurchase: builder.mutation<ApiResponseSuccess<Vendor>, FormValues>({
+        addVendorPurchase: builder.mutation<ApiResponseSuccess<Vendor>, AddVendorPurchaseFormState>({
             query: (body) => ({
-                url: '/add',
+                url: '/create',
                 method: 'POST',
                 body,
             }),
@@ -22,4 +21,5 @@ export const vendorApiSlice = createApi({
     }),
 });
 
-export const { useAddVendorPurchaseMutation} = vendorApiSlice;
+export const { useAddVendorPurchaseMutation } = vendorPurchaseApiSlice;
+export default vendorPurchaseApiSlice;

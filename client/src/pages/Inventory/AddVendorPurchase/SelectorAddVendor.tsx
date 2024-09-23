@@ -2,54 +2,47 @@ import React from 'react';
 import FormCreatableSelect from '@/components/core/FormCreatableSelect';
 import { FaStore } from '../../../assets/icons';
 import { useGetAllVendorsQuery } from '@/store/slices/vendorSlice/vendorApiSlice';
-import { useFormik, FormikHelpers } from 'formik';
 import { useCreateVendorMutation } from '@/store/slices/vendorSlice/vendorApiSlice';
 import { successHandler } from '@/utils/successHandler';
 import { errorHandler } from '@/components/error/errorHandler';
 
+interface SelectorAddVendorProps {
+    vendorId?: number;
+    setVendorId: (id: number | undefined) => void;
+    error?: string; // New prop for error
+    touched?: boolean; // New prop for touched
+}
 
-const SelectorAddVendor = ({ upliftVendorId }: { upliftVendorId: (id: number | undefined) => void }) => {
+const SelectorAddVendor: React.FC<SelectorAddVendorProps> = ({ vendorId, setVendorId, error, touched }) => {
     const { data: vendorsResponse } = useGetAllVendorsQuery({});
-    const [addVendor] = useCreateVendorMutation()
+    const [addVendor] = useCreateVendorMutation();
+
     const handleCreate = async (newItem: string) => {
         try {
             const response = await addVendor({ name: newItem }).unwrap();
-
-            successHandler(response)
+            successHandler(response);
         } catch (err: unknown) {
-            errorHandler(err)
+            errorHandler(err);
         }
-
     };
-
-    const formik = useFormik({
-        initialValues: {
-            vendorId: undefined,
-        } as { vendorId?: number | undefined },
-        onSubmit: (values: { vendorId?: number | undefined }, { setSubmitting }: FormikHelpers<{ vendorId?: number | undefined }>) => {
-            upliftVendorId(values.vendorId); // Uplift vendorId on submit
-            setSubmitting(false);
-        },
-    });
 
     return (
         <div>
-            <form onSubmit={formik.handleSubmit}>
-                <FormCreatableSelect
-                    icon={<FaStore />}
-                    name="vendorId"
-                    placeholder='Create or Select Vendor'
-                    label="Vendor"
-                    options={vendorsResponse?.result.map((vendor) => ({ value: vendor.id, label: vendor.name }))}
-                    onChange={(value) => {
-                        formik.setFieldValue('vendorId', value); // Set selected vendor ID
-                        upliftVendorId(value as number); // Uplift vendorId when selected
-                    }}
-                    error={formik.errors.vendorId}
-                    touched={formik.touched.vendorId}
-                    onCreate={handleCreate} // Call handleCreate when new vendor is created
-                />
-            </form>
+            
+            <FormCreatableSelect
+                icon={<FaStore />}
+                name="vendorId"
+                placeholder="Create or Select Vendor"
+                label="Vendor"
+                options={vendorsResponse?.result.map((vendor) => ({ value: vendor.id, label: vendor.name })) || []}
+                value={vendorId} // Controlled value
+                onChange={(value) => {
+                    setVendorId(value as number); // Set selected vendor ID in parent
+                }}
+                error={error} // Pass error from parent
+                touched={touched} // Pass touched state from parent
+                onCreate={handleCreate} // Call handleCreate when new vendor is created
+            />
         </div>
     );
 };

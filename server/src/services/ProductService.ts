@@ -38,7 +38,7 @@ class ProductService {
                             cost_price: cost_price, // cost per item of a batch
                         }
                     });
-                    purchase = await trx.purchase.create({
+                    purchase = await trx.purchase.create({//bug: add trx & Journal entries
                         data: {
                             user,
                             kiosk: data.kiosk,
@@ -54,6 +54,16 @@ class ProductService {
                             cost_price: cost_price
                         }
                     })
+                    // await trx.trx.create({
+                    //     data: {
+
+                    //     }
+                    // })
+                    // await trx.journal.create({
+                    //     data: {
+
+                    //     }
+                    // })
                 }
             } else {
                 // Find the existing product
@@ -79,7 +89,7 @@ class ProductService {
                         quantity: product.quantity + quantity,
                     }
                 });
-                purchase = await trx.purchase.create({
+                purchase = await trx.purchase.create({//bug: add trx & Journal entries
                     data: {
                         user,
                         kiosk: data.kiosk,
@@ -101,9 +111,6 @@ class ProductService {
         });
     }
 
-    async addVendorPurchase() {
-
-    }
     async getProducts({ skip, take, category_id }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined }): Promise<{ products: Product[], count: number }> {
         const products = await this.prisma.product.findMany({
             skip,

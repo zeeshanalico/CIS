@@ -54,7 +54,7 @@ class AuthService {
         const accessToken = jwt.sign(
             payload,
             accessTokenSecret,
-            { expiresIn: '15m' }
+            { expiresIn: '15d' }
         );
 
         const refreshToken = jwt.sign(

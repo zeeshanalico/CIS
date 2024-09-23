@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onCreate, value }) => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 }}
             transition={{ duration: 0.3 }}
-            className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ${isOpen ? 'block' : 'hidden'}`}
+            className={`fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${isOpen ? 'block' : 'hidden'}`}
         >
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h2 className="text-lg font-semibold mb-4">Create New Item</h2>

@@ -2,11 +2,33 @@ import { PrismaClient, Prisma, Purchase } from '@prisma/client';
 import { CustomError } from '../utils/CustomError';
 
 class PurchaseService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaClient) { }
 
-    async createPurchase(createPurchaseInput: Prisma.PurchaseCreateInput): Promise<Purchase> {
-        return await this.prisma.purchase.create({
-            data: createPurchaseInput,
+    async createPurchase({ product, vendor, qty, cost_price, user, kiosk }
+        : {
+            qty: number, cost_price: number,
+            user: { connect: { id: number } },
+            product: { connect: { id: number } },
+            vendor: { connect: { id: number } },
+            kiosk: { connect: { id: number } }
+        },
+    ): Promise<any> {
+
+        return await this.prisma.$transaction(async trx => {
+            const amount = qty * cost_price;
+            const purchase = await trx.purchase.create({//bug: add trx & Journal entries
+                data: { user, kiosk, amount, }
+            })
+            const vendorPurchaseProduct = await trx.vendor_product_purchase.create({
+                data: {
+                    purchase: { connect: { id: purchase.id } },
+                    vendor,
+                    product,
+                    qty,
+                    cost_price,
+                }
+            })
+            return { vendorPurchaseProduct, purchase }
         });
     }
 

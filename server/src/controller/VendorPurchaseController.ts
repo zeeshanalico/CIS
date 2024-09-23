@@ -8,15 +8,23 @@ import UserService from '../services/UserService';
 class VendorPurchaseController {
     private readonly vendorPurchaseKeysArray;
 
-    constructor(private readonly purchaseService: PurchaseService,private readonly userService:UserService) {
+    constructor(private readonly purchaseService: PurchaseService, private readonly userService: UserService) {
         this.vendorPurchaseKeysArray = ['id', 'vendor_id', 'purchase_id', 'qty', 'cost_price', 'created_at', 'updated_at'];
     }
 
     async createVendorPurchase(req: Request, res: Response): Promise<void> {
+        const user_id = req.user?.user_id
+
+        const { qty, vendorId, productId, cost_price } = req.body;
         try {
-            const result = await this.purchaseService.createPurchase(req.body);
-            const filteredVendorPurchase = _.pick(result, this.vendorPurchaseKeysArray);
-            sendSuccess(res, filteredVendorPurchase, 'Vendor purchase created successfully');
+            const kiosk = await this.userService.getKioskByUserId(user_id as number)
+            if (!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
+            if (!user_id) throw new CustomError('User not found', 404);
+            const result = await this.purchaseService.createPurchase({
+                vendor: { connect: { id: vendorId } }, product: { connect: { id: productId } }, qty, cost_price, user: { connect: { id: user_id } }, kiosk: { connect: { id: kiosk.id } },
+            });
+            // const filteredVendorPurchase = _.pick(result, {});
+            sendSuccess(res, result, 'Vendor purchase created successfully');
         } catch (error) {
             sendError(res, error);
         }

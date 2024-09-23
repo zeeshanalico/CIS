@@ -9,7 +9,7 @@ const Unauthorized: React.FC = () => {
             title='Unauthorized'
             message="You do not have the required permissions to access this page."
             buttonText='Go Back'
-            onButtonClick={() => navigate(-1)}
+            onButtonClick={() => navigate('/')}
             icon={<FaBan className="fa-5x text-8xl text-red-600" />} />
     );
 };

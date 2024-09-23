@@ -39,7 +39,7 @@ class KioskController {
     console.log(req.params.id);
 
     try {
-      const kiosk = await this.kioskService.getKioskById(Number(req.params.id));
+      const kiosk =  await this.kioskService.getKioskById(Number(req.params.id));
       if (!kiosk) {
         throw new CustomError('Kiosk not found', 404);
       }
