@@ -4,7 +4,7 @@ import { FaExclamationCircle } from "../../assets/icons";
 import { InputHTMLAttributes } from "react";
 
 interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
-    label: string;
+    label?: string;
     name: string;
     icon: React.ReactNode;
     error?: string;
@@ -21,9 +21,9 @@ const FormInput: React.FC<FormInputProps> = ({
 }) => {
     return (
         <div className="mb-4 w-full">
-            <Label htmlFor={name} className="block mb-1 text-sm font-medium text-gray-700">
+            {label && <Label htmlFor={name} className="block mb-1 text-sm font-medium text-gray-700">
                 {label}
-            </Label>
+            </Label>}
             <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     {icon}

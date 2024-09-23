@@ -3,7 +3,8 @@ import ProductService from '../services/ProductService';
 import { sendError, sendSuccess } from '../utils/responseUtils';
 import UserService from '../services/UserService';
 import { CustomError } from '../utils/CustomError';
-
+import { parseBoolean } from '../utils/parseBoolean';
+import { parseString } from '../utils/parseString';
 class ProductController {
     constructor(private readonly productService: ProductService, private readonly userService: UserService) { }
 
@@ -35,9 +36,11 @@ class ProductController {
         const take = parseInt(req.query.limit as string, 10) || undefined;//for all results
         const skip = (page - 1) * (take || 0);//offset
         const category_id = req.query.category_id as string;//'34'|'undefined'
+        const search = parseString(req.query.search as string)
+        const availableProducts = parseBoolean(req.query.availableProducts as string) || false;
 
         try {
-            const { products, count } = await this.productService.getProducts({ skip, take, category_id: category_id && category_id !== 'undefined' ? parseInt(category_id) : undefined });
+            const { products, count } = await this.productService.getProducts({ skip, take, category_id: category_id && category_id !== 'undefined' ? parseInt(category_id) : undefined, search, availableProducts });
             const extraInfo = { count, pageNumber: page, pageSize: take, from: skip + 1, to: skip + products.length }
 
             sendSuccess(res, products, 'Products fetched successfully', extraInfo);

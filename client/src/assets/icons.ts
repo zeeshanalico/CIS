@@ -18,7 +18,9 @@ export {
     FaEdit
 
 } from "react-icons/fa";
-export { FaDeleteLeft ,FaRupeeSign} from "react-icons/fa6";
+export { FiShoppingCart, FiTag, FiPackage, } from "react-icons/fi";
+export { FaDeleteLeft, FaRupeeSign } from "react-icons/fa6";
 export { MdOutlineAlternateEmail, MdCategory, MdDeleteForever } from "react-icons/md";
 export { BsFillTelephoneFill } from "react-icons/bs";
+export { CiSearch } from "react-icons/ci";
 

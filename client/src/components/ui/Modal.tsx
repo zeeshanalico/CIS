@@ -5,9 +5,10 @@ interface Props {
     buttonText?: string;
     title?: string;
     children: React.ReactNode;
+    className?: string;
 }
 
-const Modal = ({ isOpen, children,  title }: Props) => {
+const Modal = ({ isOpen, children, className, title }: Props) => {
     if (!isOpen) return null;
 
     const backdropVariants = {
@@ -29,7 +30,9 @@ const Modal = ({ isOpen, children,  title }: Props) => {
             variants={backdropVariants}
         >
             <motion.div
-                className="bg-white rounded-lg shadow-lg max-w-sm md:max-w-lg w-full"
+                // className={`bg-white rounded-lg shadow-lg max-w-sm md:max-w-lg w-full ${className}`}
+                className={`bg-white rounded-lg shadow-lg w-full max-w-screen-lg ${className}`} // Full width with max width
+
                 variants={modalVariants}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
@@ -37,7 +40,7 @@ const Modal = ({ isOpen, children,  title }: Props) => {
                     <h3 className="text-lg font-semibold">{title ?? "Confirm Action"}</h3>
                 </div>
                 {children}
-               
+
             </motion.div>
         </motion.div>
     );

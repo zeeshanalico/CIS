@@ -111,11 +111,16 @@ class ProductService {
         });
     }
 
-    async getProducts({ skip, take, category_id }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined }): Promise<{ products: Product[], count: number }> {
+    async getProducts({ skip, take, category_id, search, availableProducts }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined, search: string | undefined, availableProducts: boolean }): Promise<{ products: Product[], count: number }> {
         const products = await this.prisma.product.findMany({
             skip,
             take,
-            where: { category_id: category_id, is_deleted: false },
+            where: {
+                category_id,
+                is_deleted: false,
+                name: { contains: search ,mode:'insensitive'},
+                quantity: availableProducts ? { not: { equals: 0 } } : undefined
+            },
             include: {
                 category: {
                     select: {
@@ -124,10 +129,15 @@ class ProductService {
                     }
                 },
             },
-            orderBy: { created_at: 'desc', },
+            orderBy: { created_at: 'desc'},
 
         });
-        const count = await this.prisma.product.count({ where: { is_deleted: false } });
+        const count = await this.prisma.product.count({
+            where: {
+                is_deleted: false,
+                quantity: availableProducts ? { not: { equals: 0 } } : undefined
+            },
+        });
         return { products, count }
     }
 

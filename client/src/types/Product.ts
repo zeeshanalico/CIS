@@ -4,7 +4,7 @@ export class Product {
     id: number;
     category_id: number;
     name: string;
-    sale_price: string;
+    sale_price: number;
     quantity: number;
     image_url: string | null;
     kiosk_id: number;
@@ -19,7 +19,7 @@ export class Product {
         id: number,
         category_id: number,
         name: string,
-        sale_price: string,
+        sale_price: number,
         quantity: number,
         image_url: string | null,
         kiosk_id: number,

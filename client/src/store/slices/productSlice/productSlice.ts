@@ -5,16 +5,22 @@ import { Product } from '@/types/Product';
 
 interface ProductState {
     products: Product[];
+    sale: { selectedProducts: Product[]; }
     // showDeleteConfirmationModal: boolean;
     showEditModal: boolean;
     selectedProduct: Product | null;
     extraInfo: ExtraInfo,
     page: number;
     limit: number;
+    search: undefined | string;
 }
 
 const initialState: ProductState = {
     products: [],
+    sale: {
+        selectedProducts: [],//for use in sale module
+
+    },
     // showDeleteConfirmationModal: false,
     selectedProduct: null,
     showEditModal: false,
@@ -26,7 +32,8 @@ const initialState: ProductState = {
         to: 0
     },
     page: 1,
-    limit: 5,
+    limit: 10,
+    search: undefined
 };
 
 const productSlice = createSlice({
@@ -36,6 +43,20 @@ const productSlice = createSlice({
         setProducts(state, action: PayloadAction<Product[]>) {
             state.products = action.payload;
         },
+        // popProduct(state, action: PayloadAction<Product>) {
+        //     state.products = state.products.filter(p => p.id !== action.payload.id)
+        // },
+        addToCart(state, action: PayloadAction<Product>) {
+            state.sale.selectedProducts.push(action.payload);
+            state.products = state.products.filter(p => p.id !== action.payload.id);
+        },
+        removeFromCart(state, action: PayloadAction<Product>) {
+            state.products = state.sale.selectedProducts.filter(p => p.id !== action.payload.id);
+            state.products.push(action.payload);
+        },
+        // clearCart(state) {
+        //     state.sale.selectedProducts = [];//add more things to clear
+        // },
         setExtraInfo(state, action: PayloadAction<ExtraInfo>) {
             state.extraInfo = action.payload;
         },
@@ -44,6 +65,9 @@ const productSlice = createSlice({
         },
         setLimit(state, action: PayloadAction<number>) {
             state.limit = action.payload;
+        },
+        setSearch(state, action: PayloadAction<string>) {
+            state.search = action.payload;
         },
 
         // addKiosk(state, action: PayloadAction<Kiosk>) {
@@ -61,5 +85,5 @@ const productSlice = createSlice({
     },
 });
 
-export const { setProducts, setPage, setExtraInfo, setLimit, toggleEditModal, setSelectedProduct } = productSlice.actions;
+export const { setProducts, addToCart, removeFromCart, setSearch, setPage, setExtraInfo, setLimit, toggleEditModal, setSelectedProduct } = productSlice.actions;
 export default productSlice;

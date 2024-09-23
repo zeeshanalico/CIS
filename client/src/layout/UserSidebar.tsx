@@ -51,6 +51,7 @@ const UserSidebar = () => {
                         <ul className="mt-6 space-y-2">
                             <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.USER_DASHBOARD} className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_NEW_INVENTORY}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Inventory</Link></li>
+                            <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.SALE}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Sale</Link></li>
                         </ul>
                     </div>
                 </div>

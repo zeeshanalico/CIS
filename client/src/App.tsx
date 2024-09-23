@@ -23,6 +23,7 @@ const AddVendor = lazy(() => import('./pages/Vendor/AddVendor/AddVendor'));
 const Report = lazy(() => import('./pages/Report/Report'));
 const Setting = lazy(() => import('./pages/Setting/Setting'));
 const UserDashboard = lazy(() => import('./pages/UserDashboard/UserDashboard'));
+const Sale = lazy(() => import('./pages/Sale/Sale'));
 const Testing = lazy(() => import('./pages/Testing/Testing'));
 const AddNewInventory = lazy(() => import('./pages/Inventory/AddNewInventory/AddNewInventory'));
 const AddVendorPurchase = lazy(() => import('./pages/Inventory/AddVendorPurchase/AddVendorPurchase'));
@@ -58,6 +59,8 @@ export enum RoutesEnum {
 
     VENDOR = '/vendor',//for naming purpose
     ADD_VENDOR = 'add-vendor',
+
+    SALE = '/sale',
 }
 
 const App = () => {
@@ -120,6 +123,9 @@ const App = () => {
             case `${RoutesEnum.KIOSK}/${RoutesEnum.EXISTED_KIOSKS}`:
                 title = 'Kiosk';
                 break;
+            case RoutesEnum.SALE:
+                title = 'Sale';
+                break;
             default:
                 title = 'Not Found';
                 break;
@@ -167,6 +173,7 @@ const App = () => {
                 <Route element={<ProtectedRoute requiredRoles={[Role.USER]} />}>
                     <Route path="/" element={<UserSidebar />}>
                         <Route path={RoutesEnum.USER_DASHBOARD} element={<UserDashboard />} />
+                        <Route path={RoutesEnum.SALE} element={<Sale />} />
                         <Route path={RoutesEnum.INVENTORY} element={<InventoryLayout />} >
                             <Route path={RoutesEnum.ADD_NEW_INVENTORY} element={<AddNewInventory />} />
                             <Route path={RoutesEnum.STOCK} element={<Stock />} />
