@@ -10,10 +10,15 @@ import { Label } from '@radix-ui/react-label';
 import FormInput from '@/components/core/FormInput';
 import Select from 'react-select';
 import { useGetAllCustomersQuery } from '@/store/slices/customerSlice/customerSlice';
+import { useCreateSaleMutation } from '@/store/slices/saleSlice/saleApiSlice';
+import { successHandler } from '@/utils/successHandler';
+import { errorHandler } from '@/components/error/errorHandler';
+import { CartProducts, Cart } from '@/store/slices/saleSlice/saleApiSlice';
 
 const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () => void }) => {
     const { data: customerResponse } = useGetAllCustomersQuery({});
     const dispatch = useDispatch();
+    const [createSale] = useCreateSaleMutation();
 
     useEffect(() => {
         if (isOpen) {
@@ -52,18 +57,33 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
             discount: Yup.number().min(0, 'Discount cannot be negative'),
             customer: Yup.object().nullable().required('Customer selection is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: async (values, { setSubmitting, resetForm }) => {
+            console.log(values);
+
             const subtotal = calculateSubtotal();
             const total = calculateTotal();
+            const cartProducts: CartProducts[] = values?.cartProducts.map(({ id, units, sale_price }) => ({ product_id: id, units, unit_price: Number(sale_price) }));
+            console.log(cartProducts);
 
-            console.log('Checkout values:', {
-                ...values,
+            const data = {
+                cartProducts,
+                customer_id: (values.customer as unknown as { value: number, label: string }).value,
+                discount: values.discount,
                 subtotal,
                 total,
-            });
+            } as Cart;
+            try {
+                const response = await createSale(data).unwrap();
+                dispatch(clearCart());
+                // localStorage.removeItem('cartProducts');
+                resetForm()
+                setSubmitting(false)
+                toggleModal()
+                successHandler(response)
+            } catch (error) {
+                errorHandler(error)
 
-            dispatch(clearCart());
-            localStorage.removeItem('cartProducts');
+            }
         },
     });
 
@@ -101,6 +121,11 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
         formik.setFieldValue('cartProducts', updatedProducts);
     };
 
+    const handleClearCart = () => {
+        dispatch(clearCart());
+        localStorage.removeItem('cartProducts');
+        toggleModal()
+    }
     return (
         <Modal className="p-6 m-6 rounded-lg" isOpen={isOpen} title="Your Cart">
             <form onSubmit={formik.handleSubmit}>
@@ -222,10 +247,7 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                     </button>
                     <button
                         type="button"
-                        onClick={() => {
-                            dispatch(clearCart());
-                            localStorage.removeItem('cartProducts');
-                        }}
+                        onClick={handleClearCart}
                         className="px-4 py-2 bg-gray-950 text-white hover:bg-black rounded"
                     >
                         Clear Cart

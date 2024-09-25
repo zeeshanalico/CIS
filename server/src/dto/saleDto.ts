@@ -5,25 +5,22 @@ export const cartSchema = Joi.object({
         .items(
             Joi.object({
                 product_id: Joi.number().integer().required().messages({
-                    'number.base': 'Product ID must be a number',
-                    'any.required': 'Product ID are required',
+                    'number.base': 'Product ID must be a valid number',
+                    'any.required': 'Product ID is required',
                 }),
-                // name: Joi.string().required(),
                 units: Joi.number().integer().min(1).required().messages({
-                    'number.base': 'Units must be a number',
+                    'number.base': 'Units must be a valid number',
                     'number.min': 'Units must be at least 1',
                     'any.required': 'Units are required',
                 }),
-                // sale_price: Joi.number().positive().required().messages({
-                //     'number.base': 'Sale price must be a valid number',
-                //     'number.positive': 'Sale price must be greater than 0',
-                //     'any.required': 'Sale price is required',
-                // }),
-                // quantity: Joi.number().integer().min(0).required().messages({
-                //     'number.base': 'Quantity must be a valid number',
-                //     'number.min': 'Quantity cannot be less than 0',
-                //     'any.required': 'Quantity is required',
-                // }),
+                unit_price: Joi.number()
+                    .integer()
+                    .required()
+                    .messages({
+                        'number.base': 'Unit Price must be a valid number',
+                        'number.positive': 'Unit Price must be greater than zero',
+                        'any.required': 'Unit Price is required',
+                    }),
             })
         )
         .min(1)
@@ -36,16 +33,38 @@ export const cartSchema = Joi.object({
 
     discount: Joi.number()
         .min(0)
-        .max(Joi.ref('subtotal')) // subtotal should be dynamically calculated
+        .max(Joi.ref('subtotal')) // Ensure discount doesn't exceed subtotal
+        .required()
         .messages({
+            'number.base': 'Discount must be a valid number',
             'number.min': 'Discount cannot be negative',
             'number.max': 'Discount cannot exceed the subtotal',
+            'any.required': 'Discount is required',
         }),
 
-    customer: Joi.object({
-        customer_id: Joi.number().integer().required().messages({
-            'number.base': 'Customer ID must be a number',
-            'any.required': 'Customer Selection is required',
+    customer_id: Joi.number()
+        .integer()
+        .required()
+        .messages({
+            'number.base': 'Customer ID must be a valid number',
+            'any.required': 'Customer selection is required',
         }),
-    })
+
+    subtotal: Joi.number()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'Subtotal must be a valid number',
+            'number.positive': 'Subtotal must be greater than zero',
+            'any.required': 'Subtotal is required',
+        }),
+
+    total: Joi.number()
+        .positive()
+        .required()
+        .messages({
+            'number.base': 'Total must be a valid number',
+            'number.positive': 'Total must be greater than zero',
+            'any.required': 'Total is required',
+        }),
 });
