@@ -4,15 +4,18 @@ interface CartButtonProps {
     itemCount: number;
     onClick?: () => void;
     icon: ReactNode
+    disabled: boolean
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ itemCount, onClick, icon }) => {
+const CartButton: React.FC<CartButtonProps> = ({ itemCount, onClick, icon, disabled }) => {
     return (
         <button
-            className="relative gap-2 inline-flex items-center justify-center p-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-200"
+            className={`ml-2 ${disabled ? 'bg-indigo-500 hover:bg-indigo-500' : 'bg-indigo-600 hover:bg-indigo-700'} relative gap-2 text-nowrap inline-flex items-center justify-center p-2  text-white rounded-md  transition duration-200`}
             onClick={onClick}
+            disabled={disabled}
+
         >
-            <span className="items-center  text-white ">
+            <span className="items-center text-white ">
                 {icon}
             </span>
             <span className="material-icons">Shopping cart</span>

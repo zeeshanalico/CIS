@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetProductsQuery } from '@/store/slices/productSlice/productApiSlice';
-import { setProducts, setExtraInfo, setSearch, setPage, setLimit, addToCart } from '@/store/slices/productSlice/productSlice';
+import { setProducts, setExtraInfo, setSearch, setPage, setLimit, addToCart, totalCartProductsInStorage, clearCart } from '@/store/slices/productSlice/productSlice';
 import { RootState } from '@/store/store';
 import usePagination from '@/components/hooks/usePagination';
 import imageCommingSoon from '../../assets/image-coming-soon.jpg';
@@ -10,13 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Product } from '@/types/Product';
 import CartModal from './CartModal';
 import CartButton from './CartButton';
+import { getCartFromLocalStorage } from '@/store/slices/productSlice/productSlice';
+import { toast } from '@/components/ui/use-toast';
 const Sale = () => {
-    const { products, extraInfo, sale, limit, page, search } = useSelector((state: RootState) => state.productSlice);
-    const [searchValue, setSearchValue] = useState<string | undefined>(undefined)
+    const { products, extraInfo, limit, page, search } = useSelector((state: RootState) => state.productSlice);
+    const [searchValue, setSearchValue] = useState<string | null>(null)
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const toggleModal = () => {
+        setTotalCartProducts(getCartFromLocalStorage().length); // Update cart count when toggling modal
         setIsOpen(!isOpen);
     }
+    const [totalCartProducts, setTotalCartProducts] = useState(0)
     const { data: productsResponse } = useGetProductsQuery({ limit, page, search: searchValue, availableProducts: true });
     const dispatch = useDispatch();
 
@@ -38,8 +42,11 @@ const Sale = () => {
         if (productsResponse?.extraInfo) {
             dispatch(setExtraInfo(productsResponse.extraInfo));
         }
-        // dispatch(setLimit(10))
     }, [productsResponse, dispatch]);
+
+    useEffect(() => {
+        setTotalCartProducts(getCartFromLocalStorage().length);
+    }, [])
 
     const handleSearch = () => {
         setSearchValue(search);
@@ -47,14 +54,17 @@ const Sale = () => {
 
     const handleAddToCart = (product: Product) => {
         dispatch(addToCart(product));
+        setTotalCartProducts(getCartFromLocalStorage().length); // Increment the count by 1
+        toast({
+            duration: 1200,
+            title: `${product.name} added to cart.`,
+        });
+
     }
     return (
         <div className='p-6'>
             <div>
-                <CartButton
-                    icon={<FiShoppingCart />}
-                    itemCount={sale.selectedProducts.length}
-                    onClick={toggleModal} />
+
             </div>
             <div className='flex flex-row shadow-sm'>
                 <div className="relative w-full">
@@ -63,32 +73,36 @@ const Sale = () => {
                     </span>
                     <input
                         name='search'
-                        value={search}
+                        value={search ?? ''}
                         className='flex h-10 pl-10 rouded-none w-full bg-background px-3 focus:outline-none  focus:border-black focus:border-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground active:border-black disabled:cursor-not-allowed disabled:opacity-50'
                         onChange={e => dispatch(setSearch(e.target.value))}
                     />
                 </div>
                 <Button className='rounded-none' onClick={handleSearch}>Search</Button>
+                <CartButton
+                    icon={<FiShoppingCart />}
+                    itemCount={totalCartProducts} // Pass the updated count
+                    disabled={totalCartProducts === 0}
+                    onClick={toggleModal} />
+
             </div>
-            <div className="flex flex-row justify-between">
-                <h1 className="text-2xl font-semibold mb-4">Existing Products</h1>
-                <div className="flex flex-row gap-2 items-center">
-                    <p className="text-sm text-gray-500">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>
-                    <select
-                        className="h-8 outline-none border border-gray-300 rounded"
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setLimit(Number(e.target.value)))}
-                        value={limit}
-                    >
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                    </select>
-                </div>
+            <div className="flex flex-row justify-between py-2 items-center">
+                <p className="text-sm text-gray-500 ">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>
+                <select
+                    className="h-8 outline-none border border-gray-300 rounded"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setLimit(Number(e.target.value)))}
+                    value={limit}
+                >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
                 {products
-                    .map((product) => {
+                    // .filter(product => !getCartProductsInStorage().some(cartProduct => cartProduct.id === product.id))
+                    .map((product: Product) => {
                         const { id, category, image_url, name, quantity, sale_price } = product;
                         return <div key={id} className='bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'>
                             <img
@@ -121,7 +135,7 @@ const Sale = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex m-2 justify-center rounded-md shadow-sm m-auto" role="group">
+            <div className="flex mt-2 justify-center rounded-md shadow-sm m-auto" role="group">
                 <button
                     type="button"
                     className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
@@ -155,11 +169,11 @@ const Sale = () => {
                 >
                     Next
                 </button>
-                <CartModal
-                    isOpen={isOpen}
-                    toggleModal={toggleModal}
-                />
             </div>
+            <CartModal
+                isOpen={isOpen}
+                toggleModal={toggleModal}
+            />
         </div>
     );
 };

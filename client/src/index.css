@@ -84,6 +84,18 @@
     @apply border-indigo-600
   }
 
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Hide increment/decrement arrows in Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   .scrollbar-style::-webkit-scrollbar-track {
     background: var(--sb-track-color);
     border-radius: 3px;

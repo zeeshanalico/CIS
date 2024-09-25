@@ -3,25 +3,23 @@ import { Kiosk } from '@/types/kiosk';
 import { ExtraInfo } from '@/types/apiResponse';
 import { Product } from '@/types/Product';
 
+// Cart Product with units for local storage
+export interface CartProduct extends Product {
+    units: number;
+}
+
 interface ProductState {
     products: Product[];
-    sale: { selectedProducts: Product[]; }
-    // showDeleteConfirmationModal: boolean;
     showEditModal: boolean;
     selectedProduct: Product | null;
-    extraInfo: ExtraInfo,
+    extraInfo: ExtraInfo;
     page: number;
     limit: number;
-    search: undefined | string;
+    search: string | null;
 }
 
 const initialState: ProductState = {
     products: [],
-    sale: {
-        selectedProducts: [],//for use in sale module
-
-    },
-    // showDeleteConfirmationModal: false,
     selectedProduct: null,
     showEditModal: false,
     extraInfo: {
@@ -29,13 +27,26 @@ const initialState: ProductState = {
         pageNumber: 0,
         pageSize: 0,
         from: 0,
-        to: 0
+        to: 0,
     },
     page: 1,
     limit: 10,
-    search: undefined
+    search: null,
 };
 
+// Helper functions to manage cart in local storage
+const updateCartProductsInStorage = (cartProducts: CartProduct[]) => {
+    localStorage.setItem('cartProducts', JSON.stringify(cartProducts));
+};
+
+export const getCartFromLocalStorage = (): CartProduct[] => {
+    const storedCart = localStorage.getItem('cartProducts');
+    return storedCart ? JSON.parse(storedCart) : [];
+};
+
+export const totalCartProductsInStorage = () => {
+    return getCartFromLocalStorage().length
+}
 const productSlice = createSlice({
     name: 'productSlice',
     initialState,
@@ -43,20 +54,61 @@ const productSlice = createSlice({
         setProducts(state, action: PayloadAction<Product[]>) {
             state.products = action.payload;
         },
-        // popProduct(state, action: PayloadAction<Product>) {
-        //     state.products = state.products.filter(p => p.id !== action.payload.id)
+
+        // Add product to the cart with units management in local storage
+        // addToCart(state, action: PayloadAction<Product>) {
+
+        //     const cartProducts = getCartFromLocalStorage();
+
+        //     const productWithUnits: CartProduct = { ...action.payload, units: 1 };
+        //     cartProducts.push(productWithUnits);
+        //     updateCartProductsInStorage(cartProducts);
+        //     state.products = state.products.filter(p => p.id != action.payload.id)
         // },
         addToCart(state, action: PayloadAction<Product>) {
-            state.sale.selectedProducts.push(action.payload);
-            state.products = state.products.filter(p => p.id !== action.payload.id);
+            const cartProducts = getCartFromLocalStorage();
+            const productIndex = cartProducts.findIndex(cartProduct => cartProduct.id === action.payload.id);
+
+            if (productIndex !== -1) {
+                // If the product already exists in local storage, increment the units
+                cartProducts[productIndex].units += 1;
+            } else {
+                // If the product does not exist, add it with units set to 1
+                const productWithUnits: CartProduct = { ...action.payload, units: 1 };
+                cartProducts.push(productWithUnits);
+            }
+
+            updateCartProductsInStorage(cartProducts);
+
+            // Optionally, remove the product from state if needed
+            // state.products = state.products.filter(p => p.id !== action.payload.id);
         },
+
+
+
         removeFromCart(state, action: PayloadAction<Product>) {
-            state.products = state.sale.selectedProducts.filter(p => p.id !== action.payload.id);
-            state.products.push(action.payload);
+            let cartProducts = getCartFromLocalStorage();
+            const productIndex = cartProducts.findIndex(p => p.id === action.payload.id);
+
+            if (productIndex !== -1) {
+                if (cartProducts[productIndex].units > 1) {
+                    // If units > 1, decrement units
+                    cartProducts[productIndex].units -= 1;
+                } else {
+                    // If units == 1, remove the product
+                    cartProducts = cartProducts.filter(p => p.id !== action.payload.id);
+                }
+            }
+
+            updateCartProductsInStorage(cartProducts);
         },
-        // clearCart(state) {
-        //     state.sale.selectedProducts = [];//add more things to clear
-        // },
+
+        // Clear the cart and remove products from local storage
+        clearCart(state) {
+            updateCartProductsInStorage([]);
+        },
+
+        // Set additional information (pagination, etc.)
         setExtraInfo(state, action: PayloadAction<ExtraInfo>) {
             state.extraInfo = action.payload;
         },
@@ -69,21 +121,26 @@ const productSlice = createSlice({
         setSearch(state, action: PayloadAction<string>) {
             state.search = action.payload;
         },
-
-        // addKiosk(state, action: PayloadAction<Kiosk>) {
-        //     state.kiosks.push(action.payload);
-        // },
         setSelectedProduct(state, action: PayloadAction<Product>) {
             state.selectedProduct = action.payload;
         },
-        // toggleDeleteConfirmationModal(state) {
-        //     state.showDeleteConfirmationModal = !state.showDeleteConfirmationModal;
-        // },
         toggleEditModal(state) {
             state.showEditModal = !state.showEditModal;
         },
     },
 });
 
-export const { setProducts, addToCart, removeFromCart, setSearch, setPage, setExtraInfo, setLimit, toggleEditModal, setSelectedProduct } = productSlice.actions;
+export const {
+    setProducts,
+    addToCart,
+    removeFromCart,
+    clearCart,
+    setExtraInfo,
+    setPage,
+    setLimit,
+    setSearch,
+    toggleEditModal,
+    setSelectedProduct,
+} = productSlice.actions;
+
 export default productSlice;

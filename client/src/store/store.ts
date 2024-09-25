@@ -11,6 +11,7 @@ import { vendorApiSlice } from "./slices/vendorSlice/vendorApiSlice";
 import { productApiSlice } from "./slices/productSlice/productApiSlice";
 import productSlice from "./slices/productSlice/productSlice";
 import vendorPurchaseApiSlice from "./slices/vendorPurchase/vendorPurchaseApiSlice";
+import { CustomerApiSlice } from "./slices/customerSlice/customerSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
 	[kioskSlice.name]: kioskSlice.reducer,
@@ -24,12 +25,13 @@ const reducer = {
 	[vendorApiSlice.reducerPath]: vendorApiSlice.reducer,
 	[productApiSlice.reducerPath]: productApiSlice.reducer,
 	[vendorPurchaseApiSlice.reducerPath]: vendorPurchaseApiSlice.reducer,
+	[CustomerApiSlice.reducerPath]: CustomerApiSlice.reducer,
 };
 
 const store = configureStore({
 	reducer,
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(authApiSlice.middleware, userApiSlice.middleware, kioskApiSlice.middleware, vendorApiSlice.middleware, productApiSlice.middleware, vendorPurchaseApiSlice.middleware),
+		getDefaultMiddleware().concat(authApiSlice.middleware, userApiSlice.middleware, kioskApiSlice.middleware, vendorApiSlice.middleware, productApiSlice.middleware, vendorPurchaseApiSlice.middleware,CustomerApiSlice.middleware),
 });
 
 

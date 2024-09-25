@@ -5,7 +5,7 @@ class SaleService {
     constructor(private readonly prisma: PrismaClient) { }
 
     async createSale() {
-
+        
     }
 
 }

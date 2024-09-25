@@ -1,3 +1,3 @@
 export function parseString(value: string) {
-    return value === 'undefined' ? undefined : value
+    return value === 'undefined' ||value==='null' ? undefined : value
 }
