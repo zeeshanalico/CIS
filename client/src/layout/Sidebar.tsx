@@ -53,6 +53,7 @@ const Sidebar = () => {
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.KIOSK}/${RoutesEnum.ADD_NEW_KIOSK}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Kiosk</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.USER}/${RoutesEnum.CREATE_USER}`} className="block py-2 px-4 rounded hover:bg-indigo-500">User</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.VENDOR}/${RoutesEnum.ADD_VENDOR}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Vendor</Link></li>
+                            <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.CUSTOMER}/${RoutesEnum.ADD_NEW_CUSTOMER}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Customers</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.REPORT} className="block py-2 px-4 rounded hover:bg-indigo-500">Report</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.SETTING} className="block py-2 px-4 rounded hover:bg-indigo-500">Setting</Link></li>
                         </ul>

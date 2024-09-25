@@ -12,6 +12,17 @@ const createCustomerSchema = Joi.object({
             'string.max': 'Name should have a maximum length of {#limit}',
             'any.required': 'Name is a required field',
         }),
+    secret: Joi.string()
+        .min(2)
+        .max(100)
+        .required()
+        .messages({
+            'string.base': 'Secret should be a type of text',
+            'string.empty': 'Secret cannot be an empty field',
+            'string.min': 'Secret should have a minimum length of {#limit}',
+            'string.max': 'Secret should have a maximum length of {#limit}',
+            'any.required': 'Secret is a required field',
+        }),
     
     email: Joi.string()
         .email()
@@ -23,7 +34,7 @@ const createCustomerSchema = Joi.object({
             'any.required': 'Email is a required field',
         }),
 
-    contact_info: Joi.string()
+    phone: Joi.string()
         .min(10)
         .max(15)
         .required()

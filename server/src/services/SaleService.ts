@@ -39,7 +39,6 @@ class SaleService {
                 },
             });
 
-            // Add Sale products logic here
             for (const product of cartProducts) {
                 await this.addSaleProduct({
                     trx,
@@ -49,37 +48,49 @@ class SaleService {
                         quantity: product.units,//quantity of individual product
                         unit_price: product.unit_price,
                         //in this table(sale_product) discount can also be added for individual products;
-
                     },
+                });
+                //updating the product table's quantity
+                await trx.product.update({
+                    where: { id: product.product_id },
+                    data: { quantity: { decrement: product.units } },
                 });
             }
 
-            // const transaction = await this.addTRX({
-            //     trx,
-            //     data: {
-            //         amount: total,
-            //         customer: { connect: { id: customer_id } },
-            //         kiosk: { connect: { id: kiosk_id } },
-            //         // vendor:{connect:{id:user_id}},
-            //     },
-            // });
-
-            const journal = await this.addJournal({
+           //DOUBLE ENTRY IN JOURNAL:Journal table will manage two accounts for each kiosk (debit A/C and credit A/C)
+            const journalDebit = await this.addJournal({
                 trx,
                 data: {
                     amount: total,
                     kiosk: { connect: { id: kiosk_id } },
                     trx_type: 'DEBIT',
-                    account: '1',
-                    description: 'n/a',
-                    
-                    // vendor:{connect:{id:user_id}},
+                    account: `Account Receivable`,
+                    description: 'customer will pay later',
                 },
             })
+            const journalCredit = await this.addJournal({
+                trx,
+                data: {
+                    kiosk: { connect: { id: kiosk_id } },
+                    amount: total,
+                    trx_type: "CREDIT", 
+                    account: "Sales Revenue (increase revenue)",
+                    description: "Sale made on credit to customer",
+                },
+            })
+
+            //TRANSACTION : as transaction occurs b/w customer and kiosk so the vendor will be null, if transaction occur b/w kiosk and vendor than customer will be null like in add vendor purchase/add inventory
+             const transaction = await this.addTRX({
+                trx,
+                data: {
+                    amount: total,
+                    customer: { connect: { id: customer_id } },
+                    kiosk: { connect: { id: kiosk_id } },
+                },
+            });
+
             return sale;
         });
-
-
     }
 
     async addSale({ trx, data }: { trx?: Prisma.TransactionClient; data: Prisma.SaleCreateInput }): Promise<Sale> {

@@ -2,19 +2,19 @@ import { PrismaClient, Prisma, Customer } from '@prisma/client';
 import { CustomError } from '../utils/CustomError';
 
 class CustomerService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: PrismaClient) { }
 
     async createCustomer(
         createCustomerInput: Prisma.CustomerCreateInput
     ): Promise<Customer> {
         const existingCustomer = await this.prisma.customer.findFirst({
-            where: { email: createCustomerInput.email }
+            where: { email: createCustomerInput.email, },
         });
-        
+
         if (existingCustomer) {
             throw new CustomError('Customer already exists', 400);
         }
-        
+
         return await this.prisma.customer.create({
             data: createCustomerInput,
         });
@@ -24,11 +24,10 @@ class CustomerService {
         const customer = await this.prisma.customer.findUnique({
             where: { id },
         });
-        
+
         if (!customer) {
             throw new CustomError('Customer not found', 404);
         }
-        
         return customer;
     }
 
@@ -78,7 +77,7 @@ class CustomerService {
                 created_at: 'desc',
             },
         });
-        
+
         const count = await this.prisma.customer.count({ where: { is_deleted: false } });
 
         return { count, customers };

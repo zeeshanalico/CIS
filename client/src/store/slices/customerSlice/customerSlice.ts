@@ -1,50 +1,63 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from '@/store/baseQuery';
-import { ApiResponseSuccess, ApiResponseFailed } from '@/types/apiResponse';
-import { Customer, CustomerResponse } from '@/types/Customer';
-// import { FormValues } from '@/pages/Customer/CreateCustomer';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Customer } from '@/types/Customer';
+import { ExtraInfo } from '@/types/apiResponse';
+interface CustomerState {
+    customers: Customer[];
+    showDeleteConfirmationModal: boolean;
+    showEditModal: boolean;
+    selectedCustomer: Customer | null;
+    extraInfo: ExtraInfo,
+    page: number;
+    limit: number;
+}
 
+const initialState: CustomerState = {
+    customers: [],
+    showDeleteConfirmationModal: false,
+    selectedCustomer: null,
+    showEditModal: false,
+    extraInfo: {
+        count: 0,
+        pageNumber: 0,
+        pageSize: 0,
+        from: 0,
+        to: 0
+    },
+    page: 1,
+    limit: 10,
+};
 
-export const CustomerApiSlice = createApi({
-    reducerPath: 'customer',
-    tagTypes: ['Customer'],
-    baseQuery: baseQuery({ url: '/customer' }),
-    endpoints: (builder) => ({
-        // createCustomer: builder.mutation<ApiResponseSuccess<Customer>, FormValues>({
-        //     query: (body) => ({
-        //         url: '/create',
-        //         method: 'POST',
-        //         body,
-        //     }),
-        //     transformResponse: (response: ApiResponseSuccess<Customer>) => response,
-        //     transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
-        //     invalidatesTags: ['Customer']
-        // }),
-        getAllCustomers: builder.query<CustomerResponse, { limit?: number, page?: number, }>({
-            query: ({ limit, page }) => ({
-                url: `/get-all?limit=${limit}&page=${page}`,
-                method: 'GET',
-            }),
-            providesTags: ['Customer'],
-            transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
-        }),
+const customerSlice = createSlice({
+    name: 'customerSlice',
+    initialState,
+    reducers: {
+        setCustomers(state, action: PayloadAction<Customer[]>) {
+            state.customers = action.payload;
+        },
+        setExtraInfo(state, action: PayloadAction<ExtraInfo>) {
+            state.extraInfo = action.payload;
+        },
+        setPage(state, action: PayloadAction<number>) {
+            state.page = action.payload;
+        },
+        setLimit(state, action: PayloadAction<number>) {
+            state.limit = action.payload;
+        },
 
-        // updateCustomer: builder.mutation<ApiResponseSuccess<Customer>, { id: number, name: string, email: string }>({
-        //     query: ({ id, ...body }) => ({
-        //         url: `/update/${id}`,
-        //         method: 'PUT',
-        //         body: body,
-        //     }),
-        //     invalidatesTags: ['Customer'],
-        // }),
-        // deleteCustomer: builder.mutation<ApiResponseSuccess<Customer>, { id: number, deleteType: string }>({
-        //     query: ({ id, deleteType }) => ({
-        //         url: `/${id}?deleteType=${deleteType}`,
-        //         method: 'DELETE',
-        //     }),
-        //     invalidatesTags: ['Customer'],
-        // })
-    }),
+        addCustomer(state, action: PayloadAction<Customer>) {
+            state.customers.push(action.payload);
+        },
+        setSelectedCustomer(state, action: PayloadAction<Customer>) {
+            state.selectedCustomer = action.payload;
+        },
+        toggleDeleteConfirmationModal(state) {
+            state.showDeleteConfirmationModal = !state.showDeleteConfirmationModal;
+        },
+        toggleEditModal(state) {
+            state.showEditModal = !state.showEditModal;
+        },
+    },
 });
 
-export const { useGetAllCustomersQuery } = CustomerApiSlice;
+export const { setCustomers, setSelectedCustomer, addCustomer, toggleDeleteConfirmationModal, toggleEditModal, setExtraInfo, setPage, setLimit } = customerSlice.actions;
+export default customerSlice;

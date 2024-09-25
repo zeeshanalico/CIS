@@ -33,6 +33,7 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
     onChange,
     onCreate,
     placeholder,
+    dontShowCreate = false,
     ...props
 }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -40,6 +41,8 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
     const [newItem, setNewItem] = useState<string>('');
 
     const handleCreate = (newValue: string) => {
+        console.log(newValue);
+
         // Pass the new value to the parent component through onCreate
         onCreate(newValue);
         setSelectedItem({ value: newValue, label: newValue });
@@ -73,11 +76,15 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
                         }),
                     }}
                     name={name}
+                    // onCreateOption={handleCreate}//nextday
                     onChange={(option: SingleValue<Option>) => {
+                        console.log(option);
+
                         if (option?.__isNew__) {
                             // New option created
                             setNewItem(option.label);
                             setModalOpen(true);
+                            (dontShowCreate && handleCreate(option.label)) 
                         } else {
                             // Existing option selected
                             setSelectedItem(option || null);
@@ -91,12 +98,12 @@ const FormCreatableSelect: React.FC<CreatableSelectProps> = ({
                 <p className="mt-2 text-sm text-red-600">{error}</p>
             )}
 
-            <Modal
+            {!dontShowCreate && <Modal
                 isOpen={modalOpen}
                 onClose={() => { setModalOpen(false), setSelectedItem(null), setNewItem('') }}
                 value={newItem}
                 onCreate={handleCreate}
-            />
+            />}
         </div>
     );
 };

@@ -23,7 +23,7 @@ const Modal = ({ isOpen, children, className, title }: Props) => {
 
     return (
         <motion.div
-            className="fixed z-12 inset-0 flex items-center justify-center bg-black bg-opacity-50"
+            className={`fixed z-12 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${className}`}
             initial="hidden"
             animate="visible"
             exit="hidden"

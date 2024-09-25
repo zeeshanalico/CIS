@@ -16,6 +16,7 @@ class PurchaseService {
 
         return await this.prisma.$transaction(async trx => {
             const amount = qty * cost_price;
+
             const purchase = await trx.purchase.create({//bug: add trx & Journal entries
                 data: { user, kiosk, amount, }
             })
@@ -27,6 +28,31 @@ class PurchaseService {
                     qty,
                     cost_price,
                 }
+            })
+            await trx.trx.create({
+                data: {
+                    amount,
+                    kiosk,
+                    vendor,// vendor_id =-1 means vendor undefined
+                },
+            })
+            const journalDebit = await trx.journal.create({
+                data: {
+                    amount,
+                    kiosk,
+                    trx_type: 'DEBIT',
+                    account: `Inventory`,
+                    description: "Added vendor purchase inventory",
+                },
+            })
+            const journalCredit = await trx.journal.create({
+                data: {
+                    kiosk,
+                    amount,
+                    trx_type: "CREDIT",
+                    account: "Accounts Payable",
+                    description: "Vendor purchase on credit",
+                },
             })
             return { vendorPurchaseProduct, purchase }
         });

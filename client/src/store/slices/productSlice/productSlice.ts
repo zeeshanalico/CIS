@@ -71,7 +71,8 @@ const productSlice = createSlice({
 
             if (productIndex !== -1) {
                 // If the product already exists in local storage, increment the units
-                cartProducts[productIndex].units += 1;
+                // cartProducts[productIndex].units += 1;
+                return;
             } else {
                 // If the product does not exist, add it with units set to 1
                 const productWithUnits: CartProduct = { ...action.payload, units: 1 };

@@ -11,6 +11,7 @@ import VendorLayout from './pages/Vendor/Layout';
 import InventoryLayout from './pages/Inventory/Layout';
 import KioskLayout from './pages/Kiosk/Layout';
 import UserLayout from './pages/User/Layout';
+import CustomerLayout from './pages/Customer/Layout';
 
 
 // Lazy-loaded components
@@ -32,6 +33,8 @@ const CreateKiosk = lazy(() => import('./pages/Kiosk/CreateKiosk'));
 const ExistingKiosksTable = lazy(() => import('./pages/Kiosk/ExistingKiosksTable'));
 const CreateUser = lazy(() => import('./pages/User/CreateUser'));
 const UserTable = lazy(() => import('./pages/User/UserTable'));
+const CustomerTable = lazy(() => import('./pages/Customer/ExistingCustomers/CustomerTable'));
+const CreateCustomer = lazy(() => import('./pages/Customer/CreateCustomer/CreateCustomer'));
 
 
 export enum RoutesEnum {
@@ -52,6 +55,10 @@ export enum RoutesEnum {
     ADD_NEW_KIOSK = 'add-new-kiosk',
     EXISTED_KIOSKS = 'exsited-kiosks',
 
+    CUSTOMER = '/customer',//for naming purpose
+    ADD_NEW_CUSTOMER = 'add-new-customer',
+    EXISTED_CUSTOMERS = 'existing-customers',
+
     INVENTORY = '/inventory',//for naming purpose
     ADD_NEW_INVENTORY = 'add-new-inventory',
     ADD_VENDOR_PURCHASE = 'add-vendor-purchase',
@@ -71,58 +78,50 @@ const App = () => {
         const currentRoute = location.pathname;
         let title = '';
         switch (currentRoute) {
-            case RoutesEnum.LOGIN:
-                title = 'Login';
-                break;
-            case RoutesEnum.UNAUTHORIZED:
-                title = 'Unauthorized';
-                break;
-            case RoutesEnum.DASHBOARD:
-                title = 'Dashboard';
-                break;
-            case RoutesEnum.USER:
-                title = 'User';
-                break;
-            case `${RoutesEnum.USER}/${RoutesEnum.CREATE_USER}`:
-                title = 'User';
-                break;
+            case RoutesEnum.LOGIN: title = 'Login'; break;
+            case RoutesEnum.UNAUTHORIZED: title = 'Unauthorized'; break;
+            case RoutesEnum.DASHBOARD: title = 'Dashboard'; break;
+
+            case RoutesEnum.USER: title = 'User'; break;
+            case `${RoutesEnum.USER}/${RoutesEnum.CREATE_USER}`: title = 'User'; break;
             case `${RoutesEnum.USER}/${RoutesEnum.EXISTING_USERS}`:
-                title = 'User';
-                break;
+                title = 'User'; break;
+
             case RoutesEnum.KIOSK:
-                title = 'Kiosk';
-                break;
+                title = 'Kiosk'; break;
+
             case RoutesEnum.VENDOR:
-                title = 'Vendor';
-                break;
+                title = 'Vendor'; break;
+
             case RoutesEnum.REPORT:
-                title = 'Report';
-                break;
+                title = 'Report'; break;
+
             case RoutesEnum.SETTING:
-                title = 'Setting';
-                break;
+                title = 'Setting'; break;
+
             case RoutesEnum.USER_DASHBOARD:
-                title = 'User Dashboard';
-                break;
+                title = 'User Dashboard'; break;
+
             case `${RoutesEnum.VENDOR}/${RoutesEnum.ADD_VENDOR}`:
-                title = 'Vendor';
-                break;
+                title = 'Vendor'; break;
 
             case `${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_NEW_INVENTORY}`:
-                title = 'Inventory';
-                break;
+                title = 'Inventory'; break;
             case `${RoutesEnum.INVENTORY}/${RoutesEnum.STOCK}`:
-                title = 'Inventory';
-                break;
+                title = 'Inventory'; break;
             case `${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_VENDOR_PURCHASE}`:
-                title = 'Inventory';
-                break;
+                title = 'Inventory'; break;
+
+            case `${RoutesEnum.CUSTOMER}/${RoutesEnum.ADD_NEW_CUSTOMER}`:
+                title = 'Customer'; break;
+            case `${RoutesEnum.CUSTOMER}/${RoutesEnum.EXISTED_CUSTOMERS}`:
+                title = 'Customer'; break;
+
             case `${RoutesEnum.KIOSK}/${RoutesEnum.ADD_NEW_KIOSK}`:
-                title = 'Kiosk';
-                break;
+                title = 'Kiosk'; break;
             case `${RoutesEnum.KIOSK}/${RoutesEnum.EXISTED_KIOSKS}`:
-                title = 'Kiosk';
-                break;
+                title = 'Kiosk'; break;
+
             case RoutesEnum.SALE:
                 title = 'Sale';
                 break;
@@ -152,14 +151,17 @@ const App = () => {
                             <Route path={RoutesEnum.EXISTING_USERS} element={<UserTable />} />
                         </Route>
 
-
-
                         <Route path={RoutesEnum.REPORT} element={<Report />} />
                         <Route path={RoutesEnum.SETTING} element={<Setting />} />
 
                         <Route path={RoutesEnum.KIOSK} element={<KioskLayout />} >
                             <Route path={RoutesEnum.ADD_NEW_KIOSK} element={<CreateKiosk />} />
                             <Route path={RoutesEnum.EXISTED_KIOSKS} element={<ExistingKiosksTable />} />
+                        </Route>
+
+                        <Route path={RoutesEnum.CUSTOMER} element={<CustomerLayout />} >
+                            <Route path={RoutesEnum.ADD_NEW_CUSTOMER} element={<CreateCustomer />} />
+                            <Route path={RoutesEnum.EXISTED_CUSTOMERS} element={<CustomerTable />} />
                         </Route>
 
                         <Route path={RoutesEnum.VENDOR} element={<VendorLayout />} >
@@ -178,7 +180,6 @@ const App = () => {
                             <Route path={RoutesEnum.ADD_NEW_INVENTORY} element={<AddNewInventory />} />
                             <Route path={RoutesEnum.STOCK} element={<Stock />} />
                             <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
-
                         </Route>
                     </Route>
                 </Route>

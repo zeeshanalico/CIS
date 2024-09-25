@@ -54,16 +54,31 @@ class ProductService {
                             cost_price: cost_price
                         }
                     })
-                    // await trx.trx.create({
-                    //     data: {
-
-                    //     }
-                    // })
-                    // await trx.journal.create({
-                    //     data: {
-
-                    //     }
-                    // })
+                    await trx.trx.create({
+                        data: {
+                            amount: totalAmount,
+                            kiosk: data.kiosk,
+                            vendor: { connect: { id: -1 } },// vendor_id =-1 means vendor undefined
+                        },
+                    })
+                    const journalDebit = await trx.journal.create({
+                        data: {
+                            amount: totalAmount,
+                            kiosk: data.kiosk,
+                            trx_type: 'DEBIT',
+                            account: `Inventory`,
+                            description: 'Added inventory from vendor',
+                        },
+                    })
+                    const journalCredit = await trx.journal.create({
+                        data: {
+                            kiosk: data.kiosk,
+                            amount: totalAmount,
+                            trx_type: "CREDIT",
+                            account: "Accounts Payable",
+                            description: "Purchase on credit from vendor",
+                        },
+                    })
                 }
             } else {
                 // Find the existing product
@@ -105,6 +120,31 @@ class ProductService {
                         cost_price: cost_price
                     }
                 })
+                await trx.trx.create({
+                    data: {
+                        amount: totalAmount,
+                        kiosk: data.kiosk,
+                        vendor: { connect: { id: -1 } },// vendor_id =-1 means vendor undefined
+                    },
+                })
+                const journalDebit = await trx.journal.create({
+                    data: {
+                        amount: totalAmount,
+                        kiosk: data.kiosk,
+                        trx_type: 'DEBIT',
+                        account: `Inventory`,
+                        description: 'Added inventory from vendor',
+                    },
+                })
+                const journalCredit = await trx.journal.create({
+                    data: {
+                        kiosk: data.kiosk,
+                        amount: totalAmount,
+                        trx_type: "CREDIT",
+                        account: "Accounts Payable",
+                        description: "Purchase on credit from vendor",
+                    },
+                })
 
             }
             return { product, batch, purchase, vendor_product_purchase };
@@ -118,7 +158,7 @@ class ProductService {
             where: {
                 category_id,
                 is_deleted: false,
-                name: { contains: search ,mode:'insensitive'},
+                name: { contains: search, mode: 'insensitive' },
                 quantity: availableProducts ? { not: { equals: 0 } } : undefined
             },
             include: {
@@ -129,7 +169,7 @@ class ProductService {
                     }
                 },
             },
-            orderBy: { created_at: 'desc'},
+            orderBy: { created_at: 'desc' },
 
         });
         const count = await this.prisma.product.count({

@@ -9,6 +9,7 @@ interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
     icon: React.ReactNode;
     error?: string;
     touched?: boolean;
+    className?:any
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -17,6 +18,7 @@ const FormInput: React.FC<FormInputProps> = ({
     icon,
     error,
     touched,
+    className,
     ...props
 }) => {
     return (
@@ -24,7 +26,7 @@ const FormInput: React.FC<FormInputProps> = ({
             {label && <Label htmlFor={name} className="block mb-1 text-sm font-medium text-gray-700">
                 {label}
             </Label>}
-            <div className="relative">
+            <div className={`${className} relative`}>
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                     {icon}
                 </span>

@@ -5,18 +5,26 @@ import Modal from '@/components/ui/Modal';
 import { clearCart, CartProduct, getCartFromLocalStorage } from '@/store/slices/productSlice/productSlice';
 import { useDispatch } from 'react-redux';
 import { FaDeleteLeft } from '../../assets/icons';
+import { Button } from '@/components/ui/button';
 import { MdDiscount } from '../../assets/icons';
 import { Label } from '@radix-ui/react-label';
 import FormInput from '@/components/core/FormInput';
+import CreateCustomerModal from './CreateCustomerModal';
 import Select from 'react-select';
-import { useGetAllCustomersQuery } from '@/store/slices/customerSlice/customerSlice';
+import { useGetAllCustomersQuery } from '@/store/slices/customerSlice/customerApiSlice';
 import { useCreateSaleMutation } from '@/store/slices/saleSlice/saleApiSlice';
 import { successHandler } from '@/utils/successHandler';
 import { errorHandler } from '@/components/error/errorHandler';
 import { CartProducts, Cart } from '@/store/slices/saleSlice/saleApiSlice';
+import FormCreatableSelect from '@/components/core/FormCreatableSelect';
 
 const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () => void }) => {
     const { data: customerResponse } = useGetAllCustomersQuery({});
+    const [isOpenCustomerModal, setIsOpenCustomerModal] = React.useState(false)
+    const [newCustomerName, setNewCustomerName] = React.useState('')
+    const toggleCustomerModal = () => {
+        setIsOpenCustomerModal(!isOpenCustomerModal)
+    }
     const dispatch = useDispatch();
     const [createSale] = useCreateSaleMutation();
 
@@ -55,7 +63,7 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                 })
             ),
             discount: Yup.number().min(0, 'Discount cannot be negative'),
-            customer: Yup.object().nullable().required('Customer selection is required'),
+            customer: Yup.number().nullable().required('Customer selection is required'),
         }),
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             console.log(values);
@@ -63,27 +71,26 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
             const subtotal = calculateSubtotal();
             const total = calculateTotal();
             const cartProducts: CartProducts[] = values?.cartProducts.map(({ id, units, sale_price }) => ({ product_id: id, units, unit_price: Number(sale_price) }));
-            console.log(cartProducts);
 
             const data = {
                 cartProducts,
-                customer_id: (values.customer as unknown as { value: number, label: string }).value,
+                customer_id: values.customer as unknown as number,
                 discount: values.discount,
                 subtotal,
                 total,
             } as Cart;
-            try {
-                const response = await createSale(data).unwrap();
-                dispatch(clearCart());
-                // localStorage.removeItem('cartProducts');
-                resetForm()
-                setSubmitting(false)
-                toggleModal()
-                successHandler(response)
-            } catch (error) {
-                errorHandler(error)
+            // try {
+            //     const response = await createSale(data).unwrap();
+            //     dispatch(clearCart());
+            //     // localStorage.removeItem('cartProducts');
+            //     resetForm()
+            //     setSubmitting(false)
+            //     toggleModal()
+            //     successHandler(response)
+            // } catch (error) {
+            //     errorHandler(error)
 
-            }
+            // }
         },
     });
 
@@ -126,10 +133,19 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
         localStorage.removeItem('cartProducts');
         toggleModal()
     }
+
+    const handleCreate = (newCustomer: string) => {
+        console.log(newCustomer);
+        setNewCustomerName(newCustomer)
+        toggleCustomerModal()
+
+    }
     return (
-        <Modal className="p-6 m-6 rounded-lg" isOpen={isOpen} title="Your Cart">
+        <Modal className="p-6 rounded-lg overflow-y-auto scrollbar-style max-h-full" isOpen={isOpen} title="Your Cart">
+            <CreateCustomerModal name={newCustomerName} toggleModal={toggleCustomerModal} isOpen={isOpenCustomerModal} />
+            <Button onClick={toggleCustomerModal}>Toggle Modal</Button>
             <form onSubmit={formik.handleSubmit}>
-                <div className="max-h-60 overflow-y-auto scrollbar-style mb-6">
+                <div className="max-h-60 overflow-y-auto scrollbar-style mb-2">
                     <table className="w-full border-collapse text-left">
                         <thead className="border-b-2">
                             <tr>
@@ -187,15 +203,17 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                     </table>
                 </div>
 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col z-10">
                     <FormInput
                         label="Discount"
                         name="discount"
                         type="number"
+                        // className='-z-[1] '
                         icon={<MdDiscount />}
                         error={formik.errors.discount}
                         touched={formik.touched.discount}
                         onChange={handleDiscountChange}
+
                         onBlur={formik.handleBlur}
                         value={formik.values.discount}
                         placeholder="Enter discount"
@@ -203,13 +221,14 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                     />
 
                     <div className="w-full">
+                        {/* 
                         <Label htmlFor="customer" className="block mb-1 text-sm font-medium text-gray-700">
                             Select Customer:
                         </Label>
                         <Select
                             id="customer"
                             value={formik.values.customer}
-                            className="customize-hover-border"
+                            className="customize-hover-border "
                             styles={{
                                 control: (baseStyles, state) => ({
                                     ...baseStyles,
@@ -226,6 +245,20 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                             }))}
                             onBlur={formik.handleBlur}
                             isClearable
+                        /> */}
+
+                        <FormCreatableSelect
+                            dontShowCreate={true}
+                            label="Customer"
+                            name="customer"
+                            icon={<></>}
+                            placeholder="Create or Select Vendor"
+                            options={customerResponse?.result.map((customer) => ({ value: customer.id, label: customer.name })) || []}
+                            value={formik.values.customer} // Controlled value
+                            onChange={(customer_id) => formik.setFieldValue('customer', customer_id)}
+                            error={formik.errors.customer} // Pass error from parent
+                            touched={formik.touched.customer} // Pass touched state from parent
+                            onCreate={handleCreate}
                         />
                         {formik.touched.customer && formik.errors.customer && (
                             <div className="text-red-500">{formik.errors.customer}</div>
@@ -233,12 +266,12 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-2 mt-6">
+                <div className="flex flex-row gap-2 justify-between mt-2 -z-999">
                     <h2 className="text-lg font-semibold">Subtotal: {calculateSubtotal().toFixed(2)} PKR</h2>
                     <h2 className="text-lg font-semibold">Total: {calculateTotal().toFixed(2)} PKR</h2>
                 </div>
 
-                <div className="flex justify-end gap-4 mt-6">
+                <div className="flex justify-end gap-4 mt-2">
                     <button
                         onClick={toggleModal}
                         className="px-4 py-2 bg-gray-300 text-gray-700 hover:bg-gray-400 rounded"

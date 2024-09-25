@@ -7,11 +7,12 @@ import { kioskApiSlice } from "./slices/kioskSlice/kioskApiSlice";
 import kioskSlice from './slices/kioskSlice/kioskSlice'
 import globalSlice from "./slices/globalSlice.ts/globalSlice";
 import userSlice from "./slices/userSlice/userSlice";
+import customerSlice from "./slices/customerSlice/customerSlice";
 import { vendorApiSlice } from "./slices/vendorSlice/vendorApiSlice";
 import { productApiSlice } from "./slices/productSlice/productApiSlice";
 import productSlice from "./slices/productSlice/productSlice";
 import vendorPurchaseApiSlice from "./slices/vendorPurchase/vendorPurchaseApiSlice";
-import { CustomerApiSlice } from "./slices/customerSlice/customerSlice";
+import { customerApiSlice } from "./slices/customerSlice/customerApiSlice";
 import { saleApiSlice } from "./slices/saleSlice/saleApiSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
@@ -19,6 +20,7 @@ const reducer = {
 	[globalSlice.name]: globalSlice.reducer,
 	[userSlice.name]: userSlice.reducer,
 	[productSlice.name]: productSlice.reducer,
+	[customerSlice.name]: customerSlice.reducer,
 
 	[authApiSlice.reducerPath]: authApiSlice.reducer,
 	[userApiSlice.reducerPath]: userApiSlice.reducer,
@@ -26,14 +28,14 @@ const reducer = {
 	[vendorApiSlice.reducerPath]: vendorApiSlice.reducer,
 	[productApiSlice.reducerPath]: productApiSlice.reducer,
 	[vendorPurchaseApiSlice.reducerPath]: vendorPurchaseApiSlice.reducer,
-	[CustomerApiSlice.reducerPath]: CustomerApiSlice.reducer,
+	[customerApiSlice.reducerPath]: customerApiSlice.reducer,
 	[saleApiSlice.reducerPath]: saleApiSlice.reducer,
 };
 
 const store = configureStore({
 	reducer,
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(authApiSlice.middleware, userApiSlice.middleware, kioskApiSlice.middleware, vendorApiSlice.middleware, productApiSlice.middleware, vendorPurchaseApiSlice.middleware, CustomerApiSlice.middleware,saleApiSlice.middleware),
+		getDefaultMiddleware().concat(authApiSlice.middleware, userApiSlice.middleware, kioskApiSlice.middleware, vendorApiSlice.middleware, productApiSlice.middleware, vendorPurchaseApiSlice.middleware, customerApiSlice.middleware, saleApiSlice.middleware),
 });
 
 
