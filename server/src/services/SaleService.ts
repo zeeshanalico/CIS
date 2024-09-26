@@ -22,7 +22,7 @@ class SaleService {
     constructor(private readonly prisma: PrismaClient) { }
 
     async createSale(input: Cart) {
-        const { cartProducts, discount, customer_id, kiosk_id, user_id, subtotal, total } = input;//here discount is total discount
+        const { cartProducts, discount, customer_id, kiosk_id, subtotal, total } = input;//here discount is total discount
         const qty = cartProducts.reduce((acc, product) => acc + product.units, 0);
 
         return this.prisma.$transaction(async (trx: Prisma.TransactionClient) => {
@@ -57,7 +57,7 @@ class SaleService {
                 });
             }
 
-           //DOUBLE ENTRY IN JOURNAL:Journal table will manage two accounts for each kiosk (debit A/C and credit A/C)
+            //DOUBLE ENTRY IN JOURNAL:Journal table will manage two accounts for each kiosk (debit A/C and credit A/C)
             const journalDebit = await this.addJournal({
                 trx,
                 data: {
@@ -73,14 +73,14 @@ class SaleService {
                 data: {
                     kiosk: { connect: { id: kiosk_id } },
                     amount: total,
-                    trx_type: "CREDIT", 
+                    trx_type: "CREDIT",
                     account: "Sales Revenue (increase revenue)",
                     description: "Sale made on credit to customer",
                 },
             })
 
             //TRANSACTION : as transaction occurs b/w customer and kiosk so the vendor will be null, if transaction occur b/w kiosk and vendor than customer will be null like in add vendor purchase/add inventory
-             const transaction = await this.addTRX({
+            const transaction = await this.addTRX({
                 trx,
                 data: {
                     amount: total,
@@ -93,6 +93,9 @@ class SaleService {
         });
     }
 
+    async create_Public_Self_Sale(input: Cart) {
+        
+    }
     async addSale({ trx, data }: { trx?: Prisma.TransactionClient; data: Prisma.SaleCreateInput }): Promise<Sale> {
         let prismaInstance: PrismaClient | Prisma.TransactionClient = trx || this.prisma;
         return await prismaInstance.sale.create({ data });

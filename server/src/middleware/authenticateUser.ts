@@ -5,16 +5,16 @@ import { UserPayload } from "../types/UserPayload";
 
 //decode Access Token
 export const autheticateUser = (req: Request, res: Response, next: NextFunction) => {
-    if (req.path.startsWith('/auth')) {
+    if (req.path.startsWith('/auth') || req.path.startsWith('/public')) {
         return next();
     }
     const authHeader = req.headers['authorization'];
-    
+
     if (authHeader) {
         const [scheme, token] = authHeader.split(' ');
         if (scheme === 'Bearer' && token) {
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
-                if (err) throw new CustomError('Invalid access token', 401); 
+                if (err) throw new CustomError('Invalid access token', 401);
                 req.user = user as (UserPayload);
             });
 

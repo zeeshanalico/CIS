@@ -2,8 +2,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{
-}
+
+* {}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -62,23 +63,13 @@
 }
 
 @layer base {
+
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-  }
-
-  .scrollbar-style {
-    --sb-thumb-color: #b7b1c4;
-    --sb-track-color: #F1F1F1;
-    --sb-size: 6px;
-  }
-
-  .scrollbar-style::-webkit-scrollbar {
-    width: var(--sb-size);
-    height: var(--sb-size);
   }
 
   .customize-hover-border div:nth-child(3):hover {
@@ -90,11 +81,22 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  
+
   /* Hide increment/decrement arrows in Firefox */
   input[type="number"] {
     -moz-appearance: textfield;
     appearance: textfield;
+  }
+
+  .scrollbar-style {
+    --sb-thumb-color: #b7b1c4;
+    --sb-track-color: #F1F1F1;
+    --sb-size: 6px;
+  }
+
+  .scrollbar-style::-webkit-scrollbar {
+    width: var(--sb-size);
+    height: var(--sb-size);
   }
 
   .scrollbar-style::-webkit-scrollbar-track {
@@ -112,6 +114,17 @@
     .scrollbar-style {
       scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
     }
+  }
+
+  .no-scrollbar {
+    /* For WebKit browsers */
+    &::-webkit-scrollbar {
+      display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+    }
+
+    /* For Firefox */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
   }
 }
 

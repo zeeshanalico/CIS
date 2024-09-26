@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Kiosk } from '@/types/kiosk';
 import { ExtraInfo } from '@/types/apiResponse';
 import { Product } from '@/types/Product';
+import { toast } from '@/components/ui/use-toast';
 
 // Cart Product with units for local storage
 export interface CartProduct extends Product {
@@ -70,9 +71,15 @@ const productSlice = createSlice({
             const productIndex = cartProducts.findIndex(cartProduct => cartProduct.id === action.payload.id);
 
             if (productIndex !== -1) {
+                
                 // If the product already exists in local storage, increment the units
                 // cartProducts[productIndex].units += 1;
-                return;
+                throw new Error('Product already exists in the cart');
+                
+                // return toast({
+                //         duration: 1200,
+                //         title: `This Product is already  added to cart.`,
+                //     });
             } else {
                 // If the product does not exist, add it with units set to 1
                 const productWithUnits: CartProduct = { ...action.payload, units: 1 };

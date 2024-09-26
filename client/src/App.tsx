@@ -12,6 +12,7 @@ import InventoryLayout from './pages/Inventory/Layout';
 import KioskLayout from './pages/Kiosk/Layout';
 import UserLayout from './pages/User/Layout';
 import CustomerLayout from './pages/Customer/Layout';
+import { AnimatePresence } from 'framer-motion';
 
 
 // Lazy-loaded components
@@ -35,6 +36,8 @@ const CreateUser = lazy(() => import('./pages/User/CreateUser'));
 const UserTable = lazy(() => import('./pages/User/UserTable'));
 const CustomerTable = lazy(() => import('./pages/Customer/ExistingCustomers/CustomerTable'));
 const CreateCustomer = lazy(() => import('./pages/Customer/CreateCustomer/CreateCustomer'));
+const LandingPage = lazy(() => import('./pages/Landing'));
+import { AnimateY } from './components/ui/AnimateY';
 
 
 export enum RoutesEnum {
@@ -134,59 +137,65 @@ const App = () => {
 
     return (
         <Suspense fallback={<FullPageLoader />}>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} replace />} />
-                <Route path={RoutesEnum.LOGIN} element={<Login />} />
-                <Route path={RoutesEnum.UNAUTHORIZED} element={<Unauthorized />} />
-                <Route path={RoutesEnum.TESTING} element={<Testing />} />
+            <AnimatePresence mode='wait'>
 
-                {/* Protected Routes for Admins */}
-                <Route element={<ProtectedRoute requiredRoles={[Role.SUPER_ADMIN, Role.ADMIN]} />}>
-                    <Route path="/" element={<Sidebar />}>
-                        <Route path={RoutesEnum.DASHBOARD} element={<Home />} />
-                        {/* <Route path={RoutesEnum.USER} element={<User />} /> */}
-                        <Route path={RoutesEnum.USER} element={<UserLayout />} >
-                            <Route path={RoutesEnum.CREATE_USER} element={<CreateUser />} />
-                            <Route path={RoutesEnum.EXISTING_USERS} element={<UserTable />} />
-                        </Route>
+                {/* <Routes> */}
+                <Routes location={location} key={location.key}>
 
-                        <Route path={RoutesEnum.REPORT} element={<Report />} />
-                        <Route path={RoutesEnum.SETTING} element={<Setting />} />
+                    {/* Public Routes */}
+                    <Route path="/" element={<LandingPage />} />
+                    {/* <Route path={RoutesEnum.LOGIN} element={<Login />} /> */}
+                    <Route path={RoutesEnum.LOGIN} element={<AnimateY><Login /></AnimateY>} />
+                    <Route path={RoutesEnum.UNAUTHORIZED} element={<Unauthorized />} />
+                    <Route path={RoutesEnum.TESTING} element={<Testing />} />
 
-                        <Route path={RoutesEnum.KIOSK} element={<KioskLayout />} >
-                            <Route path={RoutesEnum.ADD_NEW_KIOSK} element={<CreateKiosk />} />
-                            <Route path={RoutesEnum.EXISTED_KIOSKS} element={<ExistingKiosksTable />} />
-                        </Route>
+                    {/* Protected Routes for Admins */}
+                    <Route element={<ProtectedRoute requiredRoles={[Role.SUPER_ADMIN, Role.ADMIN]} />}>
+                        <Route path="/" element={<Sidebar />}>
+                            <Route path={RoutesEnum.DASHBOARD} element={<Home />} />
+                            {/* <Route path={RoutesEnum.USER} element={<User />} /> */}
+                            <Route path={RoutesEnum.USER} element={<UserLayout />} >
+                                <Route path={RoutesEnum.CREATE_USER} element={<CreateUser />} />
+                                <Route path={RoutesEnum.EXISTING_USERS} element={<UserTable />} />
+                            </Route>
 
-                        <Route path={RoutesEnum.CUSTOMER} element={<CustomerLayout />} >
-                            <Route path={RoutesEnum.ADD_NEW_CUSTOMER} element={<CreateCustomer />} />
-                            <Route path={RoutesEnum.EXISTED_CUSTOMERS} element={<CustomerTable />} />
-                        </Route>
+                            <Route path={RoutesEnum.REPORT} element={<Report />} />
+                            <Route path={RoutesEnum.SETTING} element={<Setting />} />
 
-                        <Route path={RoutesEnum.VENDOR} element={<VendorLayout />} >
-                            <Route path={RoutesEnum.ADD_VENDOR} element={<AddVendor />} />
-                        </Route>
+                            <Route path={RoutesEnum.KIOSK} element={<KioskLayout />} >
+                                <Route path={RoutesEnum.ADD_NEW_KIOSK} element={<CreateKiosk />} />
+                                <Route path={RoutesEnum.EXISTED_KIOSKS} element={<ExistingKiosksTable />} />
+                            </Route>
 
-                    </Route>
-                </Route>
+                            <Route path={RoutesEnum.CUSTOMER} element={<CustomerLayout />} >
+                                <Route path={RoutesEnum.ADD_NEW_CUSTOMER} element={<CreateCustomer />} />
+                                <Route path={RoutesEnum.EXISTED_CUSTOMERS} element={<CustomerTable />} />
+                            </Route>
 
-                {/* Protected Routes for Users */}
-                <Route element={<ProtectedRoute requiredRoles={[Role.USER]} />}>
-                    <Route path="/" element={<UserSidebar />}>
-                        <Route path={RoutesEnum.USER_DASHBOARD} element={<UserDashboard />} />
-                        <Route path={RoutesEnum.SALE} element={<Sale />} />
-                        <Route path={RoutesEnum.INVENTORY} element={<InventoryLayout />} >
-                            <Route path={RoutesEnum.ADD_NEW_INVENTORY} element={<AddNewInventory />} />
-                            <Route path={RoutesEnum.STOCK} element={<Stock />} />
-                            <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
+                            <Route path={RoutesEnum.VENDOR} element={<VendorLayout />} >
+                                <Route path={RoutesEnum.ADD_VENDOR} element={<AddVendor />} />
+                            </Route>
+
                         </Route>
                     </Route>
-                </Route>
 
-                {/* Not Found Route */}
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+                    {/* Protected Routes for Users */}
+                    <Route element={<ProtectedRoute requiredRoles={[Role.USER]} />}>
+                        <Route path="/" element={<UserSidebar />}>
+                            <Route path={RoutesEnum.USER_DASHBOARD} element={<UserDashboard />} />
+                            <Route path={RoutesEnum.SALE} element={<Sale />} />
+                            <Route path={RoutesEnum.INVENTORY} element={<InventoryLayout />} >
+                                <Route path={RoutesEnum.ADD_NEW_INVENTORY} element={<AddNewInventory />} />
+                                <Route path={RoutesEnum.STOCK} element={<Stock />} />
+                                <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
+                            </Route>
+                        </Route>
+                    </Route>
+
+                    {/* Not Found Route */}
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </AnimatePresence>
         </Suspense>
     );
 };

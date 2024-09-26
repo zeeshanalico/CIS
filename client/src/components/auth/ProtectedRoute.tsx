@@ -53,9 +53,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles = [] }) =
         }
     }, [isAuthChecked, accessToken, requiredRoles, user, navigate]);
 
-    if (isLoading || !isAuthChecked) {
-        return <FullPageLoader />;
-    }
+    // if (isLoading || !isAuthChecked) {
+    //     return <FullPageLoader />;
+    // }
 
     return <Outlet />;
 };

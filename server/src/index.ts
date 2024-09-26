@@ -29,7 +29,7 @@ app.use(logRequest);//logging request in 'logRequest' middleware while logging r
 //   res.json({ user: req.user })
 // })
 
-app.use('/api', autheticateUser, router);// startWith(/auth) excluded from middleware
+app.use('/api', autheticateUser, router);// startWith(/auth | /public) excluded from middleware
 
 app.use(notFound, errorHandler);
 

@@ -19,6 +19,6 @@ router.use('/vendor', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]
 router.use('/customer', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), customerRouter)
 router.use('/sale', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), saleRouter)
 router.use('/vendor-purchase', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), vendorPurchaseRouter)
-
+router.use('/public', saleRouter)
 export default router
 

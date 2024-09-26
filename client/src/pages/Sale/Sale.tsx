@@ -12,6 +12,7 @@ import CartModal from './CartModal';
 import CartButton from './CartButton';
 import { getCartFromLocalStorage } from '@/store/slices/productSlice/productSlice';
 import { toast } from '@/components/ui/use-toast';
+import { errorHandler } from '@/components/error/errorHandler';
 const Sale = () => {
     const { products, extraInfo, limit, page, search } = useSelector((state: RootState) => state.productSlice);
     const [searchValue, setSearchValue] = useState<string | null>(null)
@@ -53,13 +54,16 @@ const Sale = () => {
     }
 
     const handleAddToCart = (product: Product) => {
-        dispatch(addToCart(product));
-        setTotalCartProducts(getCartFromLocalStorage().length); // Increment the count by 1
-        toast({
-            duration: 1200,
-            title: `${product.name} added to cart.`,
-        });
-
+        try {
+            dispatch(addToCart(product));
+            setTotalCartProducts(getCartFromLocalStorage().length); // Increment the count by 1
+            toast({
+                duration: 1200,
+                title: `${product.name} added to cart.`,
+            });
+        } catch (error) {
+            errorHandler(error)
+        }
     }
     return (
         <div className='p-6'>

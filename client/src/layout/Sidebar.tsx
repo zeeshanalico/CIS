@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { RoutesEnum } from "@/App";
+import { AnimateX } from "@/components/ui/AnimateY";
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [logout, { isLoading: logoutLoading }] = useLogoutMutation();
@@ -78,7 +79,9 @@ const Sidebar = () => {
                     </header>
                     <main className="flex-1 p-4 bg-gray-50 scrollbar-style overflow-x-visible ">
                         {/* Main content */}
-                        <Outlet />
+                        <AnimateX>
+                            <Outlet />
+                        </AnimateX>
                     </main>
                 </div>
             </div>

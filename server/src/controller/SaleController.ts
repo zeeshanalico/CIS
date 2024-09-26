@@ -12,9 +12,7 @@ class SaleController {
         try {
             const kiosk = await this.userService.getKioskByUserId(user_id as number)
             if (!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
-            if (!user_id) throw new CustomError('User not found', 404);
-
-            const result = await this.saleService.createSale({ ...req.body, kiosk_id: kiosk.id, user_id });
+            const result = await this.saleService.createSale({ ...req.body, kiosk_id: kiosk.id, });
             sendSuccess(res, result, 'Vendor purchase created successfully');
         } catch (error) {
             sendError(res, error);
@@ -22,6 +20,14 @@ class SaleController {
 
     }
 
+    async create_Public_Self_Sale(req: Request, res: Response) {
+        try {
+            const result = await this.saleService.create_Public_Self_Sale({ ...req.body, });
+            sendSuccess(res, result, 'Vendor purchase created successfully');
+        } catch (error) {
+            sendError(res, error);
+        }
+    }
 }
 
 export default SaleController;

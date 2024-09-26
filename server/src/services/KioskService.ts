@@ -53,7 +53,7 @@ class KioskService {
       return kiosk;
     })
   }
-  
+
   async hardDeleteKiosk(id: number): Promise<Kiosk> {
     return await this.prisma.$transaction(async (trx) => {
       await trx.user.updateMany({

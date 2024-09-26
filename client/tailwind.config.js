@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       boxShadow: {
         'custom-inner': 'inset 0 6px 6px rgb(23, 255, 255)',
+        'inner-lg': 'inset 0 4px 8px rgba(0, 0, 0, 0.1)', // Custom inner shadow
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
