@@ -13,7 +13,7 @@ import KioskLayout from './pages/Kiosk/Layout';
 import UserLayout from './pages/User/Layout';
 import CustomerLayout from './pages/Customer/Layout';
 import { AnimatePresence } from 'framer-motion';
-
+import { AnimateRouteX, AnimateRouteY } from './components/ui/AnimateRoute';
 
 // Lazy-loaded components
 const Login = lazy(() => import('./pages/Login/Login'));
@@ -37,7 +37,7 @@ const UserTable = lazy(() => import('./pages/User/UserTable'));
 const CustomerTable = lazy(() => import('./pages/Customer/ExistingCustomers/CustomerTable'));
 const CreateCustomer = lazy(() => import('./pages/Customer/CreateCustomer/CreateCustomer'));
 const LandingPage = lazy(() => import('./pages/Landing'));
-import { AnimateY } from './components/ui/AnimateY';
+const ProductsPage = lazy(() => import('./pages/Public/Products'));
 
 
 export enum RoutesEnum {
@@ -137,15 +137,15 @@ const App = () => {
 
     return (
         <Suspense fallback={<FullPageLoader />}>
-            <AnimatePresence mode='wait'>
+            <AnimatePresence mode='sync'>
 
                 {/* <Routes> */}
                 <Routes location={location} key={location.key}>
 
                     {/* Public Routes */}
                     <Route path="/" element={<LandingPage />} />
-                    {/* <Route path={RoutesEnum.LOGIN} element={<Login />} /> */}
-                    <Route path={RoutesEnum.LOGIN} element={<AnimateY><Login /></AnimateY>} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path={RoutesEnum.LOGIN} element={<AnimateRouteY fullPath={RoutesEnum.LOGIN} element={<Login />} />} />
                     <Route path={RoutesEnum.UNAUTHORIZED} element={<Unauthorized />} />
                     <Route path={RoutesEnum.TESTING} element={<Testing />} />
 
@@ -153,7 +153,7 @@ const App = () => {
                     <Route element={<ProtectedRoute requiredRoles={[Role.SUPER_ADMIN, Role.ADMIN]} />}>
                         <Route path="/" element={<Sidebar />}>
                             <Route path={RoutesEnum.DASHBOARD} element={<Home />} />
-                            {/* <Route path={RoutesEnum.USER} element={<User />} /> */}
+
                             <Route path={RoutesEnum.USER} element={<UserLayout />} >
                                 <Route path={RoutesEnum.CREATE_USER} element={<CreateUser />} />
                                 <Route path={RoutesEnum.EXISTING_USERS} element={<UserTable />} />
@@ -168,8 +168,8 @@ const App = () => {
                             </Route>
 
                             <Route path={RoutesEnum.CUSTOMER} element={<CustomerLayout />} >
-                                <Route path={RoutesEnum.ADD_NEW_CUSTOMER} element={<CreateCustomer />} />
-                                <Route path={RoutesEnum.EXISTED_CUSTOMERS} element={<CustomerTable />} />
+                                <Route path={RoutesEnum.ADD_NEW_CUSTOMER} element={<AnimateRouteX fullPath={`${RoutesEnum.CUSTOMER}/${RoutesEnum.ADD_NEW_CUSTOMER}`} element={<CreateCustomer />} />} />
+                                <Route path={RoutesEnum.EXISTED_CUSTOMERS} element={<AnimateRouteX fullPath={`${RoutesEnum.CUSTOMER}/${RoutesEnum.EXISTED_CUSTOMERS}`} element={<CustomerTable />} />} />
                             </Route>
 
                             <Route path={RoutesEnum.VENDOR} element={<VendorLayout />} >

@@ -18,9 +18,9 @@ export const AnimateY = ({ children }: Prop) => {
 export const AnimateX = ({ children }: Prop) => {
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }}  // Starting animation state
+            initial={{ opacity: 0, x: 50 }}  // Starting animation state
             animate={{ opacity: 1, x: 0 }}   // Animation state when mounted
-            exit={{ opacity: 0, x: -20 }}     // Animation state when exiting
+            exit={{ opacity: 0, x: -50 }}     // Animation state when exiting
             transition={{ duration: 0.2 }}     // Transition duration
         >
             {children}

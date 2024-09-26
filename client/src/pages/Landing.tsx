@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-
+import TooltipWithOptions from '@/components/ui/ToolTip';
 
 export default function LandingPage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -51,8 +51,8 @@ export default function LandingPage() {
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     <div className="text-2xl font-bold">KioskInventory</div>
                     <nav className="hidden md:flex space-x-6 items-center">
-                        <button onClick={() => handleNavClick('features')} className={`hover:text-indigo-300 transition duration-300`}>Features</button>
-                        <button onClick={() => handleNavClick('products')} className={`hover:text-indigo-300 transition duration-300`}>Products</button>
+                        <button onClick={() => navigate('/products')} className="hover:text-indigo-300 transition duration-300">🌟Products</button>
+                        <button onClick={() => handleNavClick('products')} className={`hover:text-indigo-300 transition duration-300`}>Featured Products</button>
                         <button onClick={() => handleNavClick('contact')} className={`hover:text-indigo-300 transition duration-300 `}>Contact</button>
                         <button onClick={() => navigate('/login')} className="bg-white text-indigo-900 px-4 py-2 rounded font-semibold hover:bg-indigo-100 transition duration-300">Login</button>
                     </nav>
@@ -64,10 +64,10 @@ export default function LandingPage() {
                 </div>
                 {mobileMenuOpen && (
                     <div className="md:hidden bg-indigo-800 py-2">
-                        <button onClick={() => handleNavClick('features')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Features</button>
-                        <button onClick={() => handleNavClick('products')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Products</button>
+                        <button onClick={() => navigate('/products')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Products</button>
+                        <button onClick={() => handleNavClick('products')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Featured Products</button>
                         <button onClick={() => handleNavClick('contact')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Contact</button>
-                        <button className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Login</button>
+                        <button onClick={() => navigate('/login')} className="block w-full text-left px-4 py-2 hover:bg-indigo-700 transition duration-300">Login</button>
                     </div>
                 )}
             </header>

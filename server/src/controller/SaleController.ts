@@ -19,15 +19,6 @@ class SaleController {
         }
 
     }
-
-    async create_Public_Self_Sale(req: Request, res: Response) {
-        try {
-            const result = await this.saleService.create_Public_Self_Sale({ ...req.body, });
-            sendSuccess(res, result, 'Vendor purchase created successfully');
-        } catch (error) {
-            sendError(res, error);
-        }
-    }
 }
 
 export default SaleController;
