@@ -57,10 +57,10 @@ const AddNewInventory = () => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="w-full p-6">
-        <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
+      <div className="w-full">
+        {/* <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
           Add New Inventory
-        </h2>
+        </h2> */}
         <Formik
           initialValues={{
             isNew: false,

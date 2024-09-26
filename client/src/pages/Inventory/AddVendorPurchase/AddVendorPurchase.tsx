@@ -51,6 +51,9 @@ const ParentComponent = () => {
 
   return (
     <div>
+      {/* <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
+          Add Vendor Purchase
+        </h2> */}
       <form onSubmit={formik.handleSubmit}>
         <SelectorAddVendor
           vendorId={formik.values.vendorId}

@@ -48,7 +48,7 @@ const UserTable = () => {
     const confirmEdit = async (values: EditUserFormState) => {
 
         try {
-            const response = await updateUser(values).unwrap();
+            const response = await updateUser(values as { id: number, name: string, email: string, resetPassword: string }).unwrap();
             successHandler(response);
             dispatch(toggleEditModal());
         } catch (error) {

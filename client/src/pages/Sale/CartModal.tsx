@@ -143,7 +143,6 @@ const CartModal = ({ isOpen, toggleModal }: { isOpen: boolean; toggleModal: () =
     return (
         <Modal className="p-6 rounded-lg overflow-y-auto scrollbar-style max-h-full" isOpen={isOpen} title="Your Cart">
             <CreateCustomerModal name={newCustomerName} toggleModal={toggleCustomerModal} isOpen={isOpenCustomerModal} />
-            <Button onClick={toggleCustomerModal}>Toggle Modal</Button>
             <form onSubmit={formik.handleSubmit}>
                 <div className="max-h-60 overflow-y-auto scrollbar-style mb-2">
                     <table className="w-full border-collapse text-left">

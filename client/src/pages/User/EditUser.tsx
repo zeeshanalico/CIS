@@ -2,12 +2,13 @@ import Modal from "@/components/ui/Modal";
 import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import FormInput from "@/components/core/FormInput";
-import { FaUserAlt, MdOutlineAlternateEmail } from '../../assets/icons';
+import { FaUserAlt, MdOutlineAlternateEmail, FaLock } from '../../assets/icons';
 
 export interface EditUserFormState {
-    id: number;
+    id?: number;//it shouldn't be optional
     name: string;
     email: string;
+    resetPassword?: string;
 }
 
 interface Props {
@@ -34,7 +35,8 @@ const EditUser: React.FC<Props> = ({ isOpen, onClose, onSubmit, initialValues })
                     initialValues={{
                         name: initialValues.name,
                         email: initialValues.email,
-                    }}
+                        resetPassword: ''
+                    } as EditUserFormState}
                     validationSchema={Yup.object({
                         name: Yup.string()
                             .min(3, "Name must be at least 3 characters")
@@ -42,6 +44,7 @@ const EditUser: React.FC<Props> = ({ isOpen, onClose, onSubmit, initialValues })
                         email: Yup.string()
                             .email("Invalid email address")
                             .required("Email is required"),
+                        resetPassword: Yup.string().optional().min(6, 'If you want to update Password it must be minimum 6 characters')
                     })}
                     onSubmit={handleSubmit}
                 >
@@ -77,6 +80,16 @@ const EditUser: React.FC<Props> = ({ isOpen, onClose, onSubmit, initialValues })
                                     touched={touched.email}
                                     error={errors.email}
                                     icon={<MdOutlineAlternateEmail />}
+                                />
+                                <FormInput
+                                    label="Reset Password"
+                                    name="resetPassword"
+                                    value={values.resetPassword}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    touched={touched.resetPassword}
+                                    error={errors.resetPassword}
+                                    icon={<FaLock />}
                                 />
                             </div>
 

@@ -37,8 +37,9 @@ class UserController {
   }
 
   async updateUser(req: Request, res: Response): Promise<void> {
+    const { name, email, resetPassword } = req.body
     try {
-      const updatedUser = await this.userService.updateUser({ id: Number(req.params.id), updateUserInput: req.body, });
+      const updatedUser = await this.userService.updateUser({ id: Number(req.params.id), name, email, resetPassword });
       sendSuccess(res, updatedUser, `User  "${updatedUser.name}" updated successfully`);
     } catch (error) {
       sendError(res, error);

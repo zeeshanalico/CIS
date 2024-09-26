@@ -37,7 +37,7 @@ export const userApiSlice = createApi({
             }),
             invalidatesTags: ['User'],
         }),
-        updateUser: builder.mutation<ApiResponseSuccess<User>, { id: number, name: string, email: string }>({
+        updateUser: builder.mutation<ApiResponseSuccess<User>, { id: number, name: string, email: string, resetPassword: string }>({
             query: ({ id, ...body }) => ({
                 url: `/update/${id}`,
                 method: 'PUT',

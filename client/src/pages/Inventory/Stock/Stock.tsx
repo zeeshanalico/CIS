@@ -39,7 +39,7 @@ const Stock = () => {
   }, [productsResponse, dispatch]);
 
 
-  const confirmEdit =async (values: UpdateProductFormState) => {
+  const confirmEdit = async (values: UpdateProductFormState) => {
     try {
       const response = await updateProduct(values).unwrap();
       successHandler(response);
@@ -93,10 +93,10 @@ const Stock = () => {
                 <Td>{product.name}</Td>
                 <Td>{product.category?.name}</Td>
                 <Td>{product.quantity}</Td>
-                <Td>{product.sale_price}</Td>
+                <Td>{product.sale_price} <span className='text-sm'>PKR</span></Td>
                 <Td>
                   <span onClick={() => handleEditClick(product)}>
-                    <FaEdit className="w-6 h-6 hover:cursor-pointer transition-transform transform hover:scale-110 active:scale-90 duration-200 text-indigo-600 hover:text-indigo-800" />
+                    <FaEdit className="w-6 h-6 m-auto hover:cursor-pointer transition-transform transform hover:scale-110 active:scale-90 duration-200 text-indigo-600 hover:text-indigo-800" />
                   </span>
                 </Td>
 

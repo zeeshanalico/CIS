@@ -23,7 +23,7 @@ const EditKiosk = ({ isOpen, onClose, onSubmit, kiosk }: Props) => {
 
     return (
         <div>
-            <Modal className=" max-w-sm md:max-w-lg" title="Edit Kiosk" isOpen={isOpen} >
+            <Modal className="" title="Edit Kiosk" isOpen={isOpen} >
                 <div className="p-4">
                     <Formik
                         initialValues={{

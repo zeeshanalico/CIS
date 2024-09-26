@@ -28,15 +28,12 @@ class UserService {
         return user
     }
 
-    async updateUser({ id, updateUserInput }:
-        {
-            id: number,
-            updateUserInput: Prisma.UserUpdateInput
-        }
-    ): Promise<User> {
+    async updateUser({ id, resetPassword, name, email }: { id: number, resetPassword: string, name: string, email: string, }): Promise<User> {
+
         return await this.prisma.user.update({
+
             where: { id },
-            data: { ...updateUserInput, updated_at: new Date() },
+            data: { name, email, password: resetPassword ? resetPassword : undefined, updated_at: new Date() },
         });
     }
 

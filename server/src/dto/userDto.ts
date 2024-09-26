@@ -77,7 +77,8 @@ export const updateUserSchema = Joi.object({
             'string.base': 'Name should be a type of string',
             'string.max': 'Name cannot exceed 255 characters',
         }),
-});
+        resetPassword: Joi.string().allow('').min(6).max(100) // `resetPassword` can be an empty string or have a minimum of 6 characters
+    });
 
 // // User ID Param Schema
 // export const userIdParamSchema = Joi.object({
