@@ -9,7 +9,7 @@ const NotFoundPage = () => {
             title='Page Not Found'
             message="The page you are looking for does not exist."
             buttonText='Go Back'
-            onButtonClick={() => { navigate('/', { replace: true }) }}
+            onButtonClick={() => { navigate(-1) }}
             icon={<FaExclamationTriangle className="fa-5x text-8xl text-yellow-400"
             />}
         />

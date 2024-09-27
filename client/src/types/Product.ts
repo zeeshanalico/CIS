@@ -45,8 +45,16 @@ export class Product {
         this.category = category
     }
 }
+export interface ProductsExtraInfo extends ExtraInfo {
+    productWithHighestPrice: Product | null;
+    productWithLowestPrice: Product | null;
 
+}
 
 export interface ProductsResponse extends ApiResponseSuccess<Product[]> {
     extraInfo: ExtraInfo
 }
+export interface PublicProductsResponse extends ApiResponseSuccess<Product[]> {
+    extraInfo: ProductsExtraInfo
+}
+

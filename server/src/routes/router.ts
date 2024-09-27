@@ -9,7 +9,9 @@ import authorizeUser from '../middleware/authorizeUser'
 import { Role, Roles } from '../roles/roles'
 import saleRouter from './saleRouter/saleRouter'
 import customerRouter from './customerRouter/customerRouter'
+import publicRouter from './publicRouter/publicRouter'
 const router = express.Router()
+
 
 router.use('/auth', authRouter)//decodeAccessToken will not work for it
 router.use('/product', productRouter)
@@ -19,6 +21,6 @@ router.use('/vendor', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]
 router.use('/customer', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), customerRouter)
 router.use('/sale', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), saleRouter)
 router.use('/vendor-purchase', authorizeUser([Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER]), vendorPurchaseRouter)
-router.use('/public', saleRouter)
+router.use('/public',publicRouter)
 export default router
 

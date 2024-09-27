@@ -24,7 +24,7 @@ const Sidebar = () => {
         try {
             await logout().unwrap();
             dispatch(clearCredentials());
-            navigate('/login', { replace: true })
+            navigate('/', { replace: true })
         } catch (err: unknown) {
             if (err instanceof Error) {
                 console.log(err.message);

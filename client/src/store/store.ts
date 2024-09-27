@@ -14,6 +14,8 @@ import productSlice from "./slices/productSlice/productSlice";
 import vendorPurchaseApiSlice from "./slices/vendorPurchase/vendorPurchaseApiSlice";
 import { customerApiSlice } from "./slices/customerSlice/customerApiSlice";
 import { saleApiSlice } from "./slices/saleSlice/saleApiSlice";
+import publicProductSlice from "./slices/publicSlice/publicProductSlice";
+import { publicApiSlice } from "./slices/publicSlice/publicApiSlice";
 const reducer = {
 	[authSlice.name]: authSlice.reducer,
 	[kioskSlice.name]: kioskSlice.reducer,
@@ -21,6 +23,7 @@ const reducer = {
 	[userSlice.name]: userSlice.reducer,
 	[productSlice.name]: productSlice.reducer,
 	[customerSlice.name]: customerSlice.reducer,
+	[publicProductSlice.name]: publicProductSlice.reducer,
 
 	[authApiSlice.reducerPath]: authApiSlice.reducer,
 	[userApiSlice.reducerPath]: userApiSlice.reducer,
@@ -30,12 +33,22 @@ const reducer = {
 	[vendorPurchaseApiSlice.reducerPath]: vendorPurchaseApiSlice.reducer,
 	[customerApiSlice.reducerPath]: customerApiSlice.reducer,
 	[saleApiSlice.reducerPath]: saleApiSlice.reducer,
+	[publicApiSlice.reducerPath]: publicApiSlice.reducer,
 };
 
 const store = configureStore({
 	reducer,
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(authApiSlice.middleware, userApiSlice.middleware, kioskApiSlice.middleware, vendorApiSlice.middleware, productApiSlice.middleware, vendorPurchaseApiSlice.middleware, customerApiSlice.middleware, saleApiSlice.middleware),
+		getDefaultMiddleware().concat(
+			publicApiSlice.middleware,
+			authApiSlice.middleware,
+			userApiSlice.middleware,
+			kioskApiSlice.middleware,
+			vendorApiSlice.middleware,
+			productApiSlice.middleware,
+			vendorPurchaseApiSlice.middleware,
+			customerApiSlice.middleware,
+			saleApiSlice.middleware),
 });
 
 

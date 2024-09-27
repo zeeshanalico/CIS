@@ -1,20 +1,153 @@
-import React from 'react'
-import { ChevronDown, ChevronLeft, ChevronRight, Filter, Search } from 'lucide-react'
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/store';
+import { motion } from 'framer-motion';
+import FormSearch from '@/components/core/FormSearch';
+import {
+    getCartFromLocalStorage,
+    addToCart,
+    setExtraInfo,
+    CartProduct,
+    SortType,
+    clearCart,
+    removeFromCart,
+    setCategories,
+    setPage,
+    setSelectedCategory,
+    setSelectedProduct,
+    setSelectedSort,
+    setTotalCartProducts,
+    toggleEditModal,
+    setProducts,
+    setSearch,
+    setLimit,
+    setSelectedPrice,
+} from '@/store/slices/publicSlice/publicProductSlice';
+import usePagination from '@/components/hooks/usePagination';
+import { Product } from '@/types/Product';
+import { errorHandler } from '@/components/error/errorHandler';
+import { toast } from '@/components/ui/use-toast';
+import { ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { useGetProductsQuery, useGetCategoriesQuery } from '@/store/slices/publicSlice/publicApiSlice';
+import imageComingSoon from '../../assets/image-coming-soon.jpg';
+import { Button } from '@/components/ui/button';
+import CartButton from '../Sale/CartButton';
+import { FiShoppingCart } from 'react-icons/fi';
+import { CiSearch } from '../../assets/icons';
+import { Category } from '@/types/Category';
+import ResultsAndSorting from '@/components/core/ResultsAndSorting';
 
-const categories = ['All', 'Snacks', 'Drinks', 'Fresh Food', 'Electronics']
-const sortOptions = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest']
-
-const products = [
-    { id: 1, name: 'Energy Bar', category: 'Snacks', price: 2.99, image: '/placeholder.svg?height=200&width=200' },
-    { id: 2, name: 'Sparkling Water', category: 'Drinks', price: 1.99, image: '/placeholder.svg?height=200&width=200' },
-    { id: 3, name: 'Fresh Salad', category: 'Fresh Food', price: 5.99, image: '/placeholder.svg?height=200&width=200' },
-    { id: 4, name: 'Wireless Earbuds', category: 'Electronics', price: 49.99, image: '/placeholder.svg?height=200&width=200' },
-    { id: 5, name: 'Protein Shake', category: 'Drinks', price: 3.99, image: '/placeholder.svg?height=200&width=200' },
-    { id: 6, name: 'Granola Bar', category: 'Snacks', price: 1.49, image: '/placeholder.svg?height=200&width=200' },
-    // Add more products as needed
-]
+const sortOptions = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest'];
 
 export default function ProductPage() {
+    const {
+        products,
+        totalCartProducts,
+        extraInfo,
+        limit,
+        page,
+        search,
+        categories,
+        selectedCategory,
+        selectedPrice,
+        selectedSort,
+        selectedProduct,
+        showEditModal,
+    } = useSelector((state: RootState) => state.publicProductSlice);
+    const dispatch = useDispatch();
+
+    const [searchValue, setSearchValue] = useState<string | null>(search || '');
+    const { data: categoriesResponse } = useGetCategoriesQuery();
+    const [isOpenCart, setIsOpenCart] = useState<boolean>(false);
+
+    const { data: productsResponse } = useGetProductsQuery({
+        limit,
+        page,
+        search,
+        availableProducts: true,
+        category: selectedCategory?.id,
+        priceRange: selectedPrice,
+    });
+
+    const [filteredOptions, setFilteredOptions] = useState<{ category: Category | null, priceRange: number | null }>({
+        category: selectedCategory,
+        priceRange: extraInfo.productWithHighestPrice?.sale_price ?? null,
+
+    });
+
+    const { currentPage, totalPages, goToNextPage, goToPrevPage, goToPage } = usePagination({
+        totalItems: extraInfo?.count || 0,
+        itemsPerPage: limit,
+    });
+
+    useEffect(() => {
+        if (productsResponse?.result) {
+            dispatch(setProducts(productsResponse.result));
+        }
+        if (productsResponse?.extraInfo) {
+            dispatch(setExtraInfo(productsResponse.extraInfo));
+        }
+    }, [productsResponse, dispatch, extraInfo]);
+
+    useEffect(() => {
+        if (categoriesResponse?.result) {
+            dispatch(setCategories(categoriesResponse.result));
+        }
+    }, [categoriesResponse, dispatch]);
+
+    useEffect(() => {
+        const cartItems = getCartFromLocalStorage();
+        if (cartItems) {
+            dispatch(setTotalCartProducts(cartItems.length));
+        }
+    }, [dispatch]);
+
+    const handleSearch = () => {
+        goToPage(1)
+        dispatch(setPage(1));
+        dispatch(setSearch(searchValue || ''));
+    };
+
+    const handleAddToCart = (product: Product) => {
+        try {
+            dispatch(addToCart(product));
+            dispatch(setTotalCartProducts(getCartFromLocalStorage().length)); // Update cart count
+            toast({
+                duration: 1200,
+                title: `${product.name} added to cart.`,
+            });
+        } catch (error) {
+            errorHandler(error);
+        }
+    };
+
+    const toggleModal = () => {
+        setIsOpenCart(!isOpenCart);
+    };
+
+    const applyFilters = () => {
+        goToPage(1)
+        dispatch(setPage(1));
+        dispatch(setSelectedCategory(filteredOptions.category));
+        dispatch(setSelectedPrice(filteredOptions.priceRange));
+    };
+
+    const resetFilters = () => {
+        goToPage(1)
+        dispatch(setPage(1));
+        setFilteredOptions({
+            category: null,
+            priceRange: null,
+        });
+        dispatch(setSelectedCategory(null));
+        dispatch(setSelectedPrice(null));
+        dispatch(setSearch(''));
+    };
+
+
+    const handleSelectedSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setSelectedSort(e.target.value as SortType));
+    const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => dispatch(setLimit(Number(e.target.value)))
+    const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => setFilteredOptions((prevState: any) => ({ ...prevState, priceRange: e.target.value }))
     return (
         <div className="min-h-screen bg-gray-100">
             <header className="bg-indigo-900 text-white py-4">
@@ -24,7 +157,7 @@ export default function ProductPage() {
             </header>
 
             <main className="container mx-auto px-4 py-8">
-                <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex flex-col md:flex-row gap-4">
                     {/* Sidebar with filters */}
                     <aside className="w-full md:w-1/4">
                         <div className="bg-white p-4 rounded-lg shadow">
@@ -32,22 +165,52 @@ export default function ProductPage() {
                                 <Filter className="mr-2" size={20} />
                                 Filters
                             </h2>
+
+                            {/* Categories */}
                             <div className="mb-4">
                                 <h3 className="font-medium mb-2">Categories</h3>
                                 {categories.map((category) => (
-                                    <div key={category} className="flex items-center mb-2">
-                                        <input type="checkbox" id={category} className="mr-2" />
-                                        <label htmlFor={category}>{category}</label>
+                                    <div key={category.id} className="flex items-center mb-2">
+                                        <input
+                                            type="radio"
+                                            id={category.name}
+                                            name="category"
+                                            value={category.name}
+                                            className="mr-2"
+                                            checked={filteredOptions.category?.id === category.id}
+                                            onChange={() => setFilteredOptions((prevState: any) => ({ ...prevState, category }))}
+                                        />
+                                        <label htmlFor={category.name}>{category.name}</label>
                                     </div>
                                 ))}
                             </div>
+
                             <div>
                                 <h3 className="font-medium mb-2">Price Range</h3>
-                                <input type="range" className="w-full" min="0" max="100" />
+                                <input
+                                    type="range"
+                                    name="priceRange"
+                                    onChange={handleRangeChange}
+                                    step="10"
+                                    className="w-full"
+                                    min={extraInfo?.productWithLowestPrice?.sale_price}
+                                    max={extraInfo?.productWithHighestPrice?.sale_price}
+                                    value={filteredOptions.priceRange ?? 0}
+                                />
                                 <div className="flex justify-between text-sm text-gray-600">
-                                    <span>RS 0</span>
-                                    <span>RS 100</span>
+                                    <span>RS {extraInfo.productWithLowestPrice?.sale_price}</span>
+                                    <span>RS {extraInfo.productWithHighestPrice?.sale_price}</span>
                                 </div>
+                            </div>
+
+                            {/* Reset and Apply buttons */}
+                            <div className="flex justify-between gap-2 mt-4">
+                                <Button variant="secondary" className='w-full' onClick={resetFilters}>
+                                    Reset
+                                </Button>
+                                <Button className='bg-indigo-600 hover:bg-indigo-700 w-full' onClick={applyFilters}>
+                                    Apply
+                                </Button>
                             </div>
                         </div>
                     </aside>
@@ -55,36 +218,53 @@ export default function ProductPage() {
                     {/* Main content area */}
                     <div className="w-full md:w-3/4">
                         {/* Search and sort bar */}
-                        <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-col sm:flex-row justify-between items-center">
-                            <div className="relative w-full sm:w-64 mb-4 sm:mb-0">
-                                <input
-                                    type="text"
-                                    placeholder="Search products..."
-                                    className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                        <div className="p-1 flex flex-col gap-4 justify-between items-center">
+                            <div className="flex flex-row shadow-sm justify-between w-full">
+                                <FormSearch
+                                    setSearchValue={setSearchValue}
+                                    handleSearch={handleSearch}
+                                    searchValue={searchValue}
                                 />
-                                <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+                                <CartButton
+                                    icon={<FiShoppingCart />}
+                                    itemCount={totalCartProducts} // Pass the updated count
+                                    disabled={totalCartProducts === 0}
+                                    onClick={toggleModal}
+                                />
                             </div>
-                            <div className="relative">
-                                <select className="appearance-none bg-white border rounded-lg pl-4 pr-10 py-2">
-                                    {sortOptions.map((option) => (
-                                        <option key={option}>{option}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="absolute right-3 top-2.5 text-gray-400 pointer-events-none" size={20} />
-                            </div>
+
+                            {/* Results and Sorting */}
+                            <ResultsAndSorting
+                                to={extraInfo.to}
+                                from={extraInfo.from}
+                                count={extraInfo.count}
+                                limit={limit}
+                                handleLimitChange={handleLimitChange}
+                                selectedSort={selectedSort}
+                                sortOptions={sortOptions}
+                                handleSelectedSortChange={handleSelectedSortChange}
+                            />
+
                         </div>
 
-                        {/* Product grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Products Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {products.map((product) => (
                                 <div key={product.id} className="bg-white rounded-lg shadow overflow-hidden">
-                                    <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+                                    <img
+                                        src={product.image_url ?? imageComingSoon}
+                                        alt={product.name}
+                                        className="w-full h-48 object-cover"
+                                    />
                                     <div className="p-4">
                                         <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                                        <p className="text-gray-600 mb-2">{product.category}</p>
+                                        <p className="text-gray-600 mb-2">{product.category?.name}</p>
                                         <div className="flex justify-between items-center">
-                                            <span className="font-bold text-indigo-600">Rs {product.price.toFixed(2)}</span>
-                                            <button className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
+                                            <span className="font-bold text-indigo-600">Rs {product.sale_price}</span>
+                                            <button
+                                                onClick={() => handleAddToCart(product)}
+                                                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
+                                            >
                                                 Add to Cart
                                             </button>
                                         </div>
@@ -96,26 +276,43 @@ export default function ProductPage() {
                         {/* Pagination */}
                         <div className="mt-8 flex justify-center">
                             <nav className="flex items-center space-x-2">
-                                <button className="px-3 py-2 rounded-lg border hover:bg-gray-100">
+                                <button
+                                    onClick={() => {
+                                        dispatch(setPage(page - 1));
+                                        goToPrevPage();
+                                    }}
+                                    className="px-3 py-2 rounded-lg border hover:bg-gray-100"
+                                    disabled={currentPage === 1}
+                                >
                                     <ChevronLeft size={20} />
                                 </button>
-                                {[1, 2, 3, 4, 5].map((page) => (
+                                {[...Array(totalPages)].map((_, index) => (
                                     <button
-                                        key={page}
-                                        className={`px-4 py-2 rounded-lg border ${page === 1 ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'
-                                            }`}
+                                        key={index + 1}
+                                        onClick={() => {
+                                            dispatch(setPage(index + 1));
+                                            goToPage(index + 1);
+                                        }}
+                                        className={`px-3 py-2 rounded-lg border ${currentPage === index + 1 ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'}`}
                                     >
-                                        {page}
+                                        {index + 1}
                                     </button>
                                 ))}
-                                <button className="px-3 py-2 rounded-lg border hover:bg-gray-100">
+                                <button
+                                    onClick={() => {
+                                        dispatch(setPage(page + 1));
+                                        goToNextPage();
+                                    }}
+                                    className="px-3 py-2 rounded-lg border hover:bg-gray-100"
+                                    disabled={currentPage === totalPages}
+                                >
                                     <ChevronRight size={20} />
                                 </button>
                             </nav>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
-    )
+            </main >
+        </div >
+    );
 }

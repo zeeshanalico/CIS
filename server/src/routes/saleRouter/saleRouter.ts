@@ -12,7 +12,6 @@ const customerService = new SaleService(prisma);
 const customerController = new SaleController(customerService, userServcie);
 
 router.post('/create', validateRequest(cartSchema), (req, res) => customerController.createSale(req, res));//tested
-router.post('/create', validateRequest(cartSchema), (req, res) => customerController.create_Public_Self_Sale(req, res));//tested
 // router.get('/get-all', (req, res) => productController.getAllUsers(req, res));//tested
 // router.post('/update-kiosk-users/:id', validateRequest(updateKioskUsersSchema), (req, res) => productController.updateKioskUsers(req, res));//tested
 

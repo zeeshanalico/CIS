@@ -50,6 +50,8 @@ const Sale = () => {
     }, [])
 
     const handleSearch = () => {
+        dispatch(setPage(1));
+        dispatch(setSearch(searchValue || ''));
         setSearchValue(search);
     }
 
@@ -67,9 +69,6 @@ const Sale = () => {
     }
     return (
         <div className='p-6'>
-            <div>
-
-            </div>
             <div className='flex flex-row shadow-sm'>
                 <div className="relative w-full">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -77,6 +76,7 @@ const Sale = () => {
                     </span>
                     <input
                         name='search'
+                        // type='search'
                         value={search ?? ''}
                         className='flex h-10 pl-10 rouded-none w-full bg-background px-3 focus:outline-none  focus:border-black focus:border-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground active:border-black disabled:cursor-not-allowed disabled:opacity-50'
                         onChange={e => dispatch(setSearch(e.target.value))}
@@ -85,10 +85,9 @@ const Sale = () => {
                 <Button className='rounded-none' onClick={handleSearch}>Search</Button>
                 <CartButton
                     icon={<FiShoppingCart />}
-                    itemCount={totalCartProducts} // Pass the updated count
+                    itemCount={totalCartProducts} // Pass the updated count 
                     disabled={totalCartProducts === 0}
                     onClick={toggleModal} />
-
             </div>
             <div className="flex flex-row justify-between py-2 items-center">
                 <p className="text-sm text-gray-500 ">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>

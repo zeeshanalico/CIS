@@ -112,7 +112,7 @@ const ExistingKiosksTable = () => {
                 <Td>{kiosk.name}</Td>
                 <Td>{kiosk.location || ''}</Td>
                 <Td>{(kiosk.internal_user as User)?.name}</Td>
-                <Td>{(kiosk.user as User[])?.map(u => `${u.name}, `)}</Td>
+                <Td>{(kiosk.user as User[])?.map(u => u.name).join(', ')}</Td>
                 <Td>
                   <div className="flex flex-row gap-2 justify-center">
                     <span onClick={() => handleEditClick(kiosk)}>

@@ -1,6 +1,5 @@
 import { PrismaClient, Product, Category, Prisma } from '@prisma/client';
 import { CustomError } from '../utils/CustomError';
-
 class ProductService {
     constructor(private readonly prisma: PrismaClient) { }
 
@@ -151,7 +150,10 @@ class ProductService {
         });
     }
 
-    async getProducts({ skip, take, category_id, search, availableProducts }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined, search: string | undefined, availableProducts: boolean }): Promise<{ products: Product[], count: number }> {
+    async getProducts({ skip, take, category_id, search, availableProducts, priceRange }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined, search: string | undefined, availableProducts: boolean, priceRange?: number | undefined }): Promise<{ products: Product[], count: number }> {
+        const productWithLowestPrice = await this.getProductWithLowestPrice();
+        console.log('ZEESHAN', priceRange, typeof priceRange);
+
         const products = await this.prisma.product.findMany({
             skip,
             take,
@@ -159,7 +161,13 @@ class ProductService {
                 category_id,
                 is_deleted: false,
                 name: { contains: search, mode: 'insensitive' },
-                quantity: availableProducts ? { not: { equals: 0 } } : undefined
+                quantity: availableProducts ? { not: { equals: 0 } } : undefined,
+                sale_price: priceRange
+                    ? {
+                        gte: productWithLowestPrice?.sale_price || 0,
+                        lte: priceRange,  // Use priceRange if provided
+                    }
+                    : undefined,
             },
             include: {
                 category: {
@@ -174,19 +182,46 @@ class ProductService {
         });
         const count = await this.prisma.product.count({
             where: {
+                sale_price: priceRange
+                    ? {
+                        gte: productWithLowestPrice?.sale_price || 0,
+                        lte: priceRange,  // Use priceRange if provided
+                    }
+                    : undefined,  // No filter if priceRange is undefined
                 is_deleted: false,
+                category_id,
+                name: { contains: search, mode: 'insensitive' },
                 quantity: availableProducts ? { not: { equals: 0 } } : undefined
             },
         });
         return { products, count }
     }
 
-
-
     async getCategories(): Promise<Category[]> {
         return await this.prisma.category.findMany();
     }
 
+    async getProductWithHighestPrice(): Promise<Product | null> {
+        return await this.prisma.product.findFirst({
+            orderBy: {
+                sale_price: 'desc',
+            },
+            where: {
+                is_deleted: false
+            }
+        })
+    }
+
+    async getProductWithLowestPrice(): Promise<Product | null> {
+        return await this.prisma.product.findFirst({
+            orderBy: {
+                sale_price: 'asc',
+            },
+            where: {
+                is_deleted: false
+            }
+        })
+    }
 
     async getProductById(id: number): Promise<Product> {
 

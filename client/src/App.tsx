@@ -137,7 +137,7 @@ const App = () => {
 
     return (
         <Suspense fallback={<FullPageLoader />}>
-            <AnimatePresence mode='sync'>
+            <AnimatePresence mode='wait'>
 
                 {/* <Routes> */}
                 <Routes location={location} key={location.key}>
