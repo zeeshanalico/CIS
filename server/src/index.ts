@@ -33,6 +33,8 @@ app.use('/api', autheticateUser, router);// startWith(/auth | /public) excluded 
 
 app.use(notFound, errorHandler);
 
+console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
+
 const server = app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

@@ -3,26 +3,26 @@ const fs = require('fs')
 const path = require('path')
 import 'winston-daily-rotate-file';
 // Create logs directory if not exists
-const logsDirectory = path.join(__dirname,'..', 'logs');
-if (!fs.existsSync(logsDirectory)) {
-    fs.mkdirSync(logsDirectory);
-}
+// const logsDirectory = path.join(__dirname,'..', 'logs');
+// if (!fs.existsSync(logsDirectory)) {
+//     fs.mkdirSync(logsDirectory);
+// }
 
-const dailyRotateFileTransport = (level: string) => new transports.DailyRotateFile({
-    level,
-    dirname: logsDirectory,
-    filename: `%DATE%-${level}.log`,
-    datePattern: 'YYYY-MM-DD',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '30d',
-    format: format.combine(
-        format.timestamp(),
-        format.json(),
-    ),
-});
+// const dailyRotateFileTransport = (level: string) => new transports.DailyRotateFile({
+//     level,
+//     dirname: logsDirectory,
+//     filename: `%DATE%-${level}.log`,
+//     datePattern: 'YYYY-MM-DD',
+//     zippedArchive: true,
+//     maxSize: '20m',
+//     maxFiles: '30d',
+//     format: format.combine(
+//         format.timestamp(),
+//         format.json(),
+//     ),
+// });
 
-const isProduction = process.env.NODE_ENV === 'production';
+// const isProduction = process.env.NODE_ENV === 'production';
 
 // Define an interface for the log format
 interface LogFormat {
@@ -33,13 +33,15 @@ interface LogFormat {
     trace?: string;
 }
 
-const loggerTransports = isProduction
-    ? [
-        dailyRotateFileTransport('info'),
-        dailyRotateFileTransport('warn'),
-        dailyRotateFileTransport('error'),
-    ]
-    : [
+const loggerTransports =
+//  isProduction
+//     ? [
+//         dailyRotateFileTransport('info'),
+//         dailyRotateFileTransport('warn'),
+//         dailyRotateFileTransport('error'),
+//     ]
+//     : 
+    [
         new transports.Console({
             format: format.combine(
                 format.colorize({ all: true }),
