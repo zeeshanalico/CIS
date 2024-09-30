@@ -8,20 +8,20 @@ import cookieParser from 'cookie-parser';// cookie-parser automatically parses c
 import { notFound } from './middleware/notFound';
 import { errorHandler } from './middleware/errorHandler';
 import { autheticateUser } from './middleware/authenticateUser';
-import { whitelist } from 'info/whitelist';
-
+import whitelist from './info/whitelist';
 const configFile = path.resolve(`${__dirname}/../${process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production'}`);
 dotenv.config({ path: configFile })
 
 const app = express();
 const port = process.env.PORT! || 3001;
-app.use(cookieParser());
-app.use(express.json());
 app.use(cors({
   origin: whitelist,
-  credentials: true// Allow cookies to be sent and received
-
+  credentials: true,// Allow cookies to be sent and received
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow preflight
+  allowedHeaders: ['Content-Type', 'Authorization']     // Allow custom headers
 }))
+app.use(cookieParser());
+app.use(express.json());
 app.use(logRequest);//logging request in 'logRequest' middleware while logging response in 'responseUtils'
 
 // app.get("/testing",  (req: Request, res: Response) => {
