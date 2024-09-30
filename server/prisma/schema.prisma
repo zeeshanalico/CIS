@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  // output   = "./generated/client"
 }
 
 datasource db {
@@ -83,7 +84,7 @@ model Expense {
   amount       Decimal     @db.Decimal(10, 2)
   expense_date DateTime    @default(now()) @db.Timestamp(6)
   description  String?
-  expense_type ExpenseType 
+  expense_type ExpenseType
   is_dummy     Boolean?    @default(false)
   is_deleted   Boolean?    @default(false)
   created_at   DateTime?   @default(now()) @db.Timestamp(6)
@@ -93,26 +94,26 @@ model Expense {
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-  model Internal_user {
-    id         Int              @id @default(autoincrement())
-    name       String           @db.VarChar(255)
-    email      String           @unique @db.VarChar(255)
-    password   String           @db.VarChar(255)
-    role       InternalUserRole 
-    is_active  Boolean?         @default(true)
-    is_deleted Boolean?         @default(false)
-    created_at DateTime?        @default(now()) @db.Timestamp(6)
-    updated_at DateTime?        @default(now()) @db.Timestamp(6)
-    deleted_at DateTime?        @db.Timestamp(6)
-    kiosk      Kiosk[]
-  }
+model Internal_user {
+  id         Int              @id @default(autoincrement())
+  name       String           @db.VarChar(255)
+  email      String           @unique @db.VarChar(255)
+  password   String           @db.VarChar(255)
+  role       InternalUserRole
+  is_active  Boolean?         @default(true)
+  is_deleted Boolean?         @default(false)
+  created_at DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at DateTime?        @default(now()) @db.Timestamp(6)
+  deleted_at DateTime?        @db.Timestamp(6)
+  kiosk      Kiosk[]
+}
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Journal {
   id          Int             @id @default(autoincrement())
   kiosk_id    Int?
   amount      Decimal         @db.Decimal(10, 2)
-  trx_type    TransactionType 
+  trx_type    TransactionType
   account     String          @db.VarChar(50)
   description String?
   is_dummy    Boolean?        @default(false)
@@ -237,7 +238,7 @@ model User {
   name       String     @db.VarChar(255)
   email      String     @unique @db.VarChar(255)
   password   String     @db.VarChar(255)
-  role       UserRole   
+  role       UserRole
   is_active  Boolean?   @default(true)
   is_deleted Boolean?   @default(false)
   created_at DateTime?  @default(now()) @db.Timestamp(6)
