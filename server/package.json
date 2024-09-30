@@ -14,7 +14,8 @@
     "prisma:migrate": "dotenv -e .env.development -- npx prisma migrate dev",
     "prisma:pull": "dotenv -e .env.development -- npx prisma db pull",
     "prisma:migration-status": "dotenv -e .env.development -- npx prisma migrate status",
-    "seed": "dotenv -e .env.development -- ts-node prisma/seed.ts"
+    "seed": "dotenv -e .env.development -- ts-node prisma/seed.ts", 
+    "initial_seed": "dotenv -e .env.development -- ts-node prisma/initialSeed.ts"
   },
   "author": "Zeeshan Ali",
   "license": "ISC",
