@@ -12,6 +12,6 @@
       "dest": "/src/index.ts"
     }
   ],
-  "buildCommand": "npm install @prisma/client && npx prisma generate && npm run build"
+  "buildCommand": "npx prisma generate && npm run build"
 
 }
