@@ -18,7 +18,7 @@ import loggerService from '../logger/loggerService';
  * @param {number} [statusCode=200] - The HTTP status code (default is 200).
  */
 function sendSuccess<T>(res: Response, result: T, message: string | null = null, extraInfo?: any, statusCode: number = 200,): void {
-    loggerService.info(`Response: ${JSON.stringify(result, null, 2)}`, `responseUtils`);
+    loggerService.info(`Response: ${JSON.stringify(result, null, 2).slice(0,300)}......`, `responseUtils`);
     res.status(statusCode).json({
         success: true,
         message,

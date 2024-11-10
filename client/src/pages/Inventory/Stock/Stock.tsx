@@ -12,6 +12,7 @@ import { Product } from '@/types/Product';
 import { successHandler } from '@/utils/successHandler';
 import { errorHandler } from '@/components/error/errorHandler';
 import _ from 'lodash'
+import NoEntriesAvailable from '@/components/ui/NoEntriesAvailable';
 const Stock = () => {
   const { products, extraInfo, limit, page, showEditModal, selectedProduct } = useSelector((state: RootState) => state.productSlice);
   const { data: productsResponse } = useGetProductsQuery({ limit, page });
@@ -55,6 +56,7 @@ const Stock = () => {
     dispatch(setSelectedProduct(product));
     dispatch(toggleEditModal());
   };
+  if (products.length === 0) return <NoEntriesAvailable text="Stock Not Available"/>
 
   return (
     <div className="mx-auto flex flex-col">

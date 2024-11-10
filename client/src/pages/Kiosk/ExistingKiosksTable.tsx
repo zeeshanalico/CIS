@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useGetKiosksQuery, useDeleteKioskMutation } from '@/store/slices/kioskSlice/kioskApiSlice';
 import { setKiosks, setSelectedKiosk, setPage, setLimit, toggleEditModal, toggleDeleteConfirmationModal, setExtraInfo } from '@/store/slices/kioskSlice/kioskSlice';
-
 import { useUpdateKioskUsersMutation } from '@/store/slices/userSlice/userApiSlice';
 import { Kiosk } from '@/types/kiosk';
 import { User } from '@/types/User';
@@ -14,6 +13,7 @@ import { successHandler } from '@/utils/successHandler';
 import EditKiosk from '@/pages/Kiosk/EditKiosk';
 import Table, { Th, Td, Tr } from '../../components/ui/Table';
 import usePagination from '../../components/hooks/usePagination';
+import NoEntriesAvailable from '@/components/ui/NoEntriesAvailable';
 const ExistingKiosksTable = () => {
   const [updateKioskUsers] = useUpdateKioskUsersMutation();
   const { kiosks, showDeleteConfirmationModal, showEditModal, selectedKiosk, extraInfo, limit, page } = useSelector((state: RootState) => state.kioskSlice);
@@ -77,8 +77,9 @@ const ExistingKiosksTable = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error fetching kiosks.</div>;
+  if (kiosks.length === 0) return <NoEntriesAvailable/>
 
-  return (
+    return (
     <div className="mx-auto flex flex-col">
       <div className="flex flex-row justify-between items-center my-2">
           <p className="text-sm text-gray-500">Showing <span className="font-medium">{extraInfo.from}</span> to <span className="font-medium">{extraInfo.to}</span> of <span className="font-medium">{extraInfo.count}</span> results</p>

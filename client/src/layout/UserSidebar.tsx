@@ -52,6 +52,7 @@ const UserSidebar = () => {
                             <li onClick={() => toggleSidebar()}><Link to={RoutesEnum.USER_DASHBOARD} className="block py-2 px-4 rounded hover:bg-indigo-500">Dashboard</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_NEW_INVENTORY}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Inventory</Link></li>
                             <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.SALE}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Sale</Link></li>
+                            <li onClick={() => toggleSidebar()}><Link to={`${RoutesEnum.ADD_VENDOR_PURCHASE}`} className="block py-2 px-4 rounded hover:bg-indigo-500">Vendor Purchases</Link></li>
                         </ul>
                     </div>
                 </div>

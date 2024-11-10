@@ -14,6 +14,7 @@ dotenv.config({ path: configFile })
 
 const app = express();
 const port = process.env.PORT! || 3001;
+
 app.use(cors({
   origin: whitelist,
   credentials: true,// Allow cookies to be sent and received
@@ -23,14 +24,14 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(logRequest);//logging request in 'logRequest' middleware while logging response in 'responseUtils'
-
 // app.get("/testing",  (req: Request, res: Response) => {
 //   console.log(req.path);
-
 //   console.log("req.user: Zeeshan", req.user);
 //   res.json({ user: req.user })
 // })
 
+const staticDir = path.resolve(__dirname, '../uploads/productsImages');
+app.use('/uploads/productsImages', express.static(staticDir));
 app.use('/api', autheticateUser, router);// startWith(/auth | /public) excluded from middleware
 
 app.use(notFound, errorHandler);

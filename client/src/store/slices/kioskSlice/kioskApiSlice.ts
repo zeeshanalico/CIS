@@ -33,6 +33,7 @@ export const kioskApiSlice = createApi({
                 body: body,
                 method: 'POST',
             }),
+            transformErrorResponse: (response: FailedResponse) => response.data,
             invalidatesTags: ['User', 'Kiosk'],
         }),
         deleteKiosk: builder.mutation<KiosksResponse, { deleteType: 'soft' | 'hard'; id: number }>({

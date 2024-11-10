@@ -17,6 +17,9 @@ class AuthService {
             if (!user)
                 throw new CustomError('User not found', 404);
         }
+        
+        if(user.is_deleted)
+            throw new CustomError('Your account is deactivated as this user is deleted',404)
 
         // const pass = await bcrypt.hash(password, 10);
         // console.log(pass);

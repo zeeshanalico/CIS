@@ -21,6 +21,7 @@ import { useUpdateCustomerMutation, useDeleteCustomerMutation } from '@/store/sl
 import { toggleDeleteConfirmationModal } from '@/store/slices/customerSlice/customerSlice';
 import { successHandler } from '@/utils/successHandler';
 import { errorHandler } from '@/components/error/errorHandler';
+import NoEntriesAvailable from '@/components/ui/NoEntriesAvailable';
 
 const CustomerTable = () => {
     const dispatch = useDispatch();
@@ -72,6 +73,7 @@ const CustomerTable = () => {
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error fetching customers.</div>;
+    if (customers.length === 0) return <NoEntriesAvailable text="NO entries Available"/>
 
     const totalPages = Math.ceil(extraInfo.count / limit);
 

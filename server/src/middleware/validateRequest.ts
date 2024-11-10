@@ -11,4 +11,3 @@ export const validateRequest = (schema: Joi.ObjectSchema<any>) => (req: Request,
     }
     next();
 };
-

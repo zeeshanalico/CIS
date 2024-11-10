@@ -25,6 +25,6 @@ export { FaDeleteLeft, FaRupeeSign } from "react-icons/fa6";
 export { MdOutlineAlternateEmail, MdCategory, MdDeleteForever, MdDiscount } from "react-icons/md";
 export { BsFillTelephoneFill } from "react-icons/bs";
 export { CiSearch } from "react-icons/ci";
-
+export { Filter } from "lucide-react";
 
 

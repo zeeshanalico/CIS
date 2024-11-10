@@ -21,6 +21,7 @@ import { useUpdateUserMutation, useDeleteUserMutation } from '@/store/slices/use
 import { toggleDeleteConfirmationModal } from '@/store/slices/userSlice/userSlice';
 import { successHandler } from '@/utils/successHandler';
 import { errorHandler } from '@/components/error/errorHandler';
+import NoEntriesAvailable from '@/components/ui/NoEntriesAvailable';
 const UserTable = () => {
     const dispatch = useDispatch();
     const { users, extraInfo, limit, page: pageNumber, showEditModal, selectedUser, showDeleteConfirmationModal, } = useSelector((state: RootState) => state.userSlice);
@@ -68,6 +69,7 @@ const UserTable = () => {
     };
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error fetching kiosks.</div>;
+    if (users.length === 0) return <NoEntriesAvailable text="NO entries Available"/>
 
     const totalPages = Math.ceil(extraInfo.count / limit);
 

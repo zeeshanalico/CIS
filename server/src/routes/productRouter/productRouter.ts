@@ -5,13 +5,19 @@ import { validateRequest } from '../../middleware/validateRequest';
 import ProductService from '../../services/ProductService';
 import { createProductSchema } from '../../dto/productDto';
 import UserService from '../../services/UserService';
+import * as path from 'path'
+const multer =require('multer')
+import * as fs from 'fs'
 const router = express.Router();
+
+
+const upload = multer();
 
 const productService = new ProductService(prisma);
 const userService = new UserService(prisma)
 const productController = new ProductController(productService, userService);
 
-router.post('/create', validateRequest(createProductSchema), (req, res) => productController.addInventory(req, res));//batch,product,purchase? table will inserted
+router.post('/create', upload.single('file'), validateRequest(createProductSchema), (req, res) => productController.addInventory(req, res));//batch,product,purchase? table will inserted
 router.get('/', (req, res) => productController.getProducts(req, res));
 
 

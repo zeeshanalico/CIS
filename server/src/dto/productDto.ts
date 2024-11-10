@@ -33,5 +33,6 @@ export const createProductSchema = Joi.object({
       'any.required': 'Quantity is required',
       'number.base': 'Quantity should be a valid number',
     }),
-  isNew: Joi.boolean().optional()
+  isNew: Joi.boolean().optional(),
+  file: Joi.optional()
 });

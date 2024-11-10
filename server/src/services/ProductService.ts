@@ -9,13 +9,14 @@ class ProductService {
         });
         return product;
     }
+
     async addInventory(data: {
-        name: string, cost_price: number, isNew: boolean, sale_price: number, quantity: number,
+        name: string, cost_price: number, image_url:string, isNew: boolean, sale_price: number, quantity: number,
         category: { connect: { id: number } },
         kiosk: { connect: { id: number } },
         user: { connect: { id: number } }
     }): Promise<any> {
-        const { cost_price, isNew, name, quantity, user, ...rest } = data;
+        const { cost_price, isNew, name, quantity, user, image_url, ...rest } = data;
 
         return await this.prisma.$transaction(async (trx) => {
             let product;
@@ -26,7 +27,7 @@ class ProductService {
 
             if (isNew) {
                 product = await trx.product.create({
-                    data: { name, quantity, ...rest, }
+                    data: { name, quantity,image_url, ...rest, }
                 });
                 // here if we are adding new product with qty more than 0 then create batch and purchase
                 if (quantity > 0) {//if qty >&!=0
@@ -152,7 +153,6 @@ class ProductService {
 
     async getProducts({ skip, take, category_id, search, availableProducts, priceRange }: { skip?: number | undefined; take?: number | undefined, category_id: number | undefined, search: string | undefined, availableProducts: boolean, priceRange?: number | undefined }): Promise<{ products: Product[], count: number }> {
         const productWithLowestPrice = await this.getProductWithLowestPrice();
-        console.log('ZEESHAN', priceRange, typeof priceRange);
 
         const products = await this.prisma.product.findMany({
             skip,

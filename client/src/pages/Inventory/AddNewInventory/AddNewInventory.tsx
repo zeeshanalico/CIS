@@ -18,6 +18,7 @@ export interface FormValues {
   quantity: number | undefined;
   cost_price: number | undefined;
   isNew?: boolean;
+  image: null | File
 }
 
 const AddNewInventory = () => {
@@ -31,36 +32,39 @@ const AddNewInventory = () => {
   const handleSubmit = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
     try {
       console.log(values);
+      const formData = new FormData();
+      formData.append('name', String(values.name));  // Ensure name is a string
+      formData.append('sale_price', String(values.sale_price ?? 0));
+      formData.append('quantity', String(values.quantity ?? 0));
+      formData.append('category', String(values.category ?? 0));
+      formData.append('cost_price', String(values.cost_price ?? 0));
+      formData.append('isNew', String(values.isNew ?? false));
+      formData.append('file', values.image as File);
 
-      const response = await addInventory({ ...values, }).unwrap();
+
+      const response = await addInventory(formData).unwrap();
       successHandler(response);
-      resetForm({
-        values: {
-          isNew: false,
-          name: '',
-          category: undefined,
-          sale_price: 0,
-          cost_price: 0,
-          quantity: 0,
-        },
-      })
+      // resetForm({
+      //   values: {
+      //     isNew: false,
+      //     name: '',
+      //     category: undefined, 
+      //     sale_price: 0,
+      //     cost_price: 0,
+      //     quantity: 0,
+      //     image: null
+      //   },
+      // })
     } catch (err: unknown) {
       errorHandler(err);
     } finally {
       setSubmitting(false);
     }
   };
-  // console.log('isNew:', values.isNew);
-  // console.log('quantity:', values.quantity);
-
-  console.log(isNew);
 
   return (
     <div className="flex items-center justify-center">
       <div className="w-full">
-        {/* <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
-          Add New Inventory
-        </h2> */}
         <Formik
           initialValues={{
             isNew: false,
@@ -206,6 +210,17 @@ const AddNewInventory = () => {
                   type="number"
                 />}
               </div>
+              {isNew && <FormInput
+                icon={<></>}
+                label="Image"
+                name="image"
+                error={errors.image}
+                accept='.jpeg, .png'
+                touched={touched.image}
+                onChange={(e) => setFieldValue('image', e.currentTarget.files?.[0] ?? null)}
+                onBlur={handleBlur}
+                type="file"
+              />}
 
               <Button
                 type="submit"

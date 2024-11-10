@@ -27,17 +27,18 @@ export const productApiSlice = createApi({
             transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
         }),
-        createInventory: builder.mutation<ApiResponseSuccess<Product>, FormValues>({
-            query: (body) => ({
+        createInventory: builder.mutation<ApiResponseSuccess<Product>, FormData>({
+            query: (body) => {
+                console.log(body);
+                
+                return {
                 url: `/create`,
                 body: body,
                 method: 'POST',
-            }),
-            // transformResponse: (response: ApiResponseSuccess<Product[]>) => response,
+            }},
             transformErrorResponse: (response: { status: number; data: ApiResponseFailed }) => response.data,
             invalidatesTags: ['Product',],
         }),
-
 
         updateProduct: builder.mutation<ApiResponseSuccess<Product>, UpdateProductFormState>({
             query: ({ id, ...body }) => ({

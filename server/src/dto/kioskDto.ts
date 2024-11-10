@@ -21,7 +21,7 @@ export const createKioskSchema = Joi.object({
     user: Joi.number().required()
         .messages({
             'number.base': 'user should be a type of number',
-            'any.required': 'user is required',
+            'any.required': 'Please select manager for the kiosk or create new user and then select.',
         }),
 });
 

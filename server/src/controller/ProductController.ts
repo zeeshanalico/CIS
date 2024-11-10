@@ -5,23 +5,52 @@ import UserService from '../services/UserService';
 import { CustomError } from '../utils/CustomError';
 import { parseBoolean } from '../utils/parseBoolean';
 import { parseString } from '../utils/parseString';
+import * as path from 'path'
+import * as fs from 'fs/promises'
+
+
+interface MulterRequest extends Request {
+    file?: any;
+}
+
 class ProductController {
     constructor(private readonly productService: ProductService, private readonly userService: UserService) { }
 
-    async addInventory(req: Request, res: Response): Promise<void> {
+    async addInventory(req: MulterRequest, res: Response): Promise<void> {
+        const image = req.file;
         const { name, cost_price, sale_price, quantity, category: category_id, isNew = false } = req.body;
-        const user_id = req.user?.user_id
+        console.log("request ______", { name, cost_price, sale_price, quantity, category: category_id, isNew });
 
+        let fileName = '', filePath = '';
         try {
+            if (image) {
+                // throw new CustomError('No file uploaded', 400);
+
+                const uploadsDir = path.resolve(__dirname, '../../uploads');
+                const productImagesDir = path.join(uploadsDir, 'productsImages');
+
+                // Create directories if they don't exist
+                await fs.mkdir(uploadsDir, { recursive: true });
+                await fs.mkdir(productImagesDir, { recursive: true });
+
+                // Generate a unique file name
+                fileName = `${name}_${Date.now()}_${image.originalname}`;
+                filePath = path.join(productImagesDir, fileName);
+
+                await fs.writeFile(filePath, image.buffer);
+            }
+
+            const user_id = req.user?.user_id
             const kiosk = await this.userService.getKioskByUserId(user_id as number)
-            if (!kiosk) throw new CustomError('Kiosk is not assigned to you', 404);
+            if (!kiosk) throw new CustomError('Kiosk is not assigned to you, so you can\'t add inventory', 404);
             const product = await this.productService.addInventory({
                 name,
-                cost_price,
-                sale_price,
-                quantity,
-                isNew,
-                category: { connect: { id: category_id } },
+                cost_price: Number(cost_price),
+                sale_price: Number(sale_price),
+                quantity: Number(quantity),
+                isNew: isNew === 'false' ? false : true,
+                image_url: `${filePath}`,
+                category: { connect: { id: Number(category_id) } },
                 kiosk: { connect: { id: kiosk.id } },
                 user: { connect: { id: user_id as number } }
             });

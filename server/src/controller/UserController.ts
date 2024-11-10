@@ -12,10 +12,10 @@ class UserController {
   async createUser(req: Request, res: Response): Promise<void> {
     const { name, email, password, role } = req.body
     try {
-      const exists = await checkEmailExistence(req.body.email);
-      if (!exists) {
-        throw new CustomError('Email does not exist', 400)
-      }
+      // const exists = await checkEmailExistence(req.body.email);
+      // if (!exists) {
+      //   throw new CustomError('Email does not exist', 400)
+      // }
       const hashedPassword = await bcrypt.hash(password, 10)
       const newUser = await this.userService.createUser({ name, email, password: hashedPassword, role });
       sendSuccess(res, newUser, 'User created successfully');

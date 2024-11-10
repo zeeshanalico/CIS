@@ -13,8 +13,9 @@ class UserService {
         const existingInternalUser = await this.prisma.internal_user.findFirst({
             where: { email: createUserInput.email }
         })
-        if (existingUser || existingInternalUser)
-            throw new CustomError('User already exists', 400);
+
+        if (existingUser || existingInternalUser) 
+            throw new CustomError(`User already exists with this email ${existingUser?.is_deleted || 'but deleted'}`, 400);//future bug: existingInternalUser.is_deleted check
         return await this.prisma.user.create({
             data: createUserInput,
         });
@@ -31,7 +32,6 @@ class UserService {
     async updateUser({ id, resetPassword, name, email }: { id: number, resetPassword: string, name: string, email: string, }): Promise<User> {
 
         return await this.prisma.user.update({
-
             where: { id },
             data: { name, email, password: resetPassword ? resetPassword : undefined, updated_at: new Date() },
         });
@@ -96,11 +96,13 @@ class UserService {
 
     async getKioskByUserId(id: number): Promise<Kiosk | null> {
         const user = await this.getUserById(id);
-
-        const kiosk = await this.prisma.kiosk.findUnique({
-            where: { id: user.kiosk_id as number },
-        })
-        return kiosk;
+        if(user.kiosk_id){
+            const kiosk = await this.prisma.kiosk.findUnique({
+                where: { id: user.kiosk_id },
+            })
+            return kiosk;
+        }
+        return null;
     }
 }
 

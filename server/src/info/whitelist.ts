@@ -1,1 +1,1 @@
-export default ["http://localhost:5173", "http://localhost:3000"];
+export default ["http://localhost:5173", "http://localhost:3000","http://192.168.126.125:5173"];

@@ -37,7 +37,7 @@ const UserTable = lazy(() => import('./pages/User/UserTable'));
 const CustomerTable = lazy(() => import('./pages/Customer/ExistingCustomers/CustomerTable'));
 const CreateCustomer = lazy(() => import('./pages/Customer/CreateCustomer/CreateCustomer'));
 const LandingPage = lazy(() => import('./pages/Landing'));
-const ProductsPage = lazy(() => import('./pages/Public/Products'));
+const ProductsPage = lazy(() => import('./pages/Public/ProductsPage'));
 
 
 export enum RoutesEnum {
@@ -64,8 +64,10 @@ export enum RoutesEnum {
 
     INVENTORY = '/inventory',//for naming purpose
     ADD_NEW_INVENTORY = 'add-new-inventory',
-    ADD_VENDOR_PURCHASE = 'add-vendor-purchase',
+
     STOCK = 'stock',
+    
+    ADD_VENDOR_PURCHASE = '/add-vendor-purchase',
 
     VENDOR = '/vendor',//for naming purpose
     ADD_VENDOR = 'add-vendor',
@@ -81,6 +83,7 @@ const App = () => {
         const currentRoute = location.pathname;
         let title = '';
         switch (currentRoute) {
+            
             case RoutesEnum.LOGIN: title = 'Login'; break;
             case RoutesEnum.UNAUTHORIZED: title = 'Unauthorized'; break;
             case RoutesEnum.DASHBOARD: title = 'Dashboard'; break;
@@ -112,8 +115,8 @@ const App = () => {
                 title = 'Inventory'; break;
             case `${RoutesEnum.INVENTORY}/${RoutesEnum.STOCK}`:
                 title = 'Inventory'; break;
-            case `${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_VENDOR_PURCHASE}`:
-                title = 'Inventory'; break;
+            // case `${RoutesEnum.INVENTORY}/${RoutesEnum.ADD_VENDOR_PURCHASE}`:
+            //     title = 'Inventory'; break;
 
             case `${RoutesEnum.CUSTOMER}/${RoutesEnum.ADD_NEW_CUSTOMER}`:
                 title = 'Customer'; break;
@@ -124,6 +127,9 @@ const App = () => {
                 title = 'Kiosk'; break;
             case `${RoutesEnum.KIOSK}/${RoutesEnum.EXISTED_KIOSKS}`:
                 title = 'Kiosk'; break;
+
+            case `${RoutesEnum.ADD_VENDOR_PURCHASE}`:
+                title = 'Vendor Purchases'; break;
 
             case RoutesEnum.SALE:
                 title = 'Sale';
@@ -184,10 +190,10 @@ const App = () => {
                         <Route path="/" element={<UserSidebar />}>
                             <Route path={RoutesEnum.USER_DASHBOARD} element={<UserDashboard />} />
                             <Route path={RoutesEnum.SALE} element={<Sale />} />
+                            <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
                             <Route path={RoutesEnum.INVENTORY} element={<InventoryLayout />} >
                                 <Route path={RoutesEnum.ADD_NEW_INVENTORY} element={<AddNewInventory />} />
                                 <Route path={RoutesEnum.STOCK} element={<Stock />} />
-                                <Route path={RoutesEnum.ADD_VENDOR_PURCHASE} element={<AddVendorPurchase />} />
                             </Route>
                         </Route>
                     </Route>
