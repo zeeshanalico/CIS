@@ -1,6 +1,6 @@
 import express from 'express'
 import { prisma } from '../../connection/prisma';
-import AuthController from '../../controller/AuthController';
+import AuthController from '../../controller/authController';
 import { validateRequest } from '../../middleware/validateRequest';
 import AuthService from '../../services/AuthService';
 import { loginSchema } from '../../dto/LoginDto';
