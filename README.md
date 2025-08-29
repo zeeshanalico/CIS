@@ -35,10 +35,11 @@ Create `.env.production` and `.env.development` files at the root of the project
 NODE_ENV=production
 PORT=8080
 DATABASE_URL=postgresql://postgres:postgres@database:5432/CIS?schema=public
-ACCESS_TOKEN_SECRET=spqldf23@@@^2320230-234i221@@
-REFRESH_TOKEN_SECRET=sfsldsldf2@@@%^%%WFSDFSER@%@@WFSDFG
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
 
 # PostgreSQL
 POSTGRES_DB=CIS
 POSTGRES_USER=postgres
 POSTGRES_HOST_AUTH_METHOD=trust
+
