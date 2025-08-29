@@ -3,7 +3,7 @@ import UserService from '../services/UserService';
 import { sendError, sendSuccess } from '../utils/responseUtils';
 import { CustomError } from '../utils/CustomError';
 import _ from 'lodash'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { parseBoolean } from '../utils/parseBoolean';
 import { checkEmailExistence } from '../utils/checkEmailExists';
 class UserController {

@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { LoginDto } from '../dto/LoginDto';
 import { CustomError } from '../utils/CustomError';
 import { UserPayload } from '../types/UserPayload';
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 class AuthService {
     constructor(private readonly prisma: PrismaClient) { }
 
