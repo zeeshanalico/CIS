@@ -1,46 +1,30 @@
 services:
-  frontend:
-    container_name: sub-cis-frontend
-    build: ./client
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./client:/app # Only mount the frontend project folder to avoid issues
-      - /app/node_modules # Ensure node_modules is not overwritten
-    environment:
-      NODE_ENV: production
-
   database:
-    image: postgres:14-alpine
-    container_name: db
-    environment:
-    # POSTGRES_HOST_AUTH_METHOD: #trust to allow all connections without a password
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: cis
+    image: postgres:14
+    container_name: database
+    env_file:
+      - .env.production 
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
-      - "5433:5432" #here i expose PostgreSQL port 5433 to the host ("5433:5432"), but inside the Docker network, PostgreSQL still listens on port 5432
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  backend:
-    container_name: sub-cis-backend
-    build: ./server
+  app:
+    container_name: application
+    build: .
     ports:
-      - "3001:3001"
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:admin@db:5432/cis?schema=public # Use `db` instead of localhost
-      ACCESS_TOKEN_SECRET: spqldf23@@@^2320230-234i221@@
-      REFRESH_TOKEN_SECRET: sfsldsldf2@@@%^%%WFSDFSER@%@@WFSDFG
-    volumes:
-      - ./server:/app # Only mount the backend project folder
-      - /app/node_modules # Ensure node_modules is not overwritten
+      - "8080:8080"
+    env_file:
+      - .env.production  
     depends_on:
-      - database
-    command: sh -c "npx prisma db push && npx prisma generate && npx prisma migrate deploy"
-
-  
-
+      database:
+        condition: service_healthy
+    command: sh -c "npx prisma generate && npm run prisma:migrate && npm run initial_seed && npm run seed && node dist/index.js"
+    
 volumes:
   db-data:
