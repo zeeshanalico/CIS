@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { RootState } from '@/store/store';
-import { Role } from '@/types/Roles';
+import { Role } from '@/types/roles';
 import { setCredentials, clearCredentials } from '@/store/slices/authSlice/authSlice';
 import { useRefreshTokenMutation } from '@/store/slices/authSlice/authApiSlice';
 import { useRef } from 'react';

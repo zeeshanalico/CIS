@@ -3,7 +3,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Sidebar from './layout/Sidebar';
 import UserSidebar from './layout/UserSidebar';
 import { lazy, Suspense, useEffect } from 'react';
-import { Role } from './types/Roles';
+import { Role } from './types/roles';
 import { setTitle } from './store/slices/globalSlice.ts/globalSlice';
 import { useDispatch } from 'react-redux';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';

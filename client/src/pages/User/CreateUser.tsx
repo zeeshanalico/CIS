@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { FaUserAlt, FaUserShield, FaLock, FaExclamationCircle, MdOutlineAlternateEmail, FaEyeSlash, FaEye } from "../../assets/icons";
 import { useState } from 'react';
 import { useCreateUserMutation } from '@/store/slices/userSlice/userApiSlice';
-import { Role } from '@/types/Roles';
+import { Role } from '@/types/roles';
 import { errorHandler } from '@/components/error/errorHandler';
 import { successHandler } from '@/utils/successHandler';
 

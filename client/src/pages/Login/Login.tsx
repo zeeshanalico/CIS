@@ -9,7 +9,7 @@ import { useNavigate,} from 'react-router-dom';
 import { useDispatch,  } from 'react-redux';
 import { FaUserAlt, FaLock, FaExclamationCircle, FaEyeSlash, FaEye } from "../../assets/icons";
 import { clearCredentials, setCredentials, } from '@/store/slices/authSlice/authSlice';
-import { Role } from '@/types/Roles';
+import { Role } from '@/types/roles';
 import { errorHandler } from '@/components/error/errorHandler';
 // import { RootState } from '@/store/store';
 import { successHandler } from '@/utils/successHandler';

@@ -1,4 +1,4 @@
-import { Role } from "./Roles";
+import { Role } from "./roles";
 import { ApiResponseSuccess } from "./apiResponse";
 import { ExtraInfo } from "./apiResponse";
 export class User {
