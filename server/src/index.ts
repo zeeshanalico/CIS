@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import logRequest from './middleware/logRequest';
 import router from './routes/router'
 import path from 'path';
-import cookieParser from 'cookie-parser';// cookie-parser automatically parses cookies from the Cookie header of incoming HTTP requests and makes them available in req.cookies. This simplifies accessing cookie data without manual parsing.
+import cookieParser from 'cookie-parser';
 import { notFound } from './middleware/notFound';
 import { errorHandler } from './middleware/errorHandler';
 import { autheticateUser } from './middleware/authenticateUser';
@@ -17,23 +17,24 @@ const port = process.env.PORT! || 3001;
 
 app.use(cors({
   origin: whitelist,
-  credentials: true,// Allow cookies to be sent and received
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow preflight
   allowedHeaders: ['Content-Type', 'Authorization']     // Allow custom headers
 }))
 app.use(cookieParser());
 app.use(express.json());
-app.use(logRequest);//logging request in 'logRequest' middleware while logging response in 'responseUtils'
-// app.get("/testing",  (req: Request, res: Response) => {
-//   console.log(req.path);
-//   console.log("req.user: Zeeshan", req.user);
-//   res.json({ user: req.user })
-// })
+app.use(logRequest);
 
 const staticDir = path.resolve(__dirname, '../uploads/productsImages');
 app.use('/uploads/productsImages', express.static(staticDir));
 app.use('/api', autheticateUser, router);// startWith(/auth | /public) excluded from middleware
 
+const frontendDir = path.resolve(__dirname, 'public');
+app.use(express.static(frontendDir));
+
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(frontendDir, 'index.html'));
+});
 app.use(notFound, errorHandler);
 
 console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
